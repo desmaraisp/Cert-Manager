@@ -76,39 +76,46 @@ public class CertificateVersionController : ControllerBase
 	[ProducesResponseType(404)]
 	public async Task<IActionResult> GetCertificateVersionById(Guid id)
 	{
-		var certVersion = await certManagerContext.CertificateVersions.FirstOrDefaultAsync(x => x.CertificateVersionId == id);
-		if (certVersion == null) return NotFound();
+		var certVersion = await certManagerContext.CertificateVersions
+				.Select(x => new CertificateVersionResponseModel
+				{
+					ActivationDate = x.ActivationDate,
+					Cn = x.Cn,
+					ExpiryDate = x.ExpiryDate,
+					IssuerName = x.IssuerName,
+					Thumbprint = x.Thumbprint,
+					RawCertificate = x.RawCertificate,
+					CertificateId = x.Certificate.CertificateId,
+					CertificateVersionId = x.CertificateVersionId
+				})
+				.FirstOrDefaultAsync(x => x.CertificateVersionId == id);
 
-		return Ok(new CertificateVersionResponseModel
-		{
-			ActivationDate = certVersion.ActivationDate,
-			Cn = certVersion.Cn,
-			ExpiryDate = certVersion.ExpiryDate,
-			IssuerName = certVersion.IssuerName,
-			Thumbprint = certVersion.Thumbprint,
-			RawCertificate = certVersion.RawCertificate,
-			CertificateId = certVersion.Certificate.CertificateId,
-			CertificateVersionId = certVersion.CertificateVersionId
-		});
+		if (certVersion == null) return NotFound();
+		return Ok(certVersion);
 	}
 
 	[HttpGet("Certificates/{id}/CertificateVersions", Name = nameof(GetCertificateVersionsForCertificate))]
 	[ProducesResponseType(typeof(List<CertificateVersionResponseModel>), 200)]
-	public async Task<IActionResult> GetCertificateVersionsForCertificate(Guid id)
+	public async Task<IActionResult> GetCertificateVersionsForCertificate(Guid id, bool ShowExpired)
 	{
-		var results = await certManagerContext.Certificates.Where(x => x.CertificateId == id).SelectMany(c => c.CertificateVersions).ToListAsync();
+		var results = await certManagerContext.Certificates
+				.Where(x => x.CertificateId == id)
+				.SelectMany(c => c.CertificateVersions)
+				.Where(x => !ShowExpired || x.ExpiryDate > DateTime.UtcNow)
+				.Select(x => new CertificateVersionResponseModel
+				{
+					ActivationDate = x.ActivationDate,
+					Cn = x.Cn,
+					ExpiryDate = x.ExpiryDate,
+					IssuerName = x.IssuerName,
+					Thumbprint = x.Thumbprint,
+					RawCertificate = x.RawCertificate,
+					CertificateId = id,
+					CertificateVersionId = x.CertificateVersionId
+				})
+				.ToListAsync();
 
-		return Ok(results.ConvertAll(x => new CertificateVersionResponseModel
-		{
-			ActivationDate = x.ActivationDate,
-			Cn = x.Cn,
-			ExpiryDate = x.ExpiryDate,
-			IssuerName = x.IssuerName,
-			Thumbprint = x.Thumbprint,
-			RawCertificate = x.RawCertificate,
-			CertificateId = id,
-			CertificateVersionId = x.CertificateVersionId
-		}));
+		return Ok(results);
 	}
 
 	[HttpDelete("CertificateVersions/{id}", Name = nameof(DeleteCertificateVersion))]

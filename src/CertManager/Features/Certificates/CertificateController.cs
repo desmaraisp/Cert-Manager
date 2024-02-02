@@ -24,7 +24,6 @@ public class CertificateController : ControllerBase
 		Certificate newCertificate = new()
 		{
 			CertificateName = payload.CertificateName,
-			CertificateRoles = payload.Roles.ConvertAll(x => new CertificateRole { Role = x }),
 			CertificateTags = payload.Tags.ConvertAll(x => new CertificateTag { Tag = x }),
 		};
 		certManagerContext.Certificates.Add(newCertificate);
@@ -34,9 +33,8 @@ public class CertificateController : ControllerBase
 		{
 			CertificateName = newCertificate.CertificateName,
 			CertificateId = newCertificate.CertificateId,
-			Roles = newCertificate.CertificateRoles.Select(x => x.Role).ToList(),
 			Tags = newCertificate.CertificateTags.Select(x => x.Tag).ToList()
-	});
+		});
 	}
 
 	[HttpGet("Certificates/{id}", Name = nameof(GetCertificateById))]
@@ -51,22 +49,47 @@ public class CertificateController : ControllerBase
 		{
 			CertificateName = foundCertificate.CertificateName,
 			CertificateId = foundCertificate.CertificateId,
-			Roles = foundCertificate.CertificateRoles.Select(x => x.Role).ToList(),
 			Tags = foundCertificate.CertificateTags.Select(x => x.Tag).ToList()
+		});
+	}
+
+	[HttpPut("Certificates/{id}", Name = nameof(EditCertificateById))]
+	[ProducesResponseType(typeof(CertificateModelWithId), 200)]
+	[ProducesResponseType(404)]
+	public async Task<IActionResult> EditCertificateById(CertificateModel payload, Guid id)
+	{
+		var certificate = await certManagerContext.Certificates.Include(x => x.CertificateTags).FirstOrDefaultAsync(x => x.CertificateId == id);
+
+		if(certificate == null) return NotFound();
+
+		certManagerContext.CertificateTags.RemoveRange(certificate.CertificateTags.ToList());
+
+		certificate.CertificateTags = payload.Tags.ConvertAll(x => new CertificateTag { Tag = x, CertificateId = id });
+		certificate.CertificateName = payload.CertificateName;
+		await certManagerContext.SaveChangesAsync();
+
+		return Ok(new CertificateModelWithId
+		{
+			CertificateName = payload.CertificateName,
+			CertificateId = id,
+			Tags = payload.Tags
 		});
 	}
 
 	[HttpGet("Certificates", Name = nameof(GetAllCertificates))]
 	[ProducesResponseType(typeof(List<CertificateModelWithId>), 200)]
-	public async Task<IActionResult> GetAllCertificates()
+	public async Task<IActionResult> GetAllCertificates([FromQuery] List<string> TagsToSearch, [FromQuery] SearchBehavior TagsSearchBehavior)
 	{
-		var certificates = await certManagerContext.Certificates.Select(x => new CertificateModelWithId
-		{
-			Roles = x.CertificateRoles.Select(x => x.Role).ToList(),
-			Tags = x.CertificateTags.Select(x => x.Tag).ToList(),
-			CertificateName = x.CertificateName,
-			CertificateId = x.CertificateId
-		}).ToListAsync();
+		var certificates = await certManagerContext.Certificates
+			.Where(x => TagsToSearch.Count == 0 || TagsSearchBehavior == SearchBehavior.IncludeAll || x.CertificateTags.All(tag => TagsToSearch.Contains(tag.Tag)))
+			.Where(x => TagsToSearch.Count == 0 || TagsSearchBehavior == SearchBehavior.IncludeAny || x.CertificateTags.Any(tag => TagsToSearch.Contains(tag.Tag)))
+			.Select(x => new CertificateModelWithId
+			{
+				Tags = x.CertificateTags.Select(x => x.Tag).ToList(),
+				CertificateName = x.CertificateName,
+				CertificateId = x.CertificateId
+			})
+			.ToListAsync();
 
 		return Ok(certificates);
 	}

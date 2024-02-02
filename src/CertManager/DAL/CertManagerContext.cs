@@ -7,7 +7,6 @@ public class CertManagerContext : DbContext
 {
 	public DbSet<Certificate> Certificates { get; set; } = null!;
 	public DbSet<CertificateVersion> CertificateVersions { get; set; } = null!;
-	public DbSet<CertificateRole> CertificateRoles { get; set; } = null!;
 	public DbSet<CertificateTag> CertificateTags { get; set; } = null!;
 	public CertManagerContext(DbContextOptions<CertManagerContext> options)
         : base(options)

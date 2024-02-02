@@ -10,6 +10,5 @@ public partial class Certificate
     public required string CertificateName { get; set; }
 
 	public ICollection<CertificateVersion> CertificateVersions { get; set; } = new List<CertificateVersion>();
-	public ICollection<CertificateRole> CertificateRoles { get; set; } = new List<CertificateRole>();
 	public ICollection<CertificateTag> CertificateTags { get; set; } = new List<CertificateTag>();
 }
