@@ -1,11 +1,17 @@
 using CertManager.DAL;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 internal class Program
 {
 	private static void Main(string[] args)
 	{
 		var builder = WebApplication.CreateBuilder(args);
+        builder.Host.UseSerilog((context, config) =>
+        {
+            Environment.SetEnvironmentVariable("BASEDIR", AppDomain.CurrentDomain.BaseDirectory);
+            config.ReadFrom.Configuration(context.Configuration);
+        });
 
 		builder.Services.AddControllers();
 		builder.Services.AddEndpointsApiExplorer();
@@ -22,7 +28,8 @@ internal class Program
 			app.UseSwagger();
 			app.UseSwaggerUI();
 		}
-
+		
+        app.UseSerilogRequestLogging();
 		app.UseAuthorization();
 		app.MapControllers();
 		app.Run();
