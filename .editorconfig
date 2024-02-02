@@ -1,0 +1,4 @@
+[*.cs]
+indent_style = tab
+indent_size = tab
+csharp_style_namespace_declarations = file_scoped:warning

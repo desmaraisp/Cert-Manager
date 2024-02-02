@@ -15,7 +15,7 @@ public class CertificateController : ControllerBase
 		this.certManagerContext = certManagerContext;
 	}
 
-	[HttpPost("Certificate")]
+	[HttpPost("Certificate", Name = nameof(CreateCertificate))]
 	[ProducesResponseType(typeof(CertificateResponseModel), 200)]
 	public async Task<IActionResult> CreateCertificate(string CertificateName)
 	{
@@ -32,10 +32,10 @@ public class CertificateController : ControllerBase
 		});
 	}
 
-	[HttpGet("Certificates/{id}")]
+	[HttpGet("Certificates/{id}", Name = nameof(GetCertificateById))]
 	[ProducesResponseType(typeof(CertificateResponseModel), 200)]
 	[ProducesResponseType(404)]
-	public async Task<IActionResult> GetCertificate(Guid id)
+	public async Task<IActionResult> GetCertificateById(Guid id)
 	{
 		var foundCertificate = await certManagerContext.Certificates.FirstOrDefaultAsync(x => x.Id == id);
 		if(foundCertificate == null) return NotFound();
@@ -46,9 +46,9 @@ public class CertificateController : ControllerBase
 		});
 	}
 
-	[HttpGet("Certificates")]
+	[HttpGet("Certificates", Name = nameof(GetAllCertificates))]
 	[ProducesResponseType(typeof(List<CertificateResponseModel>), 200)]
-	public async Task<IActionResult> GetCertificates()
+	public async Task<IActionResult> GetAllCertificates()
 	{
 		var certificates = await certManagerContext.Certificates.Select(x => new CertificateResponseModel{
 			CertificateName = x.CertificateName,
@@ -58,10 +58,10 @@ public class CertificateController : ControllerBase
 		return Ok(certificates);
 	}
 
-	[HttpDelete("Certificates/{id}")]
+	[HttpDelete("Certificates/{id}", Name = nameof(DeleteCertificateById))]
 	[ProducesResponseType(200)]
 	[ProducesResponseType(404)]
-	public async Task<IActionResult> DeleteCertificate(Guid id)
+	public async Task<IActionResult> DeleteCertificateById(Guid id)
 	{
 		int rowsDeleted = await certManagerContext.Certificates.Where(x => x.Id == id).ExecuteDeleteAsync();
 		if (rowsDeleted > 0) return Ok();
