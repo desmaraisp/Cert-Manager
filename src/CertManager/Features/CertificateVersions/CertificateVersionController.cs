@@ -19,6 +19,7 @@ public class CertificateVersionController : ControllerBase
 	[HttpPost("CertificateVersion", Name = nameof(CreateCertificateVersion))]
 	[ProducesResponseType(typeof(CertificateVersionResponseModel), 200)]
 	[ProducesResponseType(400)]
+	[ProducesResponseType(404)]
 	public async Task<IActionResult> CreateCertificateVersion(IFormFile Certificate, string? Password, Guid CertificateId)
 	{
 		var extension = Path.GetExtension(Certificate.FileName);
@@ -46,12 +47,12 @@ public class CertificateVersionController : ControllerBase
 		CertificateVersion newCertVersion = new()
 		{
 			ActivationDate = DateTime.UtcNow,
+			CertificateId = CertificateId,
 			Cn = cert.GetNameInfo(X509NameType.SimpleName, false),
 			ExpiryDate = cert.NotAfter.ToUniversalTime(),
 			IssuerName = cert.IssuerName.Name,
 			Thumbprint = cert.Thumbprint,
 			RawCertificate = certBytes,
-			CertificateId = CertificateId
 		};
 
 		certManagerContext.CertificateVersions.Add(newCertVersion);
@@ -66,7 +67,7 @@ public class CertificateVersionController : ControllerBase
 			Thumbprint = newCertVersion.Thumbprint,
 			RawCertificate = newCertVersion.RawCertificate,
 			CertificateId = newCertVersion.CertificateId,
-			Id = newCertVersion.Id
+			CertificateVersionId = newCertVersion.CertificateVersionId
 		});
 	}
 
@@ -75,7 +76,7 @@ public class CertificateVersionController : ControllerBase
 	[ProducesResponseType(404)]
 	public async Task<IActionResult> GetCertificateVersionById(Guid id)
 	{
-		var certVersion = await certManagerContext.CertificateVersions.FirstOrDefaultAsync(x => x.Id == id);
+		var certVersion = await certManagerContext.CertificateVersions.FirstOrDefaultAsync(x => x.CertificateVersionId == id);
 		if (certVersion == null) return NotFound();
 
 		return Ok(new CertificateVersionResponseModel
@@ -86,8 +87,8 @@ public class CertificateVersionController : ControllerBase
 			IssuerName = certVersion.IssuerName,
 			Thumbprint = certVersion.Thumbprint,
 			RawCertificate = certVersion.RawCertificate,
-			CertificateId = certVersion.CertificateId,
-			Id = certVersion.Id
+			CertificateId = certVersion.Certificate.CertificateId,
+			CertificateVersionId = certVersion.CertificateVersionId
 		});
 	}
 
@@ -95,7 +96,7 @@ public class CertificateVersionController : ControllerBase
 	[ProducesResponseType(typeof(List<CertificateVersionResponseModel>), 200)]
 	public async Task<IActionResult> GetCertificateVersionsForCertificate(Guid id)
 	{
-		var results = await certManagerContext.Certificates.Where(x => x.Id == id).SelectMany(c => c.CertificateVersions).ToListAsync();
+		var results = await certManagerContext.Certificates.Where(x => x.CertificateId == id).SelectMany(c => c.CertificateVersions).ToListAsync();
 
 		return Ok(results.ConvertAll(x => new CertificateVersionResponseModel
 		{
@@ -105,8 +106,8 @@ public class CertificateVersionController : ControllerBase
 			IssuerName = x.IssuerName,
 			Thumbprint = x.Thumbprint,
 			RawCertificate = x.RawCertificate,
-			CertificateId = x.CertificateId,
-			Id = x.Id
+			CertificateId = id,
+			CertificateVersionId = x.CertificateVersionId
 		}));
 	}
 
@@ -115,7 +116,7 @@ public class CertificateVersionController : ControllerBase
 	[ProducesResponseType(404)]
 	public async Task<IActionResult> DeleteCertificateVersion(Guid id)
 	{
-		int rowsDeleted = await certManagerContext.CertificateVersions.Where(x => x.Id == id).ExecuteDeleteAsync();
+		int rowsDeleted = await certManagerContext.CertificateVersions.Where(x => x.CertificateVersionId == id).ExecuteDeleteAsync();
 		if (rowsDeleted > 0) return Ok();
 
 		return NotFound();

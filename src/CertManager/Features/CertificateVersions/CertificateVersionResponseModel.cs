@@ -1,5 +1,6 @@
 namespace CertManager.Features.CertificateVersions;
 
+
 public class CertificateVersionResponseModel
 {
 	public required DateTime ActivationDate { get; init; }
@@ -9,5 +10,5 @@ public class CertificateVersionResponseModel
 	public required string Thumbprint { get; init; }
 	public required byte[] RawCertificate { get; init; }
 	public required Guid CertificateId { get; init; }
-	public required Guid Id { get; init; }
+	public required Guid CertificateVersionId { get; init; }
 }

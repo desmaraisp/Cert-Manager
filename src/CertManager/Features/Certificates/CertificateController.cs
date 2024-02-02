@@ -15,44 +15,57 @@ public class CertificateController : ControllerBase
 		this.certManagerContext = certManagerContext;
 	}
 
+
+
 	[HttpPost("Certificate", Name = nameof(CreateCertificate))]
-	[ProducesResponseType(typeof(CertificateResponseModel), 200)]
-	public async Task<IActionResult> CreateCertificate(string CertificateName)
+	[ProducesResponseType(typeof(CertificateModelWithId), 200)]
+	public async Task<IActionResult> CreateCertificate(CertificateModel payload)
 	{
 		Certificate newCertificate = new()
 		{
-			CertificateName = CertificateName
+			CertificateName = payload.CertificateName,
+			CertificateRoles = payload.Roles.ConvertAll(x => new CertificateRole { Role = x }),
+			CertificateTags = payload.Tags.ConvertAll(x => new CertificateTag { Tag = x }),
 		};
 		certManagerContext.Certificates.Add(newCertificate);
 		await certManagerContext.SaveChangesAsync();
 
-		return Ok(new CertificateResponseModel{
+		return Ok(new CertificateModelWithId
+		{
 			CertificateName = newCertificate.CertificateName,
-			Id = newCertificate.Id
-		});
+			CertificateId = newCertificate.CertificateId,
+			Roles = newCertificate.CertificateRoles.Select(x => x.Role).ToList(),
+			Tags = newCertificate.CertificateTags.Select(x => x.Tag).ToList()
+	});
 	}
 
 	[HttpGet("Certificates/{id}", Name = nameof(GetCertificateById))]
-	[ProducesResponseType(typeof(CertificateResponseModel), 200)]
+	[ProducesResponseType(typeof(CertificateModelWithId), 200)]
 	[ProducesResponseType(404)]
 	public async Task<IActionResult> GetCertificateById(Guid id)
 	{
-		var foundCertificate = await certManagerContext.Certificates.FirstOrDefaultAsync(x => x.Id == id);
-		if(foundCertificate == null) return NotFound();
+		var foundCertificate = await certManagerContext.Certificates.FirstOrDefaultAsync(x => x.CertificateId == id);
+		if (foundCertificate == null) return NotFound();
 
-		return Ok(new CertificateResponseModel{
+		return Ok(new CertificateModelWithId
+		{
 			CertificateName = foundCertificate.CertificateName,
-			Id = foundCertificate.Id
+			CertificateId = foundCertificate.CertificateId,
+			Roles = foundCertificate.CertificateRoles.Select(x => x.Role).ToList(),
+			Tags = foundCertificate.CertificateTags.Select(x => x.Tag).ToList()
 		});
 	}
 
 	[HttpGet("Certificates", Name = nameof(GetAllCertificates))]
-	[ProducesResponseType(typeof(List<CertificateResponseModel>), 200)]
+	[ProducesResponseType(typeof(List<CertificateModelWithId>), 200)]
 	public async Task<IActionResult> GetAllCertificates()
 	{
-		var certificates = await certManagerContext.Certificates.Select(x => new CertificateResponseModel{
+		var certificates = await certManagerContext.Certificates.Select(x => new CertificateModelWithId
+		{
+			Roles = x.CertificateRoles.Select(x => x.Role).ToList(),
+			Tags = x.CertificateTags.Select(x => x.Tag).ToList(),
 			CertificateName = x.CertificateName,
-			Id = x.Id
+			CertificateId = x.CertificateId
 		}).ToListAsync();
 
 		return Ok(certificates);
@@ -63,7 +76,7 @@ public class CertificateController : ControllerBase
 	[ProducesResponseType(404)]
 	public async Task<IActionResult> DeleteCertificateById(Guid id)
 	{
-		int rowsDeleted = await certManagerContext.Certificates.Where(x => x.Id == id).ExecuteDeleteAsync();
+		int rowsDeleted = await certManagerContext.Certificates.Where(x => x.CertificateId == id).ExecuteDeleteAsync();
 		if (rowsDeleted > 0) return Ok();
 
 		return NotFound();
