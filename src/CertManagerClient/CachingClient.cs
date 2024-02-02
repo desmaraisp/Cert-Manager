@@ -13,14 +13,14 @@ public class CachingClient : IswaggerClient
 		this.memoryCache = memoryCache;
 	}
 
-	public Task<CertificateResponseModel> CreateCertificateAsync(string certificateName)
+	public Task<CertificateModelWithId> CreateCertificateAsync(CertificateModel certificate)
 	{
-		return decoratedClient.CreateCertificateAsync(certificateName);
+		return decoratedClient.CreateCertificateAsync(certificate);
 	}
 
-	public Task<CertificateResponseModel> CreateCertificateAsync(string certificateName, CancellationToken cancellationToken)
+	public Task<CertificateModelWithId> CreateCertificateAsync(CertificateModel certificate, CancellationToken cancellationToken)
 	{
-		return decoratedClient.CreateCertificateAsync(certificateName, cancellationToken);
+		return decoratedClient.CreateCertificateAsync(certificate, cancellationToken);
 	}
 
 	public Task<CertificateVersionResponseModel> CreateCertificateVersionAsync(string password, Guid? certificateId, Stream body)
@@ -53,23 +53,33 @@ public class CachingClient : IswaggerClient
 		return decoratedClient.DeleteCertificateVersionAsync(id, cancellationToken);
 	}
 
-	public Task<ICollection<CertificateResponseModel>> GetAllCertificatesAsync()
+	public Task<CertificateModelWithId> EditCertificateByIdAsync(Guid id, CertificateModel body)
+	{
+		return decoratedClient.EditCertificateByIdAsync(id, body);
+	}
+
+	public Task<CertificateModelWithId> EditCertificateByIdAsync(Guid id, CertificateModel body, CancellationToken cancellationToken)
+	{
+		return decoratedClient.EditCertificateByIdAsync(id, body, cancellationToken);
+	}
+
+	public Task<ICollection<CertificateModelWithId>> GetAllCertificatesAsync(IEnumerable<string> tagsToSearch, SearchBehavior? tagsSearchBehavior)
 	{
 		return GetOrCreateCachedValue(
 			"GetAllCertificatesAsync",
-			decoratedClient.GetAllCertificatesAsync
+			() => decoratedClient.GetAllCertificatesAsync(tagsToSearch, tagsSearchBehavior)
 		);
 	}
 
-	public Task<ICollection<CertificateResponseModel>> GetAllCertificatesAsync(CancellationToken cancellationToken)
+	public Task<ICollection<CertificateModelWithId>> GetAllCertificatesAsync(IEnumerable<string> tagsToSearch, SearchBehavior? tagsSearchBehavior, CancellationToken cancellationToken)
 	{
 		return GetOrCreateCachedValue(
 			"GetAllCertificatesAsync",
-			() => decoratedClient.GetAllCertificatesAsync(cancellationToken)
+			() => decoratedClient.GetAllCertificatesAsync(tagsToSearch, tagsSearchBehavior, cancellationToken)
 		);
 	}
 
-	public Task<CertificateResponseModel> GetCertificateByIdAsync(Guid id)
+	public Task<CertificateModelWithId> GetCertificateByIdAsync(Guid id)
 	{
 		return GetOrCreateCachedValue(
 			$"GetCertificateByIdAsync-{id}",
@@ -77,7 +87,7 @@ public class CachingClient : IswaggerClient
 		);
 	}
 
-	public Task<CertificateResponseModel> GetCertificateByIdAsync(Guid id, CancellationToken cancellationToken)
+	public Task<CertificateModelWithId> GetCertificateByIdAsync(Guid id, CancellationToken cancellationToken)
 	{
 		return GetOrCreateCachedValue(
 			$"GetCertificateByIdAsync-{id}",
@@ -100,19 +110,19 @@ public class CachingClient : IswaggerClient
 		);
 	}
 
-	public Task<ICollection<CertificateVersionResponseModel>> GetCertificateVersionsForCertificateAsync(Guid id)
+	public Task<ICollection<CertificateVersionResponseModel>> GetCertificateVersionsForCertificateAsync(Guid id, DateTimeOffset? minimumExpirationTimeUTC)
 	{
 		return GetOrCreateCachedValue(
 			$"GetCertificateVersionsForCertificateAsync-{id}",
-			() => decoratedClient.GetCertificateVersionsForCertificateAsync(id)
+			() => decoratedClient.GetCertificateVersionsForCertificateAsync(id, minimumExpirationTimeUTC)
 		);
 	}
 
-	public Task<ICollection<CertificateVersionResponseModel>> GetCertificateVersionsForCertificateAsync(Guid id, CancellationToken cancellationToken)
+	public Task<ICollection<CertificateVersionResponseModel>> GetCertificateVersionsForCertificateAsync(Guid id, DateTimeOffset? minimumExpirationTimeUTC, CancellationToken cancellationToken)
 	{
 		return GetOrCreateCachedValue(
 			$"GetCertificateVersionsForCertificateAsync-{id}",
-			() => decoratedClient.GetCertificateVersionsForCertificateAsync(id, cancellationToken)
+			() => decoratedClient.GetCertificateVersionsForCertificateAsync(id, minimumExpirationTimeUTC, cancellationToken)
 		);
 	}
 
