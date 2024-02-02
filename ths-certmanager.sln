@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7680F6F8-CAC3-49AD-A4BD-FF652B1A8B95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CertManager", "src\CertManager\CertManager.csproj", "{0B371D72-EECE-4874-AC01-0E1B44AC90E5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0B371D72-EECE-4874-AC01-0E1B44AC90E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B371D72-EECE-4874-AC01-0E1B44AC90E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B371D72-EECE-4874-AC01-0E1B44AC90E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B371D72-EECE-4874-AC01-0E1B44AC90E5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0B371D72-EECE-4874-AC01-0E1B44AC90E5} = {7680F6F8-CAC3-49AD-A4BD-FF652B1A8B95}
+	EndGlobalSection
+EndGlobal

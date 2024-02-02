@@ -1,0 +1,9 @@
+version: "3.2"
+
+services:
+  sql-server-db:
+    image: sql-server-db
+    build:
+      context: DevelopmentDatabase/.
+    ports:
+      - 1433:1433
