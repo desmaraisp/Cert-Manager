@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using CertManager.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -60,7 +61,7 @@ public class CertificateController : ControllerBase
 	{
 		var certificate = await certManagerContext.Certificates.Include(x => x.CertificateTags).FirstOrDefaultAsync(x => x.CertificateId == id);
 
-		if(certificate == null) return NotFound();
+		if (certificate == null) return NotFound();
 
 		certManagerContext.CertificateTags.RemoveRange(certificate.CertificateTags.ToList());
 
@@ -80,9 +81,19 @@ public class CertificateController : ControllerBase
 	[ProducesResponseType(typeof(List<CertificateModelWithId>), 200)]
 	public async Task<IActionResult> GetAllCertificates([FromQuery] List<string> TagsToSearch, [FromQuery] SearchBehavior TagsSearchBehavior)
 	{
-		var certificates = await certManagerContext.Certificates
-			.Where(x => TagsToSearch.Count == 0 || TagsSearchBehavior == SearchBehavior.IncludeAll || x.CertificateTags.All(tag => TagsToSearch.Contains(tag.Tag)))
-			.Where(x => TagsToSearch.Count == 0 || TagsSearchBehavior == SearchBehavior.IncludeAny || x.CertificateTags.Any(tag => TagsToSearch.Contains(tag.Tag)))
+		var query = certManagerContext.Certificates.AsQueryable();
+		if (TagsSearchBehavior == SearchBehavior.IncludeAny && TagsToSearch.Count != 0)
+		{
+			query = query.Where(x => x.CertificateTags.Any(tag => TagsToSearch.Contains(tag.Tag)));
+		}
+		if(TagsSearchBehavior == SearchBehavior.IncludeAll){
+			foreach (var tag in TagsToSearch)
+			{
+				query = query.Where(x => x.CertificateTags.Select(x => x.Tag).Contains(tag));
+			}
+		}
+
+		var certificates = await query
 			.Select(x => new CertificateModelWithId
 			{
 				Tags = x.CertificateTags.Select(x => x.Tag).ToList(),

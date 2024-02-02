@@ -77,6 +77,7 @@ public class CertificateVersionController : ControllerBase
 	public async Task<IActionResult> GetCertificateVersionById(Guid id)
 	{
 		var certVersion = await certManagerContext.CertificateVersions
+				.Include(x => x.Certificate)
 				.Select(x => new CertificateVersionResponseModel
 				{
 					ActivationDate = x.ActivationDate,
@@ -96,12 +97,18 @@ public class CertificateVersionController : ControllerBase
 
 	[HttpGet("Certificates/{id}/CertificateVersions", Name = nameof(GetCertificateVersionsForCertificate))]
 	[ProducesResponseType(typeof(List<CertificateVersionResponseModel>), 200)]
-	public async Task<IActionResult> GetCertificateVersionsForCertificate(Guid id, bool ShowExpired)
+	public async Task<IActionResult> GetCertificateVersionsForCertificate(Guid id, DateTime? MinimumExpirationTimeUTC = null)
 	{
-		var results = await certManagerContext.Certificates
-				.Where(x => x.CertificateId == id)
-				.SelectMany(c => c.CertificateVersions)
-				.Where(x => !ShowExpired || x.ExpiryDate > DateTime.UtcNow)
+		var query = certManagerContext.Certificates
+			.Where(x => x.CertificateId == id)
+			.SelectMany(c => c.CertificateVersions);
+
+		if(MinimumExpirationTimeUTC != null){
+			query = query.Where(x => x.ExpiryDate > MinimumExpirationTimeUTC);
+		}
+		
+		var results = await query
+				
 				.Select(x => new CertificateVersionResponseModel
 				{
 					ActivationDate = x.ActivationDate,

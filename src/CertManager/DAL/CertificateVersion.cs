@@ -21,5 +21,5 @@ public partial class CertificateVersion
     public required string Cn { get; set; }
 
 	public Guid CertificateId { get; init; }
-	public Certificate Certificate { get; } = null!;
+	public Certificate Certificate { get; init; } = null!;
 }

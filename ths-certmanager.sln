@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CertManagerClient", "src\Ce
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CertManagerClientTest", "src\CertManagerClientTest\CertManagerClientTest.csproj", "{599735B5-BFD9-4D6F-A97F-1B8FA6822A4B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CertManagerTest", "src\CertManagerTest\CertManagerTest.csproj", "{5F8F0320-8526-4E29-91EF-BE1AF563E5C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,10 +34,15 @@ Global
 		{599735B5-BFD9-4D6F-A97F-1B8FA6822A4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{599735B5-BFD9-4D6F-A97F-1B8FA6822A4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{599735B5-BFD9-4D6F-A97F-1B8FA6822A4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F8F0320-8526-4E29-91EF-BE1AF563E5C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F8F0320-8526-4E29-91EF-BE1AF563E5C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F8F0320-8526-4E29-91EF-BE1AF563E5C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F8F0320-8526-4E29-91EF-BE1AF563E5C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0B371D72-EECE-4874-AC01-0E1B44AC90E5} = {7680F6F8-CAC3-49AD-A4BD-FF652B1A8B95}
 		{FBA2565E-610E-4094-B006-BD58EFC7E96A} = {7680F6F8-CAC3-49AD-A4BD-FF652B1A8B95}
 		{599735B5-BFD9-4D6F-A97F-1B8FA6822A4B} = {7680F6F8-CAC3-49AD-A4BD-FF652B1A8B95}
+		{5F8F0320-8526-4E29-91EF-BE1AF563E5C5} = {7680F6F8-CAC3-49AD-A4BD-FF652B1A8B95}
 	EndGlobalSection
 EndGlobal
