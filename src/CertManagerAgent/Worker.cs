@@ -22,12 +22,7 @@ public class Worker : BackgroundService
 		{
 			using (IServiceScope scope = _serviceProvider.CreateScope())
 			{
-				var config = scope.ServiceProvider.GetRequiredService<IOptions<ServiceConfiguration>>();
-				var fileExporter = scope.ServiceProvider.GetRequiredService<IExporter<FileExporterConfig>>();
-
-				foreach(var fileExporterConfig in config.Value.Exporters.FileExporters){
-					await fileExporter.ExportCertificates(fileExporterConfig, stoppingToken);
-				}
+				await scope.ServiceProvider.GetRequiredService<Main>().Run(stoppingToken);
 			}
 			await Task.Delay(configuration.Delay, stoppingToken);
 		}

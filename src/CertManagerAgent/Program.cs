@@ -14,6 +14,7 @@ builder.UseSerilog((context, config) =>
 builder.ConfigureServices((context, services) =>
 {
 	services.AddScoped<IExporter<FileExporterConfig>, FileExporter>();
+	services.AddScoped<Main>();
 	services.AddOptions<ServiceConfiguration>().BindConfiguration("ServiceConfiguration");
 	services.AddCertManager("CertManagerApi");
 	services.AddHostedService<Worker>();

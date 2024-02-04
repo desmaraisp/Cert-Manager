@@ -19,7 +19,7 @@ public static class ServiceCollectionExtension
 			.BindConfiguration(configSectionPath)
 			.ValidateDataAnnotations();
 
-		serviceCollection.AddHttpClient<IswaggerClient, swaggerClient>((sp, c) =>
+		serviceCollection.AddHttpClient<ICertManagerClient, CertManagerClient>((sp, c) =>
 		{
 			c.BaseAddress = new(
 				sp.GetRequiredService<IOptionsSnapshot<CertManagerClientOptions>>().Value.BaseAddress

@@ -5,9 +5,9 @@ namespace CertManagerAgent.Exporters.FileExporter;
 
 public class FileExporter : IExporter<FileExporterConfig>
 {
-	private readonly IswaggerClient client;
+	private readonly ICertManagerClient client;
 
-	public FileExporter(IswaggerClient client)
+	public FileExporter(ICertManagerClient client)
 	{
 		this.client = client;
 	}
