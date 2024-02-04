@@ -21,9 +21,20 @@ public class CertificateVersionControllerTests
 		context = ConfigureSqLite.ConfigureCertManagerContext();
 		controller = new CertificateVersionController(context);
 	}
+
+	private static string GetCertificatePath(string FileName) => Path.Combine(
+		AppDomain.CurrentDomain.BaseDirectory,
+		"../../../../../TestCertificates",
+		FileName
+	);
+
 	private async Task<CertificateVersion> CreateDefaultCertificateVersion(Guid id, DateTime? expirationTimeOverride = null)
 	{
-		using var cert = new X509Certificate2(AppDomain.CurrentDomain.BaseDirectory + "TestCertificate_Password_Is_123.pfx", "123", X509KeyStorageFlags.Exportable);
+		using var cert = new X509Certificate2(
+			GetCertificatePath(
+				"TestCertificate_Password_Is_123.pfx"
+			), "123", X509KeyStorageFlags.Exportable
+		);
 
 		CertificateVersion newCertVersion = new()
 		{
@@ -53,7 +64,7 @@ public class CertificateVersionControllerTests
 	public async Task CreateCertificateVersion_ReturnsOkResult_WhenValidPfxFileProvided()
 	{
 		var certGuid = await CreateDefaultCertificate();
-		var certificateBytes = File.ReadAllBytes(AppDomain.CurrentDomain.BaseDirectory + "TestCertificate_Password_Is_123.pfx");
+		var certificateBytes = File.ReadAllBytes(GetCertificatePath("TestCertificate_Password_Is_123.pfx"));
 		var certificateFile = new FormFile(new MemoryStream(certificateBytes), 0, certificateBytes.Length, "TestCertificate", "TestCertificate_Password_Is_123.pfx");
 
 		var result = await controller.CreateCertificateVersion(certificateFile, "123", certGuid) as OkObjectResult;
@@ -72,7 +83,7 @@ public class CertificateVersionControllerTests
 	public async Task CreateCertificateVersion_Exception_WhenWrongPassword()
 	{
 		var certGuid = await CreateDefaultCertificate();
-		var certificateBytes = File.ReadAllBytes(AppDomain.CurrentDomain.BaseDirectory + "TestCertificate_Password_Is_123.pfx");
+		var certificateBytes = File.ReadAllBytes(GetCertificatePath("TestCertificate_Password_Is_123.pfx"));
 		var certificateFile = new FormFile(new MemoryStream(certificateBytes), 0, certificateBytes.Length, "TestCertificate", "TestCertificate_Password_Is_123.pfx");
 
 		await Assert.ThrowsExceptionAsync<CryptographicException>(async () =>
@@ -83,7 +94,7 @@ public class CertificateVersionControllerTests
 	[TestMethod]
 	public async Task CreateCertificateVersion_Exception_WhenCertificateNotExist()
 	{
-		var certificateBytes = File.ReadAllBytes(AppDomain.CurrentDomain.BaseDirectory + "TestCertificate_Password_Is_123.pfx");
+		var certificateBytes = File.ReadAllBytes(GetCertificatePath("TestCertificate_Password_Is_123.pfx"));
 		var certificateFile = new FormFile(new MemoryStream(certificateBytes), 0, certificateBytes.Length, "TestCertificate", "TestCertificate_Password_Is_123.pfx");
 
 		await Assert.ThrowsExceptionAsync<DbUpdateException>(async () =>
@@ -96,7 +107,7 @@ public class CertificateVersionControllerTests
 	public async Task CreateCertificateVersion_ReturnsOkResult_WhenValidCerFileProvided()
 	{
 		var certGuid = await CreateDefaultCertificate();
-		var certificateBytes = File.ReadAllBytes(AppDomain.CurrentDomain.BaseDirectory + "TestCertificate_Password_Is_123.cer");
+		var certificateBytes = File.ReadAllBytes(GetCertificatePath("TestCertificate.cer"));
 		var certificateFile = new FormFile(new MemoryStream(certificateBytes), 0, certificateBytes.Length, "TestCertificate", "TestCertificate_Password_Is_123.cer");
 
 		var result = await controller.CreateCertificateVersion(certificateFile, null, certGuid) as OkObjectResult;
@@ -114,7 +125,7 @@ public class CertificateVersionControllerTests
 	[TestMethod]
 	public async Task CreateCertificateVersion_ReturnsBadRequest_WhenInvalidFileExtensionProvided()
 	{
-		var certificateBytes = File.ReadAllBytes(AppDomain.CurrentDomain.BaseDirectory + "TestCertificate_Password_Is_123.cer");
+		var certificateBytes = File.ReadAllBytes(GetCertificatePath("TestCertificate.cer"));
 		var certificateFile = new FormFile(new MemoryStream(certificateBytes), 0, certificateBytes.Length, "CertificateFile", "InvalidCertificate.txt");
 
 		var result = await controller.CreateCertificateVersion(certificateFile, null, Guid.NewGuid()) as BadRequestResult;

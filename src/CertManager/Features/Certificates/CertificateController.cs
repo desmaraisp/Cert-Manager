@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using CertManager.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -79,14 +78,14 @@ public class CertificateController : ControllerBase
 
 	[HttpGet("Certificates", Name = nameof(GetAllCertificates))]
 	[ProducesResponseType(typeof(List<CertificateModelWithId>), 200)]
-	public async Task<IActionResult> GetAllCertificates([FromQuery] List<string> TagsToSearch, [FromQuery] SearchBehavior TagsSearchBehavior)
+	public async Task<IActionResult> GetAllCertificates([FromQuery] List<string> TagsToSearch, [FromQuery] CertificateSearchBehavior TagsSearchBehavior)
 	{
 		var query = certManagerContext.Certificates.AsQueryable();
-		if (TagsSearchBehavior == SearchBehavior.IncludeAny && TagsToSearch.Count != 0)
+		if (TagsSearchBehavior == CertificateSearchBehavior.MatchAny && TagsToSearch.Count != 0)
 		{
 			query = query.Where(x => x.CertificateTags.Any(tag => TagsToSearch.Contains(tag.Tag)));
 		}
-		if(TagsSearchBehavior == SearchBehavior.IncludeAll){
+		if(TagsSearchBehavior == CertificateSearchBehavior.MatchAll){
 			foreach (var tag in TagsToSearch)
 			{
 				query = query.Where(x => x.CertificateTags.Select(x => x.Tag).Contains(tag));

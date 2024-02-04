@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AuthenticationProxy.Test;
-using CertManager;
 using CertManager.DAL;
 using CertManager.Features.Certificates;
 using Microsoft.AspNetCore.Mvc;
@@ -177,7 +172,7 @@ public class CertificateControllerTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetAllCertificates(new(), SearchBehavior.IncludeAll) as OkObjectResult;
+		var result = await controller.GetAllCertificates(new(), CertificateSearchBehavior.MatchAll) as OkObjectResult;
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual(200, result.StatusCode);
@@ -208,7 +203,7 @@ public class CertificateControllerTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetAllCertificates(new List<string> { "Tag1" }, SearchBehavior.IncludeAll) as OkObjectResult;
+		var result = await controller.GetAllCertificates(new List<string> { "Tag1" }, CertificateSearchBehavior.MatchAll) as OkObjectResult;
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual(200, result.StatusCode);
@@ -239,7 +234,7 @@ public class CertificateControllerTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetAllCertificates(new List<string> { "Tag1", "Tag3" }, SearchBehavior.IncludeAll) as OkObjectResult;
+		var result = await controller.GetAllCertificates(new List<string> { "Tag1", "Tag3" }, CertificateSearchBehavior.MatchAll) as OkObjectResult;
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual(200, result.StatusCode);
@@ -270,7 +265,7 @@ public class CertificateControllerTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetAllCertificates(new List<string> { "Tag1", "Tag2" }, SearchBehavior.IncludeAll) as OkObjectResult;
+		var result = await controller.GetAllCertificates(new List<string> { "Tag1", "Tag2" }, CertificateSearchBehavior.MatchAll) as OkObjectResult;
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual(200, result.StatusCode);
@@ -307,7 +302,7 @@ public class CertificateControllerTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetAllCertificates(new List<string> { "Tag1", "Tag2" }, SearchBehavior.IncludeAny) as OkObjectResult;
+		var result = await controller.GetAllCertificates(new List<string> { "Tag1", "Tag2" }, CertificateSearchBehavior.MatchAny) as OkObjectResult;
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual(200, result.StatusCode);
