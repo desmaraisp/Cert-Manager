@@ -33,7 +33,7 @@ public class CertificateVersionControllerTests
 		using var cert = new X509Certificate2(
 			GetCertificatePath(
 				"TestCertificate_Password_Is_123.pfx"
-			), "123", X509KeyStorageFlags.Exportable
+			), "123", X509KeyStorageFlags.Exportable|X509KeyStorageFlags.EphemeralKeySet
 		);
 
 		CertificateVersion newCertVersion = new()

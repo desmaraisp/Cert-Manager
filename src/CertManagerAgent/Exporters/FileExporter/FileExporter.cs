@@ -1,3 +1,5 @@
+using System.IO.Abstractions;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using CertManagerClient;
 
@@ -6,10 +8,12 @@ namespace CertManagerAgent.Exporters.FileExporter;
 public class FileExporter : IExporter<FileExporterConfig>
 {
 	private readonly ICertManagerClient client;
+	private readonly IFileSystem fileSystem;
 
-	public FileExporter(ICertManagerClient client)
+	public FileExporter(ICertManagerClient client, IFileSystem fileSystem)
 	{
 		this.client = client;
+		this.fileSystem = fileSystem;
 	}
 
 	public async Task ExportCertificates(FileExporterConfig ExporterConfiguration, CancellationToken CancellationToken)
@@ -29,63 +33,88 @@ public class FileExporter : IExporter<FileExporterConfig>
 
 	private async Task ExportCertificateToFileAsync(CertificateVersionResponseModel CertificateVersion, string OutputDirectory, ExportFormat ExportFormat)
 	{
-		using var certificate = new X509Certificate2(CertificateVersion.RawCertificate);
+		fileSystem.Directory.CreateDirectory(OutputDirectory);
+		using var certificate = new X509Certificate2(CertificateVersion.RawCertificate, (string?)null, X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable);
 
 		Task task = ExportFormat switch
 		{
-			ExportFormat.PFX => ExportToPFXAsync(certificate, OutputDirectory),
-			ExportFormat.CER => ExportToCERAsync(certificate, OutputDirectory),
-			ExportFormat.RSA_PublicKey => ExportRSAPublicKeyAsync(certificate, OutputDirectory),
-			ExportFormat.PEM_Encoded_PKCS1_PrivateKey => Export_PEM_Encoded_PKCS1_PrivateKeyAsync(certificate, OutputDirectory),
-			ExportFormat.PEM_Encoded_PKCS8_PrivateKey => Export_PEM_Encoded_PKCS8_PrivateKeyAsync(certificate, OutputDirectory),
+			ExportFormat.PFX => ExportToPFXAsync(certificate, CertificateVersion.CertificateVersionId, OutputDirectory),
+			ExportFormat.CER => ExportToCERAsync(certificate, CertificateVersion.CertificateVersionId, OutputDirectory),
+			ExportFormat.RSA_PublicKey => ExportRSAPublicKeyAsync(certificate, CertificateVersion.CertificateVersionId, OutputDirectory),
+			ExportFormat.PEM_Encoded_PKCS1_PrivateKey => Export_PEM_Encoded_PKCS1_PrivateKeyAsync(certificate, CertificateVersion.CertificateVersionId, OutputDirectory),
+			ExportFormat.PEM_Encoded_PKCS8_PrivateKey => Export_PEM_Encoded_PKCS8_PrivateKeyAsync(certificate, CertificateVersion.CertificateVersionId, OutputDirectory),
 			_ => throw new NotImplementedException(),
 		};
 		await task;
 	}
 
-	private static async Task Export_PEM_Encoded_PKCS8_PrivateKeyAsync(X509Certificate2 cert, string OutputDirectory)
+	private async Task Export_PEM_Encoded_PKCS8_PrivateKeyAsync(X509Certificate2 cert, Guid CertificateVersionId, string OutputDirectory)
 	{
 		using var key = cert.GetRSAPrivateKey();
-		string? privKeyPem = key?.ExportPkcs8PrivateKeyPem();
 
-		using StreamWriter outputFile = new(
-			Path.Combine(OutputDirectory, cert.FriendlyName + ".key")
+		var exportRewriter = RSA.Create();
+		exportRewriter.ImportEncryptedPkcs8PrivateKey(
+			"password",
+			key?.ExportEncryptedPkcs8PrivateKey(
+				"password",
+				new PbeParameters(
+					PbeEncryptionAlgorithm.Aes128Cbc,
+					HashAlgorithmName.SHA256,
+					1)),
+			out _
+		);
+		string? privKeyPem = exportRewriter?.ExportPkcs8PrivateKeyPem();
+
+		using var outputFile = fileSystem.File.CreateText(
+			Path.Combine(OutputDirectory, cert.FriendlyName + CertificateVersionId + ".key")
 		);
 		await outputFile.WriteAsync(privKeyPem);
 	}
-	private static async Task Export_PEM_Encoded_PKCS1_PrivateKeyAsync(X509Certificate2 cert, string OutputDirectory)
+	private async Task Export_PEM_Encoded_PKCS1_PrivateKeyAsync(X509Certificate2 cert, Guid CertificateVersionId, string OutputDirectory)
 	{
 		using var key = cert.GetRSAPrivateKey();
-		string? privKeyPem = key?.ExportRSAPrivateKeyPem();
 
-		using StreamWriter outputFile = new(
-			Path.Combine(OutputDirectory, cert.FriendlyName + ".key")
+		var exportRewriter = RSA.Create();
+		exportRewriter.ImportEncryptedPkcs8PrivateKey(
+			"password",
+			key?.ExportEncryptedPkcs8PrivateKey(
+				"password",
+				new PbeParameters(
+					PbeEncryptionAlgorithm.Aes128Cbc,
+					HashAlgorithmName.SHA256,
+					1)),
+			out _
+		);
+		string? privKeyPem = exportRewriter?.ExportRSAPrivateKeyPem();
+
+		using var outputFile = fileSystem.File.CreateText(
+			Path.Combine(OutputDirectory, cert.FriendlyName + CertificateVersionId + ".key")
 		);
 		await outputFile.WriteAsync(privKeyPem);
 	}
-	private static async Task ExportRSAPublicKeyAsync(X509Certificate2 cert, string OutputDirectory)
+	private async Task ExportRSAPublicKeyAsync(X509Certificate2 cert, Guid CertificateVersionId, string OutputDirectory)
 	{
-		using var key = cert.GetRSAPrivateKey();
-		string? pubKeyPem = key?.ExportSubjectPublicKeyInfoPem();
+		var pubKeyPem = cert.PublicKey.GetRSAPublicKey()?.ExportSubjectPublicKeyInfoPem();
 
-		using StreamWriter outputFile = new(
-			Path.Combine(OutputDirectory, cert.FriendlyName + ".pem")
+		using var outputFile = fileSystem.File.CreateText(
+			Path.Combine(OutputDirectory, cert.FriendlyName + CertificateVersionId + ".pem")
 		);
 		await outputFile.WriteAsync(pubKeyPem);
 	}
-	private static async Task ExportToPFXAsync(X509Certificate2 cert, string OutputDirectory)
+	private async Task ExportToPFXAsync(X509Certificate2 cert, Guid CertificateVersionId, string OutputDirectory)
 	{
 		byte[] certData = cert.Export(X509ContentType.Pfx);
-		await File.WriteAllBytesAsync(
-			Path.Combine(OutputDirectory, cert.FriendlyName + ".pfx"),
+
+		await fileSystem.File.WriteAllBytesAsync(
+			Path.Combine(OutputDirectory, cert.FriendlyName + CertificateVersionId + ".pfx"),
 			certData
 		);
 	}
-	private static async Task ExportToCERAsync(X509Certificate2 cert, string OutputDirectory)
+	private async Task ExportToCERAsync(X509Certificate2 cert, Guid CertificateVersionId, string OutputDirectory)
 	{
 		byte[] certData = cert.Export(X509ContentType.Cert);
-		await File.WriteAllBytesAsync(
-			Path.Combine(OutputDirectory, cert.FriendlyName + ".cer")
+		await fileSystem.File.WriteAllBytesAsync(
+			Path.Combine(OutputDirectory, cert.FriendlyName + CertificateVersionId + ".cer")
 			, certData
 		);
 	}
