@@ -1,3 +1,4 @@
+using CertManagerAgent.Exporters.CertStoreExporter;
 using CertManagerAgent.Exporters.FileExporter;
 
 namespace CertManagerAgent.Configurations;
@@ -11,5 +12,5 @@ public partial class ServiceConfiguration
 public class Exporters
 {
 	public required List<FileExporterConfig> FileExporters { get; init; }
-	// public required List<FileExporterConfig> CertStoreExporters { get; init; }
+	public required List<CertStoreExporterConfig> CertStoreExporters { get; init; }
 }
