@@ -1,6 +1,5 @@
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using CertManagerAgent.Exporters.FileExporter;
 using CertManagerClient;
@@ -9,7 +8,7 @@ using Moq;
 namespace CertManagerTest.Features.CertificateVersions;
 
 [TestClass]
-public class CertificateVersionControllerTests
+public class FileExporterTest
 {
 	private readonly X509Certificate2 TestCertificate;
 	private readonly IFileSystem fileSystem;
@@ -17,7 +16,7 @@ public class CertificateVersionControllerTests
 	private readonly Task<ICollection<CertificateVersionResponseModel>> defaultCertificateVersions;
 	private readonly Mock<ICertManagerClient> mock;
 	private readonly FileExporter fileExporter;
-	public CertificateVersionControllerTests()
+	public FileExporterTest()
 	{
 		TestCertificate = new X509Certificate2(
 			GetCertificatePath(
