@@ -17,7 +17,7 @@ public class CertificateVersionController : ControllerBase
 	}
 
 	[HttpPost("CertificateVersion", Name = nameof(CreateCertificateVersion))]
-	[ProducesResponseType(typeof(CertificateVersionResponseModel), 200)]
+	[ProducesResponseType(typeof(CertificateVersionModel), 200)]
 	[ProducesResponseType(400)]
 	[ProducesResponseType(404)]
 	public async Task<IActionResult> CreateCertificateVersion(IFormFile Certificate, string? Password, Guid CertificateId)
@@ -58,7 +58,7 @@ public class CertificateVersionController : ControllerBase
 		certManagerContext.CertificateVersions.Add(newCertVersion);
 		await certManagerContext.SaveChangesAsync();
 
-		return Ok(new CertificateVersionResponseModel
+		return Ok(new CertificateVersionModel
 		{
 			ActivationDate = newCertVersion.ActivationDate,
 			Cn = newCertVersion.Cn,
@@ -72,13 +72,13 @@ public class CertificateVersionController : ControllerBase
 	}
 
 	[HttpGet("CertificateVersions/{id}", Name = nameof(GetCertificateVersionById))]
-	[ProducesResponseType(typeof(CertificateVersionResponseModel), 200)]
+	[ProducesResponseType(typeof(CertificateVersionModel), 200)]
 	[ProducesResponseType(404)]
 	public async Task<IActionResult> GetCertificateVersionById(Guid id)
 	{
 		var certVersion = await certManagerContext.CertificateVersions
 				.Include(x => x.Certificate)
-				.Select(x => new CertificateVersionResponseModel
+				.Select(x => new CertificateVersionModel
 				{
 					ActivationDate = x.ActivationDate,
 					Cn = x.Cn,
@@ -95,36 +95,6 @@ public class CertificateVersionController : ControllerBase
 		return Ok(certVersion);
 	}
 
-	[HttpGet("Certificates/{id}/CertificateVersions", Name = nameof(GetCertificateVersionsForCertificate))]
-	[ProducesResponseType(typeof(List<CertificateVersionResponseModel>), 200)]
-	public async Task<IActionResult> GetCertificateVersionsForCertificate(Guid id, DateTime? MinimumExpirationTimeUTC = null)
-	{
-		var query = certManagerContext.Certificates
-			.Where(x => x.CertificateId == id)
-			.SelectMany(c => c.CertificateVersions);
-
-		if(MinimumExpirationTimeUTC != null){
-			query = query.Where(x => x.ExpiryDate > MinimumExpirationTimeUTC);
-		}
-		
-		var results = await query
-				
-				.Select(x => new CertificateVersionResponseModel
-				{
-					ActivationDate = x.ActivationDate,
-					Cn = x.Cn,
-					ExpiryDate = x.ExpiryDate,
-					IssuerName = x.IssuerName,
-					Thumbprint = x.Thumbprint,
-					RawCertificate = x.RawCertificate,
-					CertificateId = id,
-					CertificateVersionId = x.CertificateVersionId
-				})
-				.ToListAsync();
-
-		return Ok(results);
-	}
-
 	[HttpDelete("CertificateVersions/{id}", Name = nameof(DeleteCertificateVersion))]
 	[ProducesResponseType(200)]
 	[ProducesResponseType(404)]
@@ -134,5 +104,36 @@ public class CertificateVersionController : ControllerBase
 		if (rowsDeleted > 0) return Ok();
 
 		return NotFound();
+	}
+
+	[HttpGet("CertificateVersions", Name = nameof(GetCertificateVersions))]
+	[ProducesResponseType(typeof(List<CertificateVersionModel>), 200)]
+	public async Task<IActionResult> GetCertificateVersions([FromQuery] List<Guid> CertificateIds, [FromQuery] DateTime? MinimumExpirationTimeUTC = null)
+	{
+		var query = certManagerContext.CertificateVersions.AsQueryable();
+
+		if(CertificateIds.Any()){
+			query = query.Where(x => CertificateIds.Contains(x.CertificateId));
+		}
+
+		if(MinimumExpirationTimeUTC != null){
+			query = query.Where(x => x.ExpiryDate > MinimumExpirationTimeUTC);
+		}
+		
+		var results = await query
+				.Select(x => new CertificateVersionModel
+				{
+					ActivationDate = x.ActivationDate,
+					Cn = x.Cn,
+					ExpiryDate = x.ExpiryDate,
+					IssuerName = x.IssuerName,
+					Thumbprint = x.Thumbprint,
+					RawCertificate = x.RawCertificate,
+					CertificateId = x.CertificateId,
+					CertificateVersionId = x.CertificateVersionId
+				})
+				.ToListAsync();
+
+		return Ok(results);
 	}
 }

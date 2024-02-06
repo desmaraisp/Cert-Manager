@@ -1,7 +1,7 @@
 namespace CertManager.Features.CertificateVersions;
 
 
-public class CertificateVersionResponseModel
+public class CertificateVersionModel
 {
 	public required DateTime ActivationDate { get; init; }
 	public required string Cn { get; init; }

@@ -13,7 +13,7 @@ public class FileExporterTest
 	private readonly X509Certificate2 TestCertificate;
 	private readonly IFileSystem fileSystem;
 	private readonly Task<ICollection<CertificateModelWithId>> defaultCertificate;
-	private readonly Task<ICollection<CertificateVersionResponseModel>> defaultCertificateVersions;
+	private readonly Task<ICollection<CertificateVersionModel>> defaultCertificateVersions;
 	private readonly Mock<ICertManagerClient> mock;
 	private readonly FileExporter fileExporter;
 	public FileExporterTest()
@@ -34,7 +34,7 @@ public class FileExporterTest
 			]
 		);
 		defaultCertificateVersions = Task.FromResult(
-			(ICollection<CertificateVersionResponseModel>)[
+			(ICollection<CertificateVersionModel>)[
 				new() {
 					Cn = "test",
 					RawCertificate = TestCertificate.Export(X509ContentType.Pkcs12),
@@ -46,7 +46,7 @@ public class FileExporterTest
 		mock = new Mock<ICertManagerClient>();
 		mock.Setup(l => l.GetAllCertificatesAsync(
 			It.IsAny<List<string>>(),
-			It.IsAny<SearchBehavior>(),
+			It.IsAny<CertificateSearchBehavior>(),
 			It.IsAny<CancellationToken>())
 		)
 		.Returns(
@@ -54,10 +54,10 @@ public class FileExporterTest
 		);
 
 		mock.Setup(l =>
-				l.GetCertificateVersionsForCertificateAsync(
-					It.IsAny<Guid>(),
-					It.IsAny<DateTimeOffset>(),
-					It.IsAny<CancellationToken>())
+			l.GetCertificateVersionsAsync(
+				It.IsAny<IEnumerable<Guid>>(),
+				It.IsAny<DateTimeOffset>(),
+				It.IsAny<CancellationToken>())
 		).Returns(
 			defaultCertificateVersions
 		);
@@ -78,7 +78,7 @@ public class FileExporterTest
 		{
 			OutputDirectory = "C:/TestDir",
 			ExportFormat = ExportFormat.PFX,
-			SearchBehavior = SearchBehavior.IncludeAll,
+			CertificateSearchBehavior = CertificateSearchBehavior.MatchAll,
 			TagFilters = []
 		}, CancellationToken.None);
 
@@ -104,7 +104,7 @@ public class FileExporterTest
 		{
 			OutputDirectory = "C:/TestDir",
 			ExportFormat = ExportFormat.CER,
-			SearchBehavior = SearchBehavior.IncludeAll,
+			CertificateSearchBehavior = CertificateSearchBehavior.MatchAll,
 			TagFilters = []
 		}, CancellationToken.None);
 
@@ -131,7 +131,7 @@ public class FileExporterTest
 		{
 			OutputDirectory = "C:/TestDir",
 			ExportFormat = ExportFormat.RSA_PublicKey,
-			SearchBehavior = SearchBehavior.IncludeAll,
+			CertificateSearchBehavior = CertificateSearchBehavior.MatchAll,
 			TagFilters = []
 		}, CancellationToken.None);
 
@@ -155,7 +155,7 @@ public class FileExporterTest
 		{
 			OutputDirectory = "C:/TestDir",
 			ExportFormat = ExportFormat.PEM_Encoded_PKCS1_PrivateKey,
-			SearchBehavior = SearchBehavior.IncludeAll,
+			CertificateSearchBehavior = CertificateSearchBehavior.MatchAll,
 			TagFilters = []
 		}, CancellationToken.None);
 
@@ -179,7 +179,7 @@ public class FileExporterTest
 		{
 			OutputDirectory = "C:/TestDir",
 			ExportFormat = ExportFormat.PEM_Encoded_PKCS8_PrivateKey,
-			SearchBehavior = SearchBehavior.IncludeAll,
+			CertificateSearchBehavior = CertificateSearchBehavior.MatchAll,
 			TagFilters = []
 		}, CancellationToken.None);
 

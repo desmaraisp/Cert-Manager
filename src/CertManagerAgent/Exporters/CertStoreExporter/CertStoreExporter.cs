@@ -1,7 +1,4 @@
-using System.IO.Abstractions;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using CertManagerAgent.Exporters.FileExporter;
 using CertManagerAgent.Lib.CertificateStoreAbstraction;
 using CertManagerClient;
 
@@ -19,17 +16,13 @@ public class CertStoreExporter : IExporter<CertStoreExporterConfig>
 
 	public async Task ExportCertificates(CertStoreExporterConfig ExporterConfiguration, CancellationToken CancellationToken)
 	{
-		var certificates = await client.GetAllCertificatesAsync(ExporterConfiguration.TagFilters, ExporterConfiguration.SearchBehavior, CancellationToken);
+		var certificates = await client.GetAllCertificatesAsync(ExporterConfiguration.TagFilters, ExporterConfiguration.CertificateSearchBehavior, CancellationToken);
+		var certificateVersions = await client.GetCertificateVersionsAsync(certificates.Select(x => x.CertificateId), DateTimeOffset.UtcNow.AddDays(2), CancellationToken);
 
-		foreach (var certificate in certificates)
-		{
-			var certificateVersions = await client.GetCertificateVersionsForCertificateAsync(certificate.CertificateId, DateTimeOffset.UtcNow.AddDays(2), CancellationToken);
-
-			ExportCertificateToCertStoreAsync(certificateVersions.ToList(), ExporterConfiguration);
-		}
+		ExportCertificateToCertStoreAsync(certificateVersions.ToList(), ExporterConfiguration);
 	}
 
-	private void ExportCertificateToCertStoreAsync(List<CertificateVersionResponseModel> CertificateVersions, CertStoreExporterConfig certStoreExporterConfig)
+	private void ExportCertificateToCertStoreAsync(List<CertificateVersionModel> CertificateVersions, CertStoreExporterConfig certStoreExporterConfig)
 	{
 		using ICertStoreWrapper certStore = certStoreWrapperFactory.CreateCertStoreWrapper(certStoreExporterConfig.StoreName, certStoreExporterConfig.StoreLocation);
 

@@ -26,7 +26,7 @@ public class CertStoreExporterTest
 {
 	private readonly X509Certificate2 TestCertificate;
 	private readonly Task<ICollection<CertificateModelWithId>> defaultCertificate;
-	private readonly Task<ICollection<CertificateVersionResponseModel>> defaultCertificateVersions;
+	private readonly Task<ICollection<CertificateVersionModel>> defaultCertificateVersions;
 	private readonly Mock<ICertManagerClient> mock;
 	private readonly CertStoreExporter certStoreExporter;
 	private readonly InMemoryCertStoreWrapper certStoreWrapper;
@@ -48,7 +48,7 @@ public class CertStoreExporterTest
 			]
 		);
 		defaultCertificateVersions = Task.FromResult(
-			(ICollection<CertificateVersionResponseModel>)[
+			(ICollection<CertificateVersionModel>)[
 				new() {
 					Cn = "test",
 					RawCertificate = TestCertificate.Export(X509ContentType.Pkcs12),
@@ -59,7 +59,7 @@ public class CertStoreExporterTest
 		mock = new Mock<ICertManagerClient>();
 		mock.Setup(l => l.GetAllCertificatesAsync(
 			It.IsAny<List<string>>(),
-			It.IsAny<SearchBehavior>(),
+			It.IsAny<CertificateSearchBehavior>(),
 			It.IsAny<CancellationToken>())
 		)
 		.Returns(
@@ -67,8 +67,8 @@ public class CertStoreExporterTest
 		);
 
 		mock.Setup(l =>
-				l.GetCertificateVersionsForCertificateAsync(
-					It.IsAny<Guid>(),
+				l.GetCertificateVersionsAsync(
+					It.IsAny<IEnumerable<Guid>>(),
 					It.IsAny<DateTimeOffset>(),
 					It.IsAny<CancellationToken>())
 		).Returns(
@@ -103,7 +103,7 @@ public class CertStoreExporterTest
 		{
 			StoreLocation = StoreLocation.LocalMachine,
 			StoreName = StoreName.Root,
-			SearchBehavior = SearchBehavior.IncludeAll,
+			CertificateSearchBehavior = CertificateSearchBehavior.MatchAll,
 			TagFilters = []
 		}, CancellationToken.None);
 

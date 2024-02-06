@@ -18,20 +18,17 @@ public class FileExporter : IExporter<FileExporterConfig>
 
 	public async Task ExportCertificates(FileExporterConfig ExporterConfiguration, CancellationToken CancellationToken)
 	{
-		var certificates = await client.GetAllCertificatesAsync(ExporterConfiguration.TagFilters, ExporterConfiguration.SearchBehavior, CancellationToken);
+		var certificates = await client.GetAllCertificatesAsync(ExporterConfiguration.TagFilters, ExporterConfiguration.CertificateSearchBehavior, CancellationToken);
 
-		foreach (var certificate in certificates)
+		var certificateVersions = await client.GetCertificateVersionsAsync(certificates.Select(x => x.CertificateId), DateTimeOffset.UtcNow.AddDays(2), CancellationToken);
+
+		foreach (var certificateVersion in certificateVersions)
 		{
-			var certificateVersions = await client.GetCertificateVersionsForCertificateAsync(certificate.CertificateId, DateTimeOffset.UtcNow.AddDays(2), CancellationToken);
-
-			foreach (var certificateVersion in certificateVersions)
-			{
-				await ExportCertificateToFileAsync(certificateVersion, ExporterConfiguration.OutputDirectory, ExporterConfiguration.ExportFormat);
-			}
+			await ExportCertificateToFileAsync(certificateVersion, ExporterConfiguration.OutputDirectory, ExporterConfiguration.ExportFormat);
 		}
 	}
 
-	private async Task ExportCertificateToFileAsync(CertificateVersionResponseModel CertificateVersion, string OutputDirectory, ExportFormat ExportFormat)
+	private async Task ExportCertificateToFileAsync(CertificateVersionModel CertificateVersion, string OutputDirectory, ExportFormat ExportFormat)
 	{
 		fileSystem.Directory.CreateDirectory(OutputDirectory);
 		using var certificate = new X509Certificate2(CertificateVersion.RawCertificate, (string?)null, X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable);

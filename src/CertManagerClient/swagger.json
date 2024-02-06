@@ -261,7 +261,7 @@
             "in": "query",
             "style": "form",
             "schema": {
-              "$ref": "#/components/schemas/SearchBehavior"
+              "$ref": "#/components/schemas/CertificateSearchBehavior"
             }
           }
         ],
@@ -349,17 +349,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/CertificateVersionResponseModel"
+                  "$ref": "#/components/schemas/CertificateVersionModel"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CertificateVersionResponseModel"
+                  "$ref": "#/components/schemas/CertificateVersionModel"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CertificateVersionResponseModel"
+                  "$ref": "#/components/schemas/CertificateVersionModel"
                 }
               }
             }
@@ -431,17 +431,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/CertificateVersionResponseModel"
+                  "$ref": "#/components/schemas/CertificateVersionModel"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CertificateVersionResponseModel"
+                  "$ref": "#/components/schemas/CertificateVersionModel"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CertificateVersionResponseModel"
+                  "$ref": "#/components/schemas/CertificateVersionModel"
                 }
               }
             }
@@ -512,21 +512,23 @@
         }
       }
     },
-    "/api/v1/Certificates/{id}/CertificateVersions": {
+    "/api/v1/CertificateVersions": {
       "get": {
         "tags": [
           "CertificateVersion"
         ],
-        "operationId": "GetCertificateVersionsForCertificate",
+        "operationId": "GetCertificateVersions",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "style": "simple",
+            "name": "CertificateIds",
+            "in": "query",
+            "style": "form",
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
             }
           },
           {
@@ -547,7 +549,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CertificateVersionResponseModel"
+                    "$ref": "#/components/schemas/CertificateVersionModel"
                   }
                 }
               },
@@ -555,7 +557,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CertificateVersionResponseModel"
+                    "$ref": "#/components/schemas/CertificateVersionModel"
                   }
                 }
               },
@@ -563,7 +565,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CertificateVersionResponseModel"
+                    "$ref": "#/components/schemas/CertificateVersionModel"
                   }
                 }
               }
@@ -613,7 +615,14 @@
         },
         "additionalProperties": false
       },
-      "CertificateVersionResponseModel": {
+      "CertificateSearchBehavior": {
+        "enum": [
+          "MatchAll",
+          "MatchAny"
+        ],
+        "type": "string"
+      },
+      "CertificateVersionModel": {
         "type": "object",
         "properties": {
           "activationDate": {
@@ -678,13 +687,6 @@
           }
         },
         "additionalProperties": { }
-      },
-      "SearchBehavior": {
-        "enum": [
-          "IncludeAll",
-          "IncludeAny"
-        ],
-        "type": "string"
       }
     }
   }

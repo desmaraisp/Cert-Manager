@@ -72,7 +72,7 @@ public class CertificateVersionControllerTests
 		Assert.IsNotNull(result);
 		Assert.AreEqual(200, result.StatusCode);
 
-		var certificateVersion = result.Value as CertificateVersionResponseModel;
+		var certificateVersion = result.Value as CertificateVersionModel;
 		Assert.IsNotNull(certificateVersion);
 
 		using var responseCertificate = new X509Certificate2(certificateVersion.RawCertificate, (SecureString?)null, X509KeyStorageFlags.EphemeralKeySet);
@@ -115,7 +115,7 @@ public class CertificateVersionControllerTests
 		Assert.IsNotNull(result);
 		Assert.AreEqual(200, result.StatusCode);
 
-		var certificateVersion = result.Value as CertificateVersionResponseModel;
+		var certificateVersion = result.Value as CertificateVersionModel;
 		Assert.IsNotNull(certificateVersion);
 
 		using var responseCertificate = new X509Certificate2(certificateVersion.RawCertificate, (SecureString?)null, X509KeyStorageFlags.EphemeralKeySet);
@@ -145,7 +145,7 @@ public class CertificateVersionControllerTests
 		Assert.IsNotNull(result);
 		Assert.AreEqual(200, result.StatusCode);
 
-		var retrievedCertificateVersion = result.Value as CertificateVersionResponseModel;
+		var retrievedCertificateVersion = result.Value as CertificateVersionModel;
 		Assert.IsNotNull(retrievedCertificateVersion);
 		Assert.AreEqual(insertedCertVersion.ActivationDate, retrievedCertificateVersion.ActivationDate);
 		Assert.AreEqual(insertedCertVersion.Cn, retrievedCertificateVersion.Cn);
@@ -192,60 +192,50 @@ public class CertificateVersionControllerTests
 	}
 
 	[TestMethod]
-	public async Task GetCertificateVersionsForCertificate_ReturnsVersions_WhenNotExpiredCertificate()
+	public async Task GetCertificateVersions_ReturnsVersions_WhenFilterMatch()
 	{
 		var certId = await CreateDefaultCertificate();
 		var insertedCertVersion = await CreateDefaultCertificateVersion(certId, DateTime.UtcNow);
 
-		var result = await controller.GetCertificateVersionsForCertificate(insertedCertVersion.CertificateId, DateTime.UtcNow.AddDays(-2)) as OkObjectResult;
+		var result = await controller.GetCertificateVersions(new() { insertedCertVersion.CertificateId }, DateTime.UtcNow.AddDays(-2)) as OkObjectResult;
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual(200, result.StatusCode);
 
-		var certificateVersions = result.Value as List<CertificateVersionResponseModel>;
+		var certificateVersions = result.Value as List<CertificateVersionModel>;
 		Assert.IsNotNull(certificateVersions);
 		Assert.AreEqual(1, certificateVersions.Count);
 	}
 
 	[TestMethod]
-	public async Task GetCertificateVersionsForCertificate_ReturnsNoVersions_WhenExpiredCertificate()
+	public async Task GetCertificateVersions_ReturnsNoVersions_WhenFilterNotMatch()
 	{
 		var certId = await CreateDefaultCertificate();
-		var insertedCertVersion = await CreateDefaultCertificateVersion(certId, DateTime.UtcNow.AddDays(-1));
+		_ = await CreateDefaultCertificateVersion(certId, DateTime.UtcNow);
 
-		var result = await controller.GetCertificateVersionsForCertificate(insertedCertVersion.CertificateId, DateTime.UtcNow) as OkObjectResult;
+		var result = await controller.GetCertificateVersions(new() { Guid.NewGuid() }, DateTime.UtcNow.AddDays(-2)) as OkObjectResult;
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual(200, result.StatusCode);
 
-		var certificateVersions = result.Value as List<CertificateVersionResponseModel>;
+		var certificateVersions = result.Value as List<CertificateVersionModel>;
 		Assert.IsNotNull(certificateVersions);
 		Assert.AreEqual(0, certificateVersions.Count);
 	}
 
 	[TestMethod]
-	public async Task GetCertificateVersionsForCertificate_ReturnsVersions_WhenNoDateFilter()
+	public async Task GetCertificateVersions_ReturnsVersions_WhenNoFilter()
 	{
 		var certId = await CreateDefaultCertificate();
-		var insertedCertVersion = await CreateDefaultCertificateVersion(certId, DateTime.UtcNow.AddDays(-1));
+		_ = await CreateDefaultCertificateVersion(certId, DateTime.UtcNow);
 
-		var result = await controller.GetCertificateVersionsForCertificate(insertedCertVersion.CertificateId, null) as OkObjectResult;
+		var result = await controller.GetCertificateVersions(new(), DateTime.UtcNow.AddDays(-2)) as OkObjectResult;
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual(200, result.StatusCode);
 
-		var certificateVersions = result.Value as List<CertificateVersionResponseModel>;
+		var certificateVersions = result.Value as List<CertificateVersionModel>;
 		Assert.IsNotNull(certificateVersions);
 		Assert.AreEqual(1, certificateVersions.Count);
-	}
-
-	[TestMethod]
-	public async Task GetCertificateVersionsForCertificate_ReturnsNotFound_WhenCertificateNotFound()
-	{
-		var result = await controller.GetCertificateVersionsForCertificate(Guid.NewGuid(), null) as OkObjectResult;
-
-		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
-		CollectionAssert.AreEqual(new List<CertificateVersionResponseModel>(), result.Value as List<CertificateVersionResponseModel>);
 	}
 }
