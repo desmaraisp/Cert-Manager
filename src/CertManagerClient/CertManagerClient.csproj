@@ -15,7 +15,7 @@
 		<PackageReference Include="Polly.Caching.Memory" Version="3.0.2" />
 	</ItemGroup>
 	<ItemGroup>
-		<OpenApiReference Include="swagger.json" SourceUrl="https://localhost:7181/swagger/v1/swagger.json">
+		<OpenApiReference Include="swagger.json" SourceUrl="http://localhost:5156/swagger/v1/swagger.json">
 			<ClassName>CertManagerClient</ClassName>
 			<NSwagGenerateExceptionClasses>true</NSwagGenerateExceptionClasses>
 		    <Options>/UseBaseUrl:false /GenerateClientInterfaces:true /JsonLibrary:SystemTextJson</Options>

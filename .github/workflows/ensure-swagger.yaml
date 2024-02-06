@@ -1,0 +1,30 @@
+name: Ensure swagger generated client is updated
+
+on:
+  push:
+    branches:
+      - main
+  pull_request: 
+
+jobs:
+  check-swagger:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      - name: build image
+        run: |
+          dotnet tool restore
+
+          docker build -f ./src/CertManager/Dockerfile -t "certmanager:latest" .
+          docker run -e ASPNETCORE_ENVIRONMENT=Development -p 5156:5156 certmanager &
+
+          cd ./src/CertManagerClient
+          dotnet openapi refresh http://localhost:5156/swagger/v1/swagger.json
+
+          if [ -z "$(git status --short)" ]; then
+            echo "Working directory clean, swagger is up-to-date"
+          else
+            echo "Working directory not clean, swagger is not up-to-date"
+            exit 1
+          fi
