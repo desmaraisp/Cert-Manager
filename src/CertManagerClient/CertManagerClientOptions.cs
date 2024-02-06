@@ -4,7 +4,7 @@ namespace CertManagerClient.Configuration;
 
 public class CertManagerClientOptions
 {
-	[Url] public required string BaseAddress { get; init; }
-	public TimeSpan Timeout { get; init; } = TimeSpan.FromSeconds(15);
-	public TimeSpan CacheDuration { get; init; } = TimeSpan.FromMinutes(0);
+	[Url][Required] public string BaseAddress { get; set; } = "";
+	public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(15);
+	public TimeSpan CacheDuration { get; set; } = TimeSpan.FromMinutes(0);
 }
