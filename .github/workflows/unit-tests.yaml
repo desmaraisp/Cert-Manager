@@ -1,24 +1,28 @@
-name: Ensure swagger generated client is updated
+name: Run Unit tests
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call: 
   pull_request: 
 
 jobs:
-  check-swagger:
+  unit-tests:
     runs-on: ubuntu-latest
     
     steps:
       - uses: actions/checkout@v4
+      - name: Unit tests
+        run: dotnet test
+
+      - name: restore tools
+        run: dotnet tool restore
+
       - name: build image
         run: |
-          dotnet tool restore
-
           docker build -f ./src/CertManager/Dockerfile -t "certmanager:latest" .
-          docker run -e ASPNETCORE_ENVIRONMENT=Development -p 5156:5156 certmanager &
 
+      - name: check if swagger doc is up to date
+        run: |
+          docker run -e ASPNETCORE_ENVIRONMENT=Development -p 5156:5156 certmanager &
           cd ./src/CertManagerClient
           dotnet openapi refresh http://localhost:5156/swagger/v1/swagger.json
 
