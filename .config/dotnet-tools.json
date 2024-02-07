@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "microsoft.dotnet-openapi": {
+      "version": "8.0.1",
+      "commands": [
+        "dotnet-openapi"
+      ]
+    },
+    "dotnet-ef": {
+      "version": "7.0.10",
+      "commands": [
+        "dotnet-ef"
+      ]
+    },
+    "dotnet-outdated-tool": {
+      "version": "4.6.0",
+      "commands": [
+        "dotnet-outdated"
+      ]
+    }
+  }
+}

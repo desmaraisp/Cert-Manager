@@ -1,0 +1,76 @@
+name: Create and publish a Docker image
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  unit-tests:
+    uses: ./.github/workflows/unit-tests.yaml
+
+  build-native-binaries:
+    runs-on: ${{ matrix.os }}
+    strategy:
+       matrix:
+          os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - uses: actions/setup-dotnet
+        with:
+          dotnet-version: '8.x'
+      
+      - name: build and publish
+        run: |
+          dotnet restore "src/CertManagerAgent/CertManagerAgent.csproj"
+          dotnet build "CertManagerAgent.csproj" -c Release
+          dotnet publish "CertManagerAgent.csproj" -o ./cert-manager-${{matrix.os}} /p:DebugType=None /p:DebugSymbols=false
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cert-manager-${{matrix.os}}
+          path: ./publish
+          retention-days: 1
+          overwrite: true
+
+  build-containers-and-publish:
+    permissions:
+      contents: write
+      packages: write
+      issues: read
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Build images
+        run: |
+          docker build --file "./src/CertManager/Dockerfile" -t desmaraisp/cert-manager:latest .
+          docker build --file "./src/CertManagerAgent/Dockerfile" -t desmaraisp/cert-manager-agent:latest .
+
+      - name: Create migration script
+        run: |
+          dotnet tool restore
+          dotnet ef migrations script --idempotent --output ./migration.sql --project ./src/CertManager/CertManager.csproj
+
+      - name: Upload Artifact
+        uses: actions/download-artifact@v4
+        with:
+          path: ./native-binaries
+
+      - name: Semantic release
+        id: semantic-release
+        uses: cycjimmy/semantic-release-action@v4
+        env:
+          DOCKER_USERNAME: USERNAME
+          DOCKER_PASSWORD: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          extra_plugins: |
+            "@semantic-release-plus/docker"
