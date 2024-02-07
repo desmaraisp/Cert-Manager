@@ -1,4 +1,4 @@
-name: Create and publish a Docker image
+name: Build and publish release
 
 on:
   push:
@@ -16,25 +16,26 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
-      - uses: actions/setup-dotnet
+      - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.x'
       
       - name: build and publish
         run: |
-          dotnet restore "src/CertManagerAgent/CertManagerAgent.csproj"
-          dotnet build "CertManagerAgent.csproj" -c Release
-          dotnet publish "CertManagerAgent.csproj" -o ./cert-manager-${{matrix.os}} /p:DebugType=None /p:DebugSymbols=false
+          dotnet restore "./src/CertManagerAgent/CertManagerAgent.csproj"
+          dotnet build "./src/CertManagerAgent/CertManagerAgent.csproj" -c Release
+          dotnet publish "./src/CertManagerAgent/CertManagerAgent.csproj" -o ./cert-manager-${{matrix.os}} /p:DebugType=None /p:DebugSymbols=false
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: cert-manager-${{matrix.os}}
-          path: ./publish
+          path: ./cert-manager-${{matrix.os}}
           retention-days: 1
           overwrite: true
+          if-no-files-found: error
 
   build-containers-and-publish:
     permissions:
@@ -42,6 +43,7 @@ jobs:
       packages: write
       issues: read
     runs-on: ubuntu-latest
+    needs: build-native-binaries
 
     steps:
       - name: Checkout repository
