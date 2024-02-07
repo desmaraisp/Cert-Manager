@@ -14,7 +14,9 @@ public static class ServiceCollectionExtension
 	{
 		serviceCollection.AddMemoryCache();
 		serviceCollection.AddSingleton<IAsyncCacheProvider, MemoryCacheProvider>();
-
+		
+		
+		serviceCollection.AddSingleton<IValidateOptions<CertManagerClientOptions>, CertManagerClientOptionsValidator>();
 		serviceCollection.AddOptions<CertManagerClientOptions>()
 			.BindConfiguration(configSectionPath);
 
