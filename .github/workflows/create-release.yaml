@@ -29,11 +29,16 @@ jobs:
           dotnet build "./src/CertManagerAgent/CertManagerAgent.csproj" -c Release
           dotnet publish "./src/CertManagerAgent/CertManagerAgent.csproj" -o ./cert-manager-${{matrix.os}} /p:DebugType=None /p:DebugSymbols=false
 
+      - name: zip pubblish dir
+        shell: pwsh
+        run: |
+          Compress-Archive -Path ./cert-manager-${{matrix.os}}/* -DestinationPath ./cert-manager-${{matrix.os}}.zip -Force
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: cert-manager-${{matrix.os}}
-          path: ./cert-manager-${{matrix.os}}
+          path: ./cert-manager-${{matrix.os}}.zip
           retention-days: 1
           overwrite: true
           if-no-files-found: error

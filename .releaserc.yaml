@@ -12,7 +12,7 @@ plugins:
   - "@semantic-release/release-notes-generator"
   - - "@semantic-release/github"
     - assets:
-      - "path": "native-binaries/*"
+      - "path": "native-binaries/**"
       - "path": "migration.sql"
   - - "@semantic-release-plus/docker"
     - name: "ghcr.io/desmaraisp/cert-manager:latest"
