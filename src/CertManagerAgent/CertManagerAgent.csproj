@@ -5,7 +5,9 @@
     <Nullable>enable</Nullable>
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-CertManagerAgent-fbb03dca-045c-4fcd-9261-ec6ce98a4fdd</UserSecretsId>
+	<PublishAot>true</PublishAot>
+	<EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
+	<UserSecretsId>dotnet-CertManagerAgent-fbb03dca-045c-4fcd-9261-ec6ce98a4fdd</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

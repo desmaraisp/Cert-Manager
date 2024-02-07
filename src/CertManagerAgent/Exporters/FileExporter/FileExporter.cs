@@ -7,10 +7,10 @@ namespace CertManagerAgent.Exporters.FileExporter;
 
 public class FileExporter : IExporter<FileExporterConfig>
 {
-	private readonly ICertManagerClient client;
+	private readonly IGeneratedCertManagerClient client;
 	private readonly IFileSystem fileSystem;
 
-	public FileExporter(ICertManagerClient client, IFileSystem fileSystem)
+	public FileExporter(IGeneratedCertManagerClient client, IFileSystem fileSystem)
 	{
 		this.client = client;
 		this.fileSystem = fileSystem;

@@ -14,7 +14,7 @@ public class FileExporterTest
 	private readonly IFileSystem fileSystem;
 	private readonly Task<ICollection<CertificateModelWithId>> defaultCertificate;
 	private readonly Task<ICollection<CertificateVersionModel>> defaultCertificateVersions;
-	private readonly Mock<ICertManagerClient> mock;
+	private readonly Mock<IGeneratedCertManagerClient> mock;
 	private readonly FileExporter fileExporter;
 	public FileExporterTest()
 	{
@@ -43,7 +43,7 @@ public class FileExporterTest
 		);
 
 		fileSystem = new MockFileSystem();
-		mock = new Mock<ICertManagerClient>();
+		mock = new Mock<IGeneratedCertManagerClient>();
 		mock.Setup(l => l.GetAllCertificatesAsync(
 			It.IsAny<List<string>>(),
 			It.IsAny<CertificateSearchBehavior>(),

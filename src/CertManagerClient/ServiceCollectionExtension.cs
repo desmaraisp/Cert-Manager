@@ -16,18 +16,17 @@ public static class ServiceCollectionExtension
 		serviceCollection.AddSingleton<IAsyncCacheProvider, MemoryCacheProvider>();
 
 		serviceCollection.AddOptions<CertManagerClientOptions>()
-			.BindConfiguration(configSectionPath)
-			.ValidateDataAnnotations();
+			.BindConfiguration(configSectionPath);
 
-		serviceCollection.AddHttpClient<ICertManagerClient, CertManagerClient>((sp, c) =>
+		serviceCollection.AddHttpClient<IGeneratedCertManagerClient, GeneratedCertManagerClient>((sp, c) =>
 		{
 			c.BaseAddress = new(
-				sp.GetRequiredService<IOptionsSnapshot<CertManagerClientOptions>>().Value.BaseAddress
+				sp.GetRequiredService<IOptions<CertManagerClientOptions>>().Value.BaseAddress
 			);
 		})
 			.AddPolicyHandler((sp, _) =>
 				Policy.TimeoutAsync<HttpResponseMessage>(
-					sp.GetRequiredService<IOptionsSnapshot<CertManagerClientOptions>>().Value.Timeout,
+					sp.GetRequiredService<IOptions<CertManagerClientOptions>>().Value.Timeout,
 					TimeoutStrategy.Optimistic
 				)
 			)

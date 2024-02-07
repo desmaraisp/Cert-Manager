@@ -3,6 +3,6 @@ using CertManagerClient;
 namespace CertManagerAgent.Exporters;
 
 public class BaseExporterConfig {
-	public required List<string> TagFilters { get; init; }
-	public required CertificateSearchBehavior CertificateSearchBehavior { get; init; } = CertificateSearchBehavior.MatchAny;
+	public List<string> TagFilters { get; set; } = [];
+	public CertificateSearchBehavior CertificateSearchBehavior { get; set; } = CertificateSearchBehavior.MatchAny;
 }

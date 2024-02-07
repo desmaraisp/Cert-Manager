@@ -3,14 +3,14 @@ using CertManagerAgent.Exporters.FileExporter;
 
 namespace CertManagerAgent.Configurations;
 
-public partial class ServiceConfiguration
+public class ServiceConfiguration
 {
-	public required TimeSpan Delay { get; init; }
-	public required Exporters Exporters { get; init; }
+	public TimeSpan Delay { get; set; }
+	public Exporters Exporters { get; set; } = new();
 }
 
 public class Exporters
 {
-	public required List<FileExporterConfig> FileExporters { get; init; }
-	public required List<CertStoreExporterConfig> CertStoreExporters { get; init; }
+	public List<FileExporterConfig> FileExporters { get; set; } = [];
+	public List<CertStoreExporterConfig> CertStoreExporters { get; set; } = [];
 }

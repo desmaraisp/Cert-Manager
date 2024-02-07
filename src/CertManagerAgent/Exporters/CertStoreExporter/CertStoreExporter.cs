@@ -6,9 +6,9 @@ namespace CertManagerAgent.Exporters.CertStoreExporter;
 
 public class CertStoreExporter : IExporter<CertStoreExporterConfig>
 {
-	private readonly ICertManagerClient client;
+	private readonly IGeneratedCertManagerClient client;
 	private readonly ICertStoreWrapperFactory certStoreWrapperFactory;
-	public CertStoreExporter(ICertManagerClient client, ICertStoreWrapperFactory certStoreWrapperFactory)
+	public CertStoreExporter(IGeneratedCertManagerClient client, ICertStoreWrapperFactory certStoreWrapperFactory)
 	{
 		this.client = client;
 		this.certStoreWrapperFactory = certStoreWrapperFactory;
