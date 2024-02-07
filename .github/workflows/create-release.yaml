@@ -9,6 +9,7 @@ jobs:
     uses: ./.github/workflows/unit-tests.yaml
 
   build-native-binaries:
+    needs: unit-tests
     runs-on: ${{ matrix.os }}
     strategy:
        matrix:
@@ -61,7 +62,7 @@ jobs:
           dotnet tool restore
           dotnet ef migrations script --idempotent --output ./migration.sql --project ./src/CertManager/CertManager.csproj
 
-      - name: Upload Artifact
+      - name: Download built artifacts
         uses: actions/download-artifact@v4
         with:
           path: ./native-binaries
