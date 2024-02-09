@@ -1,9 +1,5 @@
-using System.IO.Abstractions;
-using System.IO.Abstractions.TestingHelpers;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using CertManagerAgent.Exporters.CertStoreExporter;
-using CertManagerAgent.Exporters.FileExporter;
 using CertManagerAgent.Lib.CertificateStoreAbstraction;
 using CertManagerClient;
 using Moq;

@@ -1,4 +1,3 @@
-using Serilog;
 using CertManagerAgent;
 using CertManagerClient.Extensions;
 using CertManagerAgent.Configurations;

@@ -1,10 +1,13 @@
 using CertManager.DAL;
+using CertManager.Features.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CertManager.Features.Certificates;
 
 [ApiController]
+[Authorize]
 [Route("api/v1")]
 public class CertificateController : ControllerBase
 {
@@ -16,9 +19,9 @@ public class CertificateController : ControllerBase
 	}
 
 
-
 	[HttpPost("Certificate", Name = nameof(CreateCertificate))]
 	[ProducesResponseType(typeof(CertificateModelWithId), 200)]
+	[RequiredScope(AuthenticationScopes.WriteScope)]
 	public async Task<IActionResult> CreateCertificate(CertificateModel payload)
 	{
 		Certificate newCertificate = new()
@@ -40,6 +43,7 @@ public class CertificateController : ControllerBase
 	[HttpGet("Certificates/{id}", Name = nameof(GetCertificateById))]
 	[ProducesResponseType(typeof(CertificateModelWithId), 200)]
 	[ProducesResponseType(404)]
+	[RequiredScope(AuthenticationScopes.ReadScope)]
 	public async Task<IActionResult> GetCertificateById(Guid id)
 	{
 		var foundCertificate = await certManagerContext.Certificates.FirstOrDefaultAsync(x => x.CertificateId == id);
@@ -56,6 +60,7 @@ public class CertificateController : ControllerBase
 	[HttpPut("Certificates/{id}", Name = nameof(EditCertificateById))]
 	[ProducesResponseType(typeof(CertificateModelWithId), 200)]
 	[ProducesResponseType(404)]
+	[RequiredScope(AuthenticationScopes.WriteScope)]
 	public async Task<IActionResult> EditCertificateById(CertificateModel payload, Guid id)
 	{
 		var certificate = await certManagerContext.Certificates.Include(x => x.CertificateTags).FirstOrDefaultAsync(x => x.CertificateId == id);
@@ -78,6 +83,7 @@ public class CertificateController : ControllerBase
 
 	[HttpGet("Certificates", Name = nameof(GetAllCertificates))]
 	[ProducesResponseType(typeof(List<CertificateModelWithId>), 200)]
+	[RequiredScope(AuthenticationScopes.ReadScope)]
 	public async Task<IActionResult> GetAllCertificates([FromQuery] List<string> TagsToSearch, [FromQuery] CertificateSearchBehavior TagsSearchBehavior)
 	{
 		var query = certManagerContext.Certificates.AsQueryable();
@@ -107,6 +113,7 @@ public class CertificateController : ControllerBase
 	[HttpDelete("Certificates/{id}", Name = nameof(DeleteCertificateById))]
 	[ProducesResponseType(200)]
 	[ProducesResponseType(404)]
+	[RequiredScope(AuthenticationScopes.WriteScope)]
 	public async Task<IActionResult> DeleteCertificateById(Guid id)
 	{
 		int rowsDeleted = await certManagerContext.Certificates.Where(x => x.CertificateId == id).ExecuteDeleteAsync();

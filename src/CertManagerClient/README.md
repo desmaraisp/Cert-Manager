@@ -1,1 +1,0 @@
-dotnet openapi refresh https://localhost:7181/swagger/v1/swagger.json

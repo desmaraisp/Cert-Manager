@@ -1,7 +1,5 @@
 
 using CertManagerAgent.Configurations;
-using CertManagerAgent.Exporters;
-using CertManagerAgent.Exporters.FileExporter;
 using Microsoft.Extensions.Options;
 
 namespace CertManagerAgent;

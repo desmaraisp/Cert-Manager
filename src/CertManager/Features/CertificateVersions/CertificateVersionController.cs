@@ -1,11 +1,14 @@
 using System.Security.Cryptography.X509Certificates;
 using CertManager.DAL;
+using CertManager.Features.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CertManager.Features.CertificateVersions;
 
 [ApiController]
+[Authorize]
 [Route("api/v1")]
 public class CertificateVersionController : ControllerBase
 {
@@ -20,6 +23,7 @@ public class CertificateVersionController : ControllerBase
 	[ProducesResponseType(typeof(CertificateVersionModel), 200)]
 	[ProducesResponseType(400)]
 	[ProducesResponseType(404)]
+	[RequiredScope(AuthenticationScopes.WriteScope)]
 	public async Task<IActionResult> CreateCertificateVersion(IFormFile Certificate, string? Password, Guid CertificateId)
 	{
 		var extension = Path.GetExtension(Certificate.FileName);
@@ -74,6 +78,7 @@ public class CertificateVersionController : ControllerBase
 	[HttpGet("CertificateVersions/{id}", Name = nameof(GetCertificateVersionById))]
 	[ProducesResponseType(typeof(CertificateVersionModel), 200)]
 	[ProducesResponseType(404)]
+	[RequiredScope(AuthenticationScopes.ReadScope)]
 	public async Task<IActionResult> GetCertificateVersionById(Guid id)
 	{
 		var certVersion = await certManagerContext.CertificateVersions
@@ -98,6 +103,7 @@ public class CertificateVersionController : ControllerBase
 	[HttpDelete("CertificateVersions/{id}", Name = nameof(DeleteCertificateVersion))]
 	[ProducesResponseType(200)]
 	[ProducesResponseType(404)]
+	[RequiredScope(AuthenticationScopes.WriteScope)]
 	public async Task<IActionResult> DeleteCertificateVersion(Guid id)
 	{
 		int rowsDeleted = await certManagerContext.CertificateVersions.Where(x => x.CertificateVersionId == id).ExecuteDeleteAsync();
@@ -108,6 +114,7 @@ public class CertificateVersionController : ControllerBase
 
 	[HttpGet("CertificateVersions", Name = nameof(GetCertificateVersions))]
 	[ProducesResponseType(typeof(List<CertificateVersionModel>), 200)]
+	[RequiredScope(AuthenticationScopes.ReadScope)]
 	public async Task<IActionResult> GetCertificateVersions([FromQuery] List<Guid> CertificateIds, [FromQuery] DateTime? MinimumExpirationTimeUTC = null)
 	{
 		var query = certManagerContext.CertificateVersions.AsQueryable();
