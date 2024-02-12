@@ -8,6 +8,10 @@ using CertManagerAgent.Exporters.CertStoreExporter;
 using CertManagerAgent.Lib.CertificateStoreAbstraction;
 using CertManagerClient.Base;
 using CertManagerAgent.Lib;
+using Serilog;
+using Serilog.Exceptions;
+using Serilog.Events;
+using Serilog.Formatting.Json;
 
 // Required for AOT compilation support
 ApiClientBase.JsonSerializerTransform = (settings) =>
@@ -17,11 +21,27 @@ ApiClientBase.JsonSerializerTransform = (settings) =>
 
 
 var builder = Host.CreateDefaultBuilder(args);
-// builder.UseSerilog((context, config) =>
-// {
-// 	Environment.SetEnvironmentVariable("BASEDIR", AppDomain.CurrentDomain.BaseDirectory);
-// 	config.ReadFrom.Configuration(context.Configuration);
-// });
+builder.UseSerilog((context, config) =>
+{
+	Environment.SetEnvironmentVariable("BASEDIR", AppDomain.CurrentDomain.BaseDirectory);
+	config.Enrich.WithExceptionDetails()
+		  .Enrich.FromLogContext()
+		  .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+		  .MinimumLevel.Override("System", LogEventLevel.Warning)
+		  .MinimumLevel.Information()
+		  .WriteTo.Console(
+				new JsonFormatter(),
+				Enum.Parse<LogEventLevel>(context.Configuration.GetValue<string>("Logger:ConsoleLoggingLevel") ?? "Information")
+			)
+		  .WriteTo.File(
+				new JsonFormatter(),
+				"%BASEDIR%/Logs/CertManager.log",
+				Enum.Parse<LogEventLevel>(context.Configuration.GetValue<string>("Logger:FileLoggingLevel") ?? "Information"),
+				rollingInterval: RollingInterval.Day,
+				retainedFileCountLimit: context.Configuration.GetValue<int>("Logger:RetainedFileCount")
+
+		  );
+});
 builder.ConfigureServices((context, services) =>
 {
 	services.AddSingleton<IFileSystem, FileSystem>()
