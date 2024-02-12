@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "CertManager",
-    "version": "1.0"
+    "title": "CertManager API",
+    "version": "v1"
   },
   "paths": {
     "/api/v1/Certificate": {
@@ -688,6 +688,35 @@
         },
         "additionalProperties": { }
       }
+    },
+    "securitySchemes": {
+      "JWTBearerAuth": {
+        "type": "oauth2",
+        "description": "Specify the authorization token.",
+        "flows": {
+          "password": {
+            "authorizationUrl": "http://localhost:8080/realms/master/protocol/openid-connect/auth",
+            "tokenUrl": "http://localhost:8080/realms/master/protocol/openid-connect/token",
+            "scopes": {
+              "cert-manager/read": "Read access",
+              "cert-manager/write": "write access"
+            }
+          },
+          "clientCredentials": {
+            "authorizationUrl": "http://localhost:8080/realms/master/protocol/openid-connect/auth",
+            "tokenUrl": "http://localhost:8080/realms/master/protocol/openid-connect/token",
+            "scopes": {
+              "cert-manager/read": "Read access",
+              "cert-manager/write": "Write access"
+            }
+          }
+        }
+      }
     }
-  }
+  },
+  "security": [
+    {
+      "JWTBearerAuth": [ ]
+    }
+  ]
 }

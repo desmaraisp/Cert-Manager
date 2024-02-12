@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CertManagerAgent", "src\Cer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CertManagerAgentTest", "src\CertManagerAgentTest\CertManagerAgentTest.csproj", "{2AF54423-B022-443F-8088-FD46A1295F29}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duende.AccessTokenManagement", "src\Duende.AccessTokenManagement\Duende.AccessTokenManagement.csproj", "{5D2287EC-4A98-49B6-BDA9-D51649D80071}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{2AF54423-B022-443F-8088-FD46A1295F29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2AF54423-B022-443F-8088-FD46A1295F29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2AF54423-B022-443F-8088-FD46A1295F29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D2287EC-4A98-49B6-BDA9-D51649D80071}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D2287EC-4A98-49B6-BDA9-D51649D80071}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D2287EC-4A98-49B6-BDA9-D51649D80071}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D2287EC-4A98-49B6-BDA9-D51649D80071}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0B371D72-EECE-4874-AC01-0E1B44AC90E5} = {7680F6F8-CAC3-49AD-A4BD-FF652B1A8B95}
@@ -51,5 +57,6 @@ Global
 		{5F8F0320-8526-4E29-91EF-BE1AF563E5C5} = {7680F6F8-CAC3-49AD-A4BD-FF652B1A8B95}
 		{58AF3CD6-6A18-45A5-B1E5-98645B63EB6E} = {7680F6F8-CAC3-49AD-A4BD-FF652B1A8B95}
 		{2AF54423-B022-443F-8088-FD46A1295F29} = {7680F6F8-CAC3-49AD-A4BD-FF652B1A8B95}
+		{5D2287EC-4A98-49B6-BDA9-D51649D80071} = {7680F6F8-CAC3-49AD-A4BD-FF652B1A8B95}
 	EndGlobalSection
 EndGlobal

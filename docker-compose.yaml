@@ -7,3 +7,25 @@ services:
       context: DevelopmentDatabase/.
     ports:
       - 1433:1433
+  keycloak-local:
+    image: quay.io/keycloak/keycloak:20.0
+    command: ["start-dev"]
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:8080/health/live"]
+        interval: 10s
+        timeout: 5s
+        retries: 10
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_HEALTH_ENABLED=true
+    ports:
+      - 8080:8080
+  tf:
+    depends_on:
+      keycloak-local:
+        condition: service_healthy
+    image: terraform
+    build:
+      context: .
+      dockerfile: terraform-local/Dockerfile

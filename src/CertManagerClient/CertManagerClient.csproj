@@ -8,10 +8,8 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions"
-			Version="8.0.0" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"
-			Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="8.0.0" />
 		<PackageReference Include="NSwag.ApiDescription.Client" Version="14.0.3">
@@ -23,11 +21,13 @@
 		<PackageReference Include="System.Text.Json" Version="8.0.1" />
 	</ItemGroup>
 	<ItemGroup>
-		<OpenApiReference Include="swagger.json"
-			SourceUrl="http://localhost:5156/swagger/v1/swagger.json">
+		<OpenApiReference Include="swagger.json" SourceUrl="http://localhost:5156/swagger/v1/swagger.json">
 			<ClassName>GeneratedCertManagerClient</ClassName>
 			<NSwagGenerateExceptionClasses>true</NSwagGenerateExceptionClasses>
 			<Options>/UseBaseUrl:false /GenerateUpdateJsonSerializerSettingsMethod:false /GenerateClientInterfaces:true /JsonLibrary:SystemTextJson /ClientBaseClass:CertManagerClient.Base.ApiClientBase</Options>
 		</OpenApiReference>
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Duende.AccessTokenManagement\Duende.AccessTokenManagement.csproj" />
 	</ItemGroup>
 </Project>
