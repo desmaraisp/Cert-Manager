@@ -12,6 +12,8 @@ using Serilog;
 using Serilog.Exceptions;
 using Serilog.Events;
 using Serilog.Formatting.Json;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 
 // Required for AOT compilation support
 ApiClientBase.JsonSerializerTransform = (settings) =>
@@ -48,6 +50,7 @@ builder.ConfigureServices((context, services) =>
 			.AddScoped<IExporter<FileExporterConfig>, FileExporter>()
 			.AddScoped<IExporter<CertStoreExporterConfig>, CertStoreExporter>()
 			.AddSingleton<ICertStoreWrapperFactory, CertStoreWrapperFactory>()
+			.AddDistributedMemoryCache()
 			.AddScoped<Main>();
 
 	services.AddOptions<ServiceConfiguration>()
