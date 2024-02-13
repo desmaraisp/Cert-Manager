@@ -37,7 +37,7 @@ builder.UseSerilog((context, config) =>
 			)
 		  .WriteTo.File(
 				new JsonFormatter(),
-				"%BASEDIR%/Logs/CertManager.log",
+				context.Configuration.GetValue<string?>("Logger:FileLoggingLocation") ?? "%BASEDIR%/Logs/CertManager.log",
 				Enum.Parse<LogEventLevel>(context.Configuration.GetValue<string>("Logger:FileLoggingLevel") ?? "Information"),
 				rollingInterval: RollingInterval.Day,
 				retainedFileCountLimit: context.Configuration.GetValue<int>("Logger:RetainedFileCount")
