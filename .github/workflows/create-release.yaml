@@ -32,21 +32,21 @@ jobs:
         if: matrix.os == 'ubuntu-20.04'
         run: |
           dotnet publish "./src/CertManagerAgent/CertManagerAgent.csproj" \
-              -o ./publish/cert-manager-linux-x64 /p:DebugType=None /p:DebugSymbols=false \
+              -o ./publish/cert-manager-agent-linux-x64 /p:DebugType=None /p:DebugSymbols=false \
               -r linux-x64
 
       - name: publish (windows)
         if: matrix.os == 'windows-latest'
         run: |
           dotnet publish "./src/CertManagerAgent/CertManagerAgent.csproj" `
-              -o ./publish/cert-manager-windows-x64 /p:DebugType=None /p:DebugSymbols=false `
+              -o ./publish/cert-manager-agent-windows-x64 /p:DebugType=None /p:DebugSymbols=false `
               -r win-x64
 
       - name: publish (macos)
         if: matrix.os == 'macos-latest'
         run: |
           dotnet publish "./src/CertManagerAgent/CertManagerAgent.csproj" \
-              -o ./publish/cert-manager-osx-x64 /p:DebugType=None /p:DebugSymbols=false \
+              -o ./publish/cert-manager-agent-osx-x64 /p:DebugType=None /p:DebugSymbols=false \
               -r osx-x64
 
       - name: zip pubblish dir
@@ -59,7 +59,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cert-manager-${{matrix.os}}
+          name: cert-manager-agent-${{matrix.os}}
           path: ./publish-zipped/
           retention-days: 1
           overwrite: true
