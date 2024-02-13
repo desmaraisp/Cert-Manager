@@ -9,18 +9,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace CertManager.Migrations
+namespace Migrations.MSSQL.Migrations
 {
     [DbContext(typeof(CertManagerContext))]
-    [Migration("20231212192903_AddCertificateTagsAndRoles")]
-    partial class AddCertificateTagsAndRoles
+    [Migration("20240213213247_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.7")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -42,26 +42,6 @@ namespace CertManager.Migrations
                         .IsUnique();
 
                     b.ToTable("Certificates");
-                });
-
-            modelBuilder.Entity("CertManager.DAL.CertificateRole", b =>
-                {
-                    b.Property<Guid>("CertificateRoleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CertificateId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("CertificateRoleId");
-
-                    b.HasIndex("CertificateId");
-
-                    b.ToTable("CertificateRoles");
                 });
 
             modelBuilder.Entity("CertManager.DAL.CertificateTag", b =>
@@ -126,37 +106,30 @@ namespace CertManager.Migrations
                     b.ToTable("CertificateVersions");
                 });
 
-            modelBuilder.Entity("CertManager.DAL.CertificateRole", b =>
-                {
-                    b.HasOne("CertManager.DAL.Certificate", null)
-                        .WithMany("CertificateRoles")
-                        .HasForeignKey("CertificateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("CertManager.DAL.CertificateTag", b =>
                 {
-                    b.HasOne("CertManager.DAL.Certificate", null)
+                    b.HasOne("CertManager.DAL.Certificate", "Certificate")
                         .WithMany("CertificateTags")
                         .HasForeignKey("CertificateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Certificate");
                 });
 
             modelBuilder.Entity("CertManager.DAL.CertificateVersion", b =>
                 {
-                    b.HasOne("CertManager.DAL.Certificate", null)
+                    b.HasOne("CertManager.DAL.Certificate", "Certificate")
                         .WithMany("CertificateVersions")
                         .HasForeignKey("CertificateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Certificate");
                 });
 
             modelBuilder.Entity("CertManager.DAL.Certificate", b =>
                 {
-                    b.Navigation("CertificateRoles");
-
                     b.Navigation("CertificateTags");
 
                     b.Navigation("CertificateVersions");

@@ -81,8 +81,12 @@ internal class Program
 
 			Action action = dbType switch
 			{
-				DBTypeEnum.Postgresql => () => o.UseNpgsql(connectionString),
-				DBTypeEnum.SqlServer => () => o.UseSqlServer(connectionString),
+				DBTypeEnum.Postgresql => () => {
+					o.UseNpgsql(connectionString, x => x.MigrationsAssembly("Migrations.Postgresql"));
+				},
+				DBTypeEnum.SqlServer => () => {
+					o.UseSqlServer(connectionString, x => x.MigrationsAssembly("Migrations.MSSQL"));
+				},
 				_ => throw new InvalidDataException()
 			};
 			action.Invoke();

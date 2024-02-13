@@ -12,8 +12,7 @@ USER appuser
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG configuration=Release
 WORKDIR /src
-COPY ["src/CertManager/CertManager.csproj", "src/CertManager/"]
-RUN dotnet restore "src/CertManager/CertManager.csproj"
+
 COPY . .
 WORKDIR "/src/src/CertManager"
 RUN dotnet build "CertManager.csproj" -c $configuration -o /app/build

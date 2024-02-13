@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace CertManager.Migrations
+namespace Migrations.MSSQL.Migrations
 {
     [DbContext(typeof(CertManagerContext))]
     partial class CertManagerContextModelSnapshot : ModelSnapshot
@@ -17,7 +17,7 @@ namespace CertManager.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.7")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -105,20 +105,24 @@ namespace CertManager.Migrations
 
             modelBuilder.Entity("CertManager.DAL.CertificateTag", b =>
                 {
-                    b.HasOne("CertManager.DAL.Certificate", null)
+                    b.HasOne("CertManager.DAL.Certificate", "Certificate")
                         .WithMany("CertificateTags")
                         .HasForeignKey("CertificateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Certificate");
                 });
 
             modelBuilder.Entity("CertManager.DAL.CertificateVersion", b =>
                 {
-                    b.HasOne("CertManager.DAL.Certificate", null)
+                    b.HasOne("CertManager.DAL.Certificate", "Certificate")
                         .WithMany("CertificateVersions")
                         .HasForeignKey("CertificateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Certificate");
                 });
 
             modelBuilder.Entity("CertManager.DAL.Certificate", b =>

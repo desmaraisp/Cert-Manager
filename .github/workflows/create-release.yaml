@@ -84,10 +84,21 @@ jobs:
           docker build --file "./src/CertManager/Dockerfile" -t desmaraisp/cert-manager:latest .
           docker build --file "./src/CertManagerAgent/Dockerfile" -t desmaraisp/cert-manager-agent:latest .
 
-      - name: Create migration script
+      - name: Create migration images
+        run: |
+          docker build --file "./src/CertManager/Dockerfile.migrations" -t desmaraisp/cert-manager-mssql-migrations:latest \
+                --build-arg databaseType=SqlServer .
+          docker build --file "./src/CertManager/Dockerfile.migrations" -t desmaraisp/cert-manager-postgreql-migrations:latest \
+                --build-arg databaseType=Postgresql .
+      
+      - name: Create migration scripts
         run: |
           dotnet tool restore
-          dotnet ef migrations script --idempotent --output ./cert-manager-db-migration.sql --project ./src/CertManager/CertManager.csproj
+          dotnet build
+          dotnet ef migrations script --idempotent --output ./cert-manager-db-migration-mssql.sql \
+              --project ./src/CertManager/CertManager.csproj -- --DatabaseType SqlServer
+          dotnet ef migrations script --idempotent --output ./cert-manager-db-migration-postgresql.sql \
+              --project ./src/CertManager/CertManager.csproj -- --DatabaseType SqlServer
 
       - name: Download built artifacts
         uses: actions/download-artifact@v4
