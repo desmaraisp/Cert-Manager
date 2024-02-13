@@ -2,6 +2,7 @@ using System.Security.Cryptography.X509Certificates;
 using CertManagerAgent.Exporters.CertStoreExporter;
 using CertManagerAgent.Lib.CertificateStoreAbstraction;
 using CertManagerClient;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace CertManagerTest.Features.CertificateVersions;
@@ -82,7 +83,8 @@ public class CertStoreExporterTest
 
 		certStoreExporter = new(
 			mock.Object,
-			factoryMock.Object
+			factoryMock.Object,
+			Mock.Of<ILogger<CertStoreExporter>>()
 		);
 	}
 

@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
        matrix:
-          os: [ubuntu-18.04, macos-latest, windows-latest]
+          os: [ubuntu-20.04, macos-latest, windows-latest]
 
     steps:
       - name: Checkout repository
@@ -29,24 +29,21 @@ jobs:
           dotnet build "./src/CertManagerAgent/CertManagerAgent.csproj" -c Release
 
       - name: publish (linux)
-        if: ${{matrix.os}} == 'ubuntu-18.04'
+        if: matrix.os == 'ubuntu-20.04'
         run: |
           dotnet publish "./src/CertManagerAgent/CertManagerAgent.csproj" \
               -o ./publish/cert-manager-linux-x64 /p:DebugType=None /p:DebugSymbols=false \
               -r linux-x64
-          dotnet publish "./src/CertManagerAgent/CertManagerAgent.csproj" \
-              -o ./publish/cert-manager-linux-arm64 /p:DebugType=None /p:DebugSymbols=false \
-              -r linux-arm64
 
       - name: publish (windows)
-        if: ${{matrix.os}} == 'windows-latest'
+        if: matrix.os == 'windows-latest'
         run: |
           dotnet publish "./src/CertManagerAgent/CertManagerAgent.csproj" `
               -o ./publish/cert-manager-windows-x64 /p:DebugType=None /p:DebugSymbols=false `
               -r win-x64
 
       - name: publish (macos)
-        if: ${{matrix.os}} == 'macos-latest'
+        if: matrix.os == 'macos-latest'
         run: |
           dotnet publish "./src/CertManagerAgent/CertManagerAgent.csproj" \
               -o ./publish/cert-manager-osx-x64 /p:DebugType=None /p:DebugSymbols=false \

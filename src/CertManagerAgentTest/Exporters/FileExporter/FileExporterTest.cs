@@ -3,6 +3,7 @@ using System.IO.Abstractions.TestingHelpers;
 using System.Security.Cryptography.X509Certificates;
 using CertManagerAgent.Exporters.FileExporter;
 using CertManagerClient;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace CertManagerTest.Features.CertificateVersions;
@@ -62,7 +63,10 @@ public class FileExporterTest
 			defaultCertificateVersions
 		);
 
-		fileExporter = new(mock.Object, fileSystem);
+		fileExporter = new(mock.Object,
+					 fileSystem,
+					 Mock.Of<ILogger<FileExporter>>()
+		);
 	}
 
 	private static string GetCertificatePath(string FileName) => Path.Combine(
