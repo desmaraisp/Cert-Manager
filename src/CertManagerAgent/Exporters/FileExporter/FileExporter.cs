@@ -5,16 +5,14 @@ using CertManagerClient;
 
 namespace CertManagerAgent.Exporters.FileExporter;
 
-public class FileExporter : IExporter<FileExporterConfig>
+public class FileExporter(
+	IGeneratedCertManagerClient client,
+	IFileSystem fileSystem,
+	ILogger<FileExporter> logger) : IExporter<FileExporterConfig>
 {
-	private readonly IGeneratedCertManagerClient client;
-	private readonly IFileSystem fileSystem;
-
-	public FileExporter(IGeneratedCertManagerClient client, IFileSystem fileSystem)
-	{
-		this.client = client;
-		this.fileSystem = fileSystem;
-	}
+	private readonly IGeneratedCertManagerClient client = client;
+	private readonly IFileSystem fileSystem = fileSystem;
+	private readonly ILogger<FileExporter> logger = logger;
 
 	public async Task ExportCertificates(FileExporterConfig ExporterConfiguration, CancellationToken CancellationToken)
 	{
@@ -31,7 +29,9 @@ public class FileExporter : IExporter<FileExporterConfig>
 	private async Task ExportCertificateToFileAsync(CertificateVersionModel CertificateVersion, string OutputDirectory, ExportFormat ExportFormat)
 	{
 		fileSystem.Directory.CreateDirectory(OutputDirectory);
+
 		using var certificate = new X509Certificate2(CertificateVersion.RawCertificate, (string?)null, X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable);
+		logger.LogInformation("Exported certificate {cert} to location {path}", certificate.Subject, OutputDirectory);
 
 		Task task = ExportFormat switch
 		{

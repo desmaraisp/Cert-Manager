@@ -4,15 +4,14 @@ using CertManagerClient;
 
 namespace CertManagerAgent.Exporters.CertStoreExporter;
 
-public class CertStoreExporter : IExporter<CertStoreExporterConfig>
+public class CertStoreExporter(
+	IGeneratedCertManagerClient client,
+	ICertStoreWrapperFactory certStoreWrapperFactory,
+	ILogger<CertStoreExporter> logger) : IExporter<CertStoreExporterConfig>
 {
-	private readonly IGeneratedCertManagerClient client;
-	private readonly ICertStoreWrapperFactory certStoreWrapperFactory;
-	public CertStoreExporter(IGeneratedCertManagerClient client, ICertStoreWrapperFactory certStoreWrapperFactory)
-	{
-		this.client = client;
-		this.certStoreWrapperFactory = certStoreWrapperFactory;
-	}
+	private readonly IGeneratedCertManagerClient client = client;
+	private readonly ILogger<CertStoreExporter> logger = logger;
+	private readonly ICertStoreWrapperFactory certStoreWrapperFactory = certStoreWrapperFactory;
 
 	public async Task ExportCertificates(CertStoreExporterConfig ExporterConfiguration, CancellationToken CancellationToken)
 	{
@@ -29,6 +28,8 @@ public class CertStoreExporter : IExporter<CertStoreExporterConfig>
 		foreach (var certificateVersion in CertificateVersions)
 		{
 			using var certificate = new X509Certificate2(certificateVersion.RawCertificate, (string?)null, X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable);
+
+			logger.LogInformation("Exported certificate {cert} to cert store", certificate.Subject);
 			certStore.AddCertificate(certificate);
 		}
 	}
