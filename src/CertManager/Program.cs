@@ -1,3 +1,4 @@
+using CertManager;
 using CertManager.DAL;
 using CertManager.Features.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -73,9 +74,19 @@ internal class Program
 			});
 		});
 
-		builder.Services.AddDbContext<CertManagerContext>(o => o.UseSqlServer(
-			builder.Configuration.GetConnectionString(nameof(CertManagerContext))
-		));
+		builder.Services.AddDbContext<CertManagerContext>(o =>
+		{
+			string? connectionString = builder.Configuration.GetConnectionString(nameof(CertManagerContext));
+			var dbType = Enum.Parse<DBTypeEnum>(builder.Configuration.GetValue<string>("DatabaseType") ?? "SqlServer");
+
+			Action action = dbType switch
+			{
+				DBTypeEnum.Postgresql => () => o.UseNpgsql(connectionString),
+				DBTypeEnum.SqlServer => () => o.UseSqlServer(connectionString),
+				_ => throw new InvalidDataException()
+			};
+			action.Invoke();
+		});
 
 		builder.Services.RegisterAuthentication(builder.Configuration);
 

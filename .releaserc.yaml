@@ -13,7 +13,7 @@ plugins:
   - - "@semantic-release/github"
     - assets:
       - "path": "native-binaries/**/cert-manager-*.zip"
-      - "path": "migration.sql"
+      - "path": "*.sql"
   - - "@semantic-release-plus/docker"
     - name: "ghcr.io/desmaraisp/cert-manager:latest"
   - - "@semantic-release-plus/docker"
