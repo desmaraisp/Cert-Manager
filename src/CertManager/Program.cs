@@ -16,7 +16,7 @@ internal class Program
 			Environment.SetEnvironmentVariable("BASEDIR", AppDomain.CurrentDomain.BaseDirectory);
 			config.ReadFrom.Configuration(context.Configuration);
 		});
-
+		builder.Services.AddHealthChecks();
 		builder.Services.AddControllers();
 		builder.Services.AddEndpointsApiExplorer();
 		builder.Services.AddSwaggerGen(c =>
@@ -101,6 +101,7 @@ internal class Program
 		app.UseAuthentication();
 		app.UseAuthorization();
 		app.MapControllers();
+		app.MapHealthChecks("/health");
 		app.Run();
 	}
 }
