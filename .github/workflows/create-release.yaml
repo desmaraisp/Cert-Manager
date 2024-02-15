@@ -84,12 +84,10 @@ jobs:
           docker build --file "./src/CertManager/Dockerfile" -t desmaraisp/cert-manager:latest .
           docker build --file "./src/CertManagerAgent/Dockerfile" -t desmaraisp/cert-manager-agent:latest .
 
-      - name: Create migration images
+      - name: Create migration image
         run: |
-          docker build --file "./src/CertManager/Dockerfile.migrations" -t desmaraisp/cert-manager-mssql-migrations:latest \
+          docker build --file "./src/CertManager/Dockerfile.migrations" -t desmaraisp/cert-manager-migrations:latest \
                 --build-arg provider=SqlServer .
-          docker build --file "./src/CertManager/Dockerfile.migrations" -t desmaraisp/cert-manager-postgresql-migrations:latest \
-                --build-arg provider=Postgresql .
       
       - name: Create migration scripts
         run: |
