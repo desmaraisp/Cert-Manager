@@ -77,19 +77,14 @@ internal class Program
 		builder.Services.AddDbContext<CertManagerContext>(o =>
 		{
 			string? connectionString = builder.Configuration.GetConnectionString(nameof(CertManagerContext));
-			var dbType = Enum.Parse<DBTypeEnum>(builder.Configuration.GetValue<string>("DatabaseType") ?? "SqlServer");
+			var provider = builder.Configuration.GetValue<string>("provider");
 
-			Action action = dbType switch
+			_ = provider switch
 			{
-				DBTypeEnum.Postgresql => () => {
-					o.UseNpgsql(connectionString, x => x.MigrationsAssembly("CertManager.Migrations.Postgresql"));
-				},
-				DBTypeEnum.SqlServer => () => {
-					o.UseSqlServer(connectionString, x => x.MigrationsAssembly("CertManager.Migrations.SqlServer"));
-				},
-				_ => throw new InvalidDataException()
+				"Postgresql" => o.UseNpgsql(connectionString, x => x.MigrationsAssembly("CertManager.Migrations.Postgresql")),
+				"SqlServer" => o.UseSqlServer(connectionString, x => x.MigrationsAssembly("CertManager.Migrations.SqlServer")),
+				_ => throw new InvalidDataException($"{provider} not recognized")
 			};
-			action.Invoke();
 		});
 
 		builder.Services.RegisterAuthentication(builder.Configuration);

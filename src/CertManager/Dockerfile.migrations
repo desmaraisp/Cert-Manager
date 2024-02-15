@@ -8,9 +8,9 @@ RUN dotnet tool restore && \
 	dotnet build "./src/CertManager/CertManager.csproj" -c Release
 
 FROM build AS publish
-ARG databaseType
+ARG provider
 RUN dotnet ef migrations bundle --configuration Release --project "./src/CertManager/CertManager.csproj" \
-	-o /app/efbundle -- --DatabaseType ${databaseType}
+	-o /app/efbundle -- --provider ${provider}
 
 FROM base AS final
 WORKDIR /app

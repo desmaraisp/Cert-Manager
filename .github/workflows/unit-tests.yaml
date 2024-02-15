@@ -22,8 +22,8 @@ jobs:
 
       - name: check if migrations up-to-date
         run: |
-          dotnet ef migrations has-pending-model-changes --project ./src/CertManager/CertManager.csproj -- --DatabaseType Postgresql
-          dotnet ef migrations has-pending-model-changes --project ./src/CertManager/CertManager.csproj -- --DatabaseType SqlServer
+          dotnet ef migrations has-pending-model-changes --project ./src/CertManager/CertManager.csproj -- --provider Postgresql
+          dotnet ef migrations has-pending-model-changes --project ./src/CertManager/CertManager.csproj -- --provider SqlServer
 
       - name: build image
         run: |
