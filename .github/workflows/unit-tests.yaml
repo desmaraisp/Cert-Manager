@@ -7,14 +7,23 @@ on:
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
-    
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.x'
+
       - name: Unit tests
         run: dotnet test
 
       - name: restore tools
         run: dotnet tool restore
+
+      - name: check if migrations up-to-date
+        run: |
+          dotnet ef migrations has-pending-model-changes --project ./src/CertManager/CertManager.csproj -- --DatabaseType Postgresql
+          dotnet ef migrations has-pending-model-changes --project ./src/CertManager/CertManager.csproj -- --DatabaseType SqlServer
 
       - name: build image
         run: |

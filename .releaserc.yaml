@@ -19,6 +19,6 @@ plugins:
   - - "@semantic-release-plus/docker"
     - name: "ghcr.io/desmaraisp/cert-manager-agent:latest"
   - - "@semantic-release-plus/docker"
-    - name: "ghcr.io/desmaraisp/cert-manager-postgreql-migrations:latest"
+    - name: "ghcr.io/desmaraisp/cert-manager-postgresql-migrations:latest"
   - - "@semantic-release-plus/docker"
     - name: "ghcr.io/desmaraisp/cert-manager-mssql-migrations:latest"
