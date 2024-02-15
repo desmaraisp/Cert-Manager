@@ -2,7 +2,7 @@ using System.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using AuthenticationProxy.Test;
-using CertManager.DAL;
+using CertManager.Database;
 using CertManager.Features.CertificateVersions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

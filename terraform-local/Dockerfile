@@ -5,4 +5,4 @@ COPY ./terraform-local/* .
 
 RUN /bin/terraform init
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/bin/terraform", "apply", "-auto-approve"]

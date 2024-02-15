@@ -5,7 +5,9 @@ namespace CertManagerAgent.Lib;
 
 [JsonSourceGenerationOptions]
 [JsonSerializable(typeof(CertificateVersionModel))]
+[JsonSerializable(typeof(ICollection<CertificateVersionModel>))]
 [JsonSerializable(typeof(CertificateModelWithId))]
+[JsonSerializable(typeof(ICollection<CertificateModelWithId>))]
 internal partial class SourceGenerationContext : JsonSerializerContext
 {
 }

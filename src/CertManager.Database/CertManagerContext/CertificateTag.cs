@@ -1,4 +1,4 @@
-namespace CertManager.DAL;
+namespace CertManager.Database;
 
 public partial class CertificateTag
 {

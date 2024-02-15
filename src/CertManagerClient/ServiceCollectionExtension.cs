@@ -43,7 +43,7 @@ public static class ServiceCollectionExtension
 					TimeoutStrategy.Optimistic
 				)
 			)
-			.AddClientCredentialsTokenHandler("catalog.client")
+			.AddClientCredentialsTokenHandler("cert-manager.client")
 			.AddPolicyHandler((sp, httpRequestMessage) =>
 			{
 				var cacheProvider = sp.GetRequiredService<IAsyncCacheProvider>();

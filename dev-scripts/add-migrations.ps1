@@ -7,7 +7,7 @@ param (
 
 Push-Location "$PSScriptRoot/../src/CertManager"
 
-dotnet ef migrations add $MigrationName --project ../Migrations.MSSQL -- --DatabaseType SqlServer
-dotnet ef migrations add $MigrationName --project ../Migrations.Postgresql -- --DatabaseType Postgresql
+dotnet ef migrations add $MigrationName --project ../CertManager.Migrations.SqlServer -- --DatabaseType SqlServer
+dotnet ef migrations add $MigrationName --project ../CertManager.Migrations.Postgresql -- --DatabaseType Postgresql
 
 Pop-Location

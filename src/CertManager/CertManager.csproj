@@ -35,4 +35,10 @@
 		</None>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\CertManager.Database\CertManager.Database.csproj" />
+	  <ProjectReference Include="..\CertManager.Migrations.Postgresql\CertManager.Migrations.Postgresql.csproj" />
+	  <ProjectReference Include="..\CertManager.Migrations.SqlServer\CertManager.Migrations.SqlServer.csproj" />
+	</ItemGroup>
+
 </Project>

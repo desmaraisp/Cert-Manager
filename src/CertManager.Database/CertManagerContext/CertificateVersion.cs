@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CertManager.DAL;
+namespace CertManager.Database;
 
 public partial class CertificateVersion
 {

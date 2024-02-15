@@ -12,4 +12,4 @@ COPY . /usr/config
 RUN chmod +x /usr/config/wait-for-db.sh
 
 
-HEALTHCHECK --interval=12s --timeout=10s --start-period=5s --retries=3 CMD /usr/config/wait-for-db.sh || exit 1
+HEALTHCHECK --interval=12s --timeout=10s --start-period=5s --retries=25 CMD /usr/config/wait-for-db.sh || exit 1

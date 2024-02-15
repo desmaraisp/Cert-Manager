@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace CertManager.DAL;
+namespace CertManager.Database;
 
 
 public class CertManagerContext : DbContext

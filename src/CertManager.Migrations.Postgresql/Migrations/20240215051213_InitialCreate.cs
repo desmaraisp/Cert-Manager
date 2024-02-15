@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Migrations.Postgresql.Migrations
+namespace CertManager.Migrations.Postgresql.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

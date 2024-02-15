@@ -1,5 +1,5 @@
 using AuthenticationProxy.Test;
-using CertManager.DAL;
+using CertManager.Database;
 using CertManager.Features.Certificates;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

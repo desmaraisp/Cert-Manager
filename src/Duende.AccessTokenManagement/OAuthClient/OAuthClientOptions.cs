@@ -13,15 +13,9 @@ public partial class OAuthClientOptionsValidator : IValidateOptions<OAuthClientO
 
 public class OAuthClientOptions
 {
-	[Required]
-	public string TokenEndpoint { get; set; } = "";
-
-	[Required] public string ClientId { get; set; } = "";
-
-	[Required] public string ClientSecret { get; set; } = "";
-
-	[Required] public string Scope { get; set; } = "";
-
-	public string? Resource { get; set; }
+	[Required(AllowEmptyStrings = false)] public string TokenEndpoint { get; set; } = "";
+	[Required(AllowEmptyStrings = false)] public string ClientId { get; set; } = "";
+	[Required(AllowEmptyStrings = false)] public string ClientSecret { get; set; } = "";
+	[Required(AllowEmptyStrings = false)] public string Scope { get; set; } = "";
 	public string? OAuthHttpClientName { get; set; }
 }

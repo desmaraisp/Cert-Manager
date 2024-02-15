@@ -7,6 +7,17 @@ services:
       context: DevelopmentDatabase/.
     ports:
       - 1433:1433
+  sql-server-migrations:
+    image: sql-server-migrations
+    command: ["--connection", "Data Source=sql-server-db\\MSSQLSERVER,1433;TrustServerCertificate=True;User Id=SA;Password=Change_this_password10"]
+    depends_on:
+      sql-server-db:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: src/CertManager/Dockerfile.migrations
+      args:
+        databaseType: SqlServer
   keycloak-local:
     image: quay.io/keycloak/keycloak:20.0
     command: ["start-dev"]

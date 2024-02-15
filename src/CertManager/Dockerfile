@@ -10,16 +10,13 @@ RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /
 USER appuser
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG configuration=Release
 WORKDIR /src
 
 COPY . .
-WORKDIR "/src/src/CertManager"
-RUN dotnet build "CertManager.csproj" -c $configuration -o /app/build
+RUN dotnet build "./src/CertManager/CertManager.csproj" -c Release -o /app/build
 
 FROM build AS publish
-ARG configuration=Release
-RUN dotnet publish "CertManager.csproj" -c $configuration -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./src/CertManager/CertManager.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

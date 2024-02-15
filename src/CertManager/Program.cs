@@ -1,5 +1,5 @@
 using CertManager;
-using CertManager.DAL;
+using CertManager.Database;
 using CertManager.Features.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -82,10 +82,10 @@ internal class Program
 			Action action = dbType switch
 			{
 				DBTypeEnum.Postgresql => () => {
-					o.UseNpgsql(connectionString, x => x.MigrationsAssembly("Migrations.Postgresql"));
+					o.UseNpgsql(connectionString, x => x.MigrationsAssembly("CertManager.Migrations.Postgresql"));
 				},
 				DBTypeEnum.SqlServer => () => {
-					o.UseSqlServer(connectionString, x => x.MigrationsAssembly("Migrations.MSSQL"));
+					o.UseSqlServer(connectionString, x => x.MigrationsAssembly("CertManager.Migrations.SqlServer"));
 				},
 				_ => throw new InvalidDataException()
 			};

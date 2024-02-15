@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Migrations.MSSQL.Migrations
+namespace CertManager.Migrations.SqlServer.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

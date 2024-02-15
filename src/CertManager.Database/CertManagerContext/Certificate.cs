@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CertManager.DAL;
+namespace CertManager.Database;
 
 public partial class Certificate
 {

@@ -1,4 +1,4 @@
-using CertManager.DAL;
+using CertManager.Database;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 

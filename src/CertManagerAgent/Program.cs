@@ -25,7 +25,6 @@ ApiClientBase.JsonSerializerTransform = (settings) =>
 var builder = Host.CreateDefaultBuilder(args);
 builder.UseSerilog((context, config) =>
 {
-	Environment.SetEnvironmentVariable("BASEDIR", AppDomain.CurrentDomain.BaseDirectory);
 	config.Enrich.WithExceptionDetails()
 		  .Enrich.FromLogContext()
 		  .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
@@ -37,7 +36,7 @@ builder.UseSerilog((context, config) =>
 			)
 		  .WriteTo.File(
 				new JsonFormatter(),
-				context.Configuration.GetValue<string?>("Logger:FileLoggingLocation") ?? "%BASEDIR%/Logs/CertManager.log",
+				context.Configuration.GetValue<string?>("Logger:FileLoggingLocation") ?? $"{AppDomain.CurrentDomain.BaseDirectory}/Logs/CertManagerAgent.log",
 				Enum.Parse<LogEventLevel>(context.Configuration.GetValue<string>("Logger:FileLoggingLevel") ?? "Information"),
 				rollingInterval: RollingInterval.Day,
 				retainedFileCountLimit: context.Configuration.GetValue<int>("Logger:RetainedFileCount")

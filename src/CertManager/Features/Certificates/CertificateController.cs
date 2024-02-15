@@ -1,4 +1,4 @@
-using CertManager.DAL;
+using CertManager.Database;
 using CertManager.Features.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

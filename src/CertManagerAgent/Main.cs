@@ -3,16 +3,15 @@ using CertManagerAgent.Exporters;
 using CertManagerAgent.Exporters.CertStoreExporter;
 using CertManagerAgent.Exporters.FileExporter;
 using Microsoft.Extensions.Options;
-using Serilog;
 
 namespace CertManagerAgent;
 
 public class Main(IExporter<FileExporterConfig> fileExporter,
-				  IOptions<ServiceConfiguration> options,
+				  IOptionsSnapshot<ServiceConfiguration> options,
 				  IExporter<CertStoreExporterConfig> cerStoreExporter,
 				  ILogger<Main> logger)
 {
-	private readonly IOptions<ServiceConfiguration> options = options;
+	private readonly IOptionsSnapshot<ServiceConfiguration> options = options;
 	private readonly IExporter<FileExporterConfig> fileExporter = fileExporter;
 	private readonly ILogger<Main> logger = logger;
 	private readonly IExporter<CertStoreExporterConfig> cerStoreExporter = cerStoreExporter;

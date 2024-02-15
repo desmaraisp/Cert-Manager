@@ -8,7 +8,7 @@
 DBSTATUS=1
 ERRCODE=1
 
-DBSTATUS=$(/opt/mssql-tools/bin/sqlcmd -h -1 -t 1 -U sa -P Change_this_password10 -Q "SET NOCOUNT ON; Select SUM(state) from sys.databases")
+DBSTATUS=$(/opt/mssql-tools/bin/sqlcmd -h -1 -t 1 -U SA -P Change_this_password10 -Q "SET NOCOUNT ON; Select SUM(state) from sys.databases")
 ERRCODE=$?
 
 if [ $DBSTATUS -ne 0 ] OR [ $ERRCODE -ne 0 ]; then 

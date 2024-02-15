@@ -2,19 +2,17 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG configuration=Release
 WORKDIR /src
-
 COPY . .
-WORKDIR "/src/src/CertManager"
-RUN dotnet build "CertManager.csproj" -c $configuration -o /app/build && \
-    dotnet tool restore
+RUN dotnet tool restore && \
+	dotnet build "./src/CertManager/CertManager.csproj" -c Release
 
 FROM build AS publish
 ARG databaseType
-RUN dotnet ef migrations bundle -o /app/bundles -- --DatabaseType ${databaseType}
+RUN dotnet ef migrations bundle --configuration Release --project "./src/CertManager/CertManager.csproj" \
+	-o /app/efbundle -- --DatabaseType ${databaseType}
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/bundles .
-ENTRYPOINT ["efbundle"]
+COPY --from=publish /app/ .
+ENTRYPOINT ["/app/efbundle"]
