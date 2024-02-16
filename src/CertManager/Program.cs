@@ -96,11 +96,12 @@ internal class Program
 			app.UseSwaggerUI();
 		}
 
+		app.MapHealthChecks("/health");
+		
 		app.UseSerilogRequestLogging();
 		app.UseAuthentication();
 		app.UseAuthorization();
 		app.MapControllers();
-		app.MapHealthChecks("/health");
 		app.Run();
 	}
 }
