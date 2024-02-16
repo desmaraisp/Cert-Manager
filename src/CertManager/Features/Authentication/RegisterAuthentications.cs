@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
 		{
 			options.MetadataAddress = configuration.GetValue<string>("Authentication:OpenIdConfigurationEndpoint") ?? throw new InvalidDataException();
 			options.Authority = configuration.GetValue<string>("Authentication:JwtAuthority");
-			options.RequireHttpsMetadata = configuration.GetValue<bool>("Authentication:RequireHttpsMetadata");
+			options.RequireHttpsMetadata = configuration.GetValue("Authentication:RequireHttpsMetadata", true);
 			options.Audience = "cert-manager";
 		});
 
