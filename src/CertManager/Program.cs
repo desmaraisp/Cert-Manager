@@ -90,7 +90,7 @@ internal class Program
 		builder.Services.RegisterAuthentication(builder.Configuration);
 
 		var app = builder.Build();
-		if (app.Environment.IsDevelopment())
+		if (builder.Configuration.GetValue<bool>("EnableSwagger"))
 		{
 			app.UseSwagger();
 			app.UseSwaggerUI();
