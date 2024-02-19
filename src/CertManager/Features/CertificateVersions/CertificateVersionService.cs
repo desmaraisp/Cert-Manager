@@ -44,7 +44,8 @@ public class CertificateVersionService(CertManagerContext certManagerContext)
 	}
 
 	public async Task<List<CertificateVersionModel>> GetCertificateVersions(
-		List<Guid> CertificateIds,
+		List<Guid> CertificateVersionIds,
+		List<Guid>? CertificateIds = null,
 		DateTime? MinimumUtcExpirationTime = null,
 		DateTime? MaximumUtcExpirationTime = null,
 		DateTime? MinimumUtcActivationTime = null,
@@ -53,7 +54,11 @@ public class CertificateVersionService(CertManagerContext certManagerContext)
 	{
 		var query = certManagerContext.CertificateVersions.AsQueryable();
 
-		if (CertificateIds.Count != 0)
+		if (CertificateVersionIds.Count != 0)
+		{
+			query = query.Where(x => CertificateVersionIds.Contains(x.CertificateVersionId));
+		}
+		if (CertificateIds != null && CertificateIds.Count != 0)
 		{
 			query = query.Where(x => CertificateIds.Contains(x.CertificateId));
 		}

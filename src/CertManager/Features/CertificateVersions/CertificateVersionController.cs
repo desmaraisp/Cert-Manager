@@ -26,13 +26,13 @@ public class CertificateVersionController : ControllerBase
 	[ProducesResponseType(400)]
 	[ProducesResponseType(404)]
 	[RequiredScope(AuthenticationScopes.WriteScope)]
-	public async Task<IActionResult> CreateCertificateVersion(IFormFile Certificate, SecureString? Password, Guid CertificateId, CertificateFormat certificateType)
+	public async Task<IActionResult> CreateCertificateVersion(IFormFile Certificate, string? Password, Guid CertificateId, CertificateFormat certificateType)
 	{
 		using X509Certificate2 cert = certificateType switch
 		{
-			CertificateFormat.PFX => await Certificate.ReadPfxCertificateAsync(Password),
-			CertificateFormat.CER => await Certificate.ReadCerCertificateAsync(),
-			CertificateFormat.PEM => await Certificate.ReadPemCertificateAsync(),
+			CertificateFormat.PFX => await Certificate.ReadCertificateAsync(Password),
+			CertificateFormat.CER => await Certificate.ReadCertificateAsync(null),
+			CertificateFormat.PEM => await Certificate.ReadCertificateAsync(null),
 			_ => throw new BadHttpRequestException($"Unrecognized cert type {certificateType}")
 		};
 		var newCertVersion = await certificateVersionService.AddCertificateVersion(CertificateId, cert);
@@ -77,6 +77,7 @@ public class CertificateVersionController : ControllerBase
 	)
 	{
 		var results = await certificateVersionService.GetCertificateVersions(
+			[],
 			CertificateIds,
 			MinimumUtcExpirationTime,
 			MaximumUtcExpirationTime,
