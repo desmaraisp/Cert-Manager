@@ -10,6 +10,6 @@ public enum ExportFormat {
 
 
 public class FileExporterConfig : BaseExporterConfig {
-	public string OutputDirectory { get; set; } = "";
+	public string? OutputDirectory { get; set; }
 	public ExportFormat ExportFormat { get; set; } = ExportFormat.PFX;
 }

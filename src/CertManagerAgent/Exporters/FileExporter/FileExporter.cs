@@ -22,7 +22,11 @@ public class FileExporter(
 
 		foreach (var certificateVersion in certificateVersions)
 		{
-			await ExportCertificateToFileAsync(certificateVersion, ExporterConfiguration.OutputDirectory, ExporterConfiguration.ExportFormat);
+			await ExportCertificateToFileAsync(
+				certificateVersion,
+				ExporterConfiguration.OutputDirectory ?? fileSystem.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Certificates"),
+				ExporterConfiguration.ExportFormat
+			);
 		}
 	}
 

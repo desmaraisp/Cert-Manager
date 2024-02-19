@@ -1,12 +1,4 @@
 ####################################################################################################
-Package:IdentityModel
-Version:6.2.0
-project URL:https://github.com/IdentityModel/IdentityModel
-Description:OpenID Connect & OAuth 2.0 client library
-licenseUrl:https://licenses.nuget.org/Apache-2.0
-license Type:Apache-2.0
-
-####################################################################################################
 Package:NSwag.ApiDescription.Client
 Version:14.0.3
 project URL:https://github.com/RicoSuter/NSwag

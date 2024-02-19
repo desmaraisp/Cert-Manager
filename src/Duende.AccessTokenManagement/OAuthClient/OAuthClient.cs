@@ -2,11 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityModel.Client;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Duende.AccessTokenManagement.OAuthClient;
+
 
 public class OAuthClient : IOAuthClient
 {
@@ -29,36 +30,37 @@ public class OAuthClient : IOAuthClient
 		CancellationToken cancellationToken = default)
 	{
 		var clientSettings = _options.Get(delegatingClientName);
-		var request = new ClientCredentialsTokenRequest
+		var request = new HttpRequestMessage
 		{
-			Address = clientSettings.TokenEndpoint,
-			Scope = clientSettings.Scope,
-			ClientId = clientSettings.ClientId,
-			ClientSecret = clientSettings.ClientSecret,
-			ClientCredentialStyle = ClientCredentialStyle.AuthorizationHeader,
+			RequestUri = new(clientSettings.TokenEndpoint),
+			Method = HttpMethod.Post,
+			Content = new FormUrlEncodedContent([
+				new("scope", clientSettings.Scope),
+				new("client_id", clientSettings.ClientId),
+				new("client_secret", clientSettings.ClientSecret),
+				new("grant_type", "client_credentials")
+			])
 		};
 
 		HttpClient httpClient = _httpClientFactory.CreateClient(clientSettings.OAuthHttpClientName ?? "");
 
-		_logger.LogDebug("Requesting client credentials access token at endpoint: {endpoint}", request.Address);
-		var response = await httpClient.RequestClientCredentialsTokenAsync(request, cancellationToken).ConfigureAwait(false);
+		_logger.LogDebug("Requesting client credentials access token at endpoint: {endpoint}", request.RequestUri);
+		return await RequestClientCredentialsTokenAsync(httpClient, request, cancellationToken);
+	}
 
-		if (response.IsError)
-		{
-			return new OAuthResponse
-			{
-				Error = response.Error
-			};
+	private static async Task<OAuthResponse> RequestClientCredentialsTokenAsync(HttpClient client, HttpRequestMessage request, CancellationToken cancellationToken)
+	{
+		using HttpResponseMessage httpResponse = await client.SendAsync(request, cancellationToken);
+
+		if(httpResponse.StatusCode == System.Net.HttpStatusCode.OK){
+			using var stream = await httpResponse.Content.ReadAsStreamAsync();
+			var oAuthResponse = await JsonSerializer.DeserializeAsync(stream, TokenSourceGenerationContext.Default.OAuthResponse, cancellationToken);
+			return oAuthResponse ?? throw new HttpRequestException("OAuth client returned null response");
 		}
 
-		return new OAuthResponse
-		{
-			AccessToken = response.AccessToken,
-			AccessTokenType = response.TokenType,
-			Expiration = response.ExpiresIn == 0
-				? DateTimeOffset.MaxValue
-				: DateTimeOffset.UtcNow.AddSeconds(response.ExpiresIn),
-			Scope = response.Scope
-		};
+		var exception = new HttpRequestException("OAuth client returned an unsuccessful status code");
+		exception.Data.Add("response", await httpResponse.Content.ReadAsStringAsync());
+		exception.Data.Add("StatusCode", httpResponse.StatusCode);
+		throw exception;
 	}
 }

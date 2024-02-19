@@ -4,19 +4,12 @@
 
 
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Duende.AccessTokenManagement.OAuthClient;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Duende.AccessTokenManagement.Caching;
-
-[JsonSourceGenerationOptions(WriteIndented = true)]
-[JsonSerializable(typeof(OAuthResponse))]
-internal partial class SourceGenerationContext : JsonSerializerContext
-{
-}
 
 public class CacheService : ICacheService
 {
@@ -40,7 +33,7 @@ public class CacheService : ICacheService
 		CancellationToken cancellationToken = default)
 	{
 		var cacheExpiration = clientCredentialsToken.Expiration.AddSeconds(-_options.TokenLifetimeCachingBufferSeconds);
-		var data = JsonSerializer.Serialize(clientCredentialsToken, SourceGenerationContext.Default.OAuthResponse);
+		var data = JsonSerializer.Serialize(clientCredentialsToken, TokenSourceGenerationContext.Default.OAuthResponse);
 
 		var entryOptions = new DistributedCacheEntryOptions
 		{
@@ -65,7 +58,7 @@ public class CacheService : ICacheService
 			try
 			{
 				_logger.LogDebug("Cache hit for access token for client: {clientName}", clientName);
-				return JsonSerializer.Deserialize(entry, SourceGenerationContext.Default.OAuthResponse);
+				return JsonSerializer.Deserialize(entry, TokenSourceGenerationContext.Default.OAuthResponse);
 			}
 			catch (JsonException ex)
 			{

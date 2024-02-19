@@ -49,14 +49,6 @@ public class ClientCredentialsTokenManagementService : IClientCredentialsTokenMa
 		}
 
 		var token = await _clientCredentialsTokenEndpointService.RequestToken(clientName, cancellationToken).ConfigureAwait(false);
-		if (token.IsError)
-		{
-			_logger.LogError(
-				"Error requesting access token for client {clientName}. Error = {error}.",
-				clientName, token.Error);
-
-			return token;
-		}
 
 		try
 		{
