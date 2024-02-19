@@ -67,7 +67,7 @@ public class CertificateVersionControllerTests
 		var certificateBytes = File.ReadAllBytes(GetCertificatePath("TestCertificate_Password_Is_123.pfx"));
 		var certificateFile = new FormFile(new MemoryStream(certificateBytes), 0, certificateBytes.Length, "TestCertificate", "TestCertificate_Password_Is_123.pfx");
 
-		var result = await controller.CreateCertificateVersion(certificateFile, "123", certGuid) as OkObjectResult;
+		var result = await controller.CreateCertificateVersion(certificateFile, "123", certGuid, CertificateFormat.PFX) as OkObjectResult;
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual(200, result.StatusCode);
@@ -88,7 +88,7 @@ public class CertificateVersionControllerTests
 
 		await Assert.ThrowsExceptionAsync<CryptographicException>(async () =>
 		{
-			await controller.CreateCertificateVersion(certificateFile, "WrongPassword", certGuid);
+			await controller.CreateCertificateVersion(certificateFile, "WrongPassword", certGuid, CertificateFormat.PFX);
 		});
 	}
 	[TestMethod]
@@ -99,7 +99,7 @@ public class CertificateVersionControllerTests
 
 		await Assert.ThrowsExceptionAsync<DbUpdateException>(async () =>
 		{
-			await controller.CreateCertificateVersion(certificateFile, "123", Guid.NewGuid());
+			await controller.CreateCertificateVersion(certificateFile, "123", Guid.NewGuid(), CertificateFormat.PFX);
 		});
 	}
 
@@ -110,7 +110,7 @@ public class CertificateVersionControllerTests
 		var certificateBytes = File.ReadAllBytes(GetCertificatePath("TestCertificate.cer"));
 		var certificateFile = new FormFile(new MemoryStream(certificateBytes), 0, certificateBytes.Length, "TestCertificate", "TestCertificate_Password_Is_123.cer");
 
-		var result = await controller.CreateCertificateVersion(certificateFile, null, certGuid) as OkObjectResult;
+		var result = await controller.CreateCertificateVersion(certificateFile, null, certGuid, CertificateFormat.CER) as OkObjectResult;
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual(200, result.StatusCode);
@@ -120,18 +120,6 @@ public class CertificateVersionControllerTests
 
 		using var responseCertificate = new X509Certificate2(certificateVersion.RawCertificate, (SecureString?)null, X509KeyStorageFlags.EphemeralKeySet);
 		Assert.IsNull(responseCertificate.GetRSAPrivateKey());
-	}
-
-	[TestMethod]
-	public async Task CreateCertificateVersion_ReturnsBadRequest_WhenInvalidFileExtensionProvided()
-	{
-		var certificateBytes = File.ReadAllBytes(GetCertificatePath("TestCertificate.cer"));
-		var certificateFile = new FormFile(new MemoryStream(certificateBytes), 0, certificateBytes.Length, "CertificateFile", "InvalidCertificate.txt");
-
-		var result = await controller.CreateCertificateVersion(certificateFile, null, Guid.NewGuid()) as BadRequestResult;
-
-		Assert.IsNotNull(result);
-		Assert.AreEqual(400, result.StatusCode);
 	}
 
 	[TestMethod]

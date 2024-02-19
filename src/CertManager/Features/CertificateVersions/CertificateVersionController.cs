@@ -1,9 +1,9 @@
+using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using CertManager.Database;
 using CertManager.Features.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CertManager.Features.CertificateVersions;
 
@@ -13,10 +13,12 @@ namespace CertManager.Features.CertificateVersions;
 public class CertificateVersionController : ControllerBase
 {
 	private readonly CertManagerContext certManagerContext;
+	private readonly CertificateVersionService certificateVersionService;
 
-	public CertificateVersionController(CertManagerContext certManagerContext)
+	public CertificateVersionController(CertManagerContext certManagerContext, CertificateVersionService certificateVersionService)
 	{
 		this.certManagerContext = certManagerContext;
+		this.certificateVersionService = certificateVersionService;
 	}
 
 	[HttpPost("CertificateVersion", Name = nameof(CreateCertificateVersion))]
@@ -24,56 +26,20 @@ public class CertificateVersionController : ControllerBase
 	[ProducesResponseType(400)]
 	[ProducesResponseType(404)]
 	[RequiredScope(AuthenticationScopes.WriteScope)]
-	public async Task<IActionResult> CreateCertificateVersion(IFormFile Certificate, string? Password, Guid CertificateId)
+	public async Task<IActionResult> CreateCertificateVersion(IFormFile Certificate, SecureString? Password, Guid CertificateId, CertificateFormat certificateType)
 	{
-		var extension = Path.GetExtension(Certificate.FileName);
-		if (extension != ".pfx" && extension != ".cer") return BadRequest();
-
-		byte[] bytes = new byte[Certificate.Length];
-		using (var reader = Certificate.OpenReadStream())
+		using X509Certificate2 cert = certificateType switch
 		{
-			await reader.ReadExactlyAsync(bytes, 0, (int)Certificate.Length);
-		}
-
-		byte[] certBytes;
-		X509Certificate2 cert;
-		if (extension == ".cer")
-		{
-			cert = new X509Certificate2(bytes, (string?)null, X509KeyStorageFlags.EphemeralKeySet);
-			certBytes = cert.Export(X509ContentType.Cert);
-		}
-		else
-		{
-			cert = new X509Certificate2(bytes, Password, X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable);
-			certBytes = cert.Export(X509ContentType.Pkcs12);
-		}
-
-		CertificateVersion newCertVersion = new()
-		{
-			ActivationDate = DateTime.UtcNow,
-			CertificateId = CertificateId,
-			Cn = cert.GetNameInfo(X509NameType.SimpleName, false),
-			ExpiryDate = cert.NotAfter.ToUniversalTime(),
-			IssuerName = cert.IssuerName.Name,
-			Thumbprint = cert.Thumbprint,
-			RawCertificate = certBytes,
+			CertificateFormat.PFX => await Certificate.ReadPfxCertificateAsync(Password),
+			CertificateFormat.CER => await Certificate.ReadCerCertificateAsync(),
+			CertificateFormat.PEM => await Certificate.ReadPemCertificateAsync(),
+			_ => throw new BadHttpRequestException($"Unrecognized cert type {certificateType}")
 		};
+		var newCertVersion = await certificateVersionService.AddCertificateVersion(CertificateId, cert);
 
-		certManagerContext.CertificateVersions.Add(newCertVersion);
-		await certManagerContext.SaveChangesAsync();
-
-		return Ok(new CertificateVersionModel
-		{
-			ActivationDate = newCertVersion.ActivationDate,
-			Cn = newCertVersion.Cn,
-			ExpiryDate = newCertVersion.ExpiryDate,
-			IssuerName = newCertVersion.IssuerName,
-			Thumbprint = newCertVersion.Thumbprint,
-			RawCertificate = newCertVersion.RawCertificate,
-			CertificateId = newCertVersion.CertificateId,
-			CertificateVersionId = newCertVersion.CertificateVersionId
-		});
+		return Ok(newCertVersion);
 	}
+
 
 	[HttpGet("CertificateVersions/{id}", Name = nameof(GetCertificateVersionById))]
 	[ProducesResponseType(typeof(CertificateVersionModel), 200)]
@@ -81,20 +47,7 @@ public class CertificateVersionController : ControllerBase
 	[RequiredScope(AuthenticationScopes.ReadScope)]
 	public async Task<IActionResult> GetCertificateVersionById(Guid id)
 	{
-		var certVersion = await certManagerContext.CertificateVersions
-				.Include(x => x.Certificate)
-				.Select(x => new CertificateVersionModel
-				{
-					ActivationDate = x.ActivationDate,
-					Cn = x.Cn,
-					ExpiryDate = x.ExpiryDate,
-					IssuerName = x.IssuerName,
-					Thumbprint = x.Thumbprint,
-					RawCertificate = x.RawCertificate,
-					CertificateId = x.Certificate.CertificateId,
-					CertificateVersionId = x.CertificateVersionId
-				})
-				.FirstOrDefaultAsync(x => x.CertificateVersionId == id);
+		var certVersion = (await certificateVersionService.GetCertificateVersions([id])).SingleOrDefault();
 
 		if (certVersion == null) return NotFound();
 		return Ok(certVersion);
@@ -106,7 +59,7 @@ public class CertificateVersionController : ControllerBase
 	[RequiredScope(AuthenticationScopes.WriteScope)]
 	public async Task<IActionResult> DeleteCertificateVersion(Guid id)
 	{
-		int rowsDeleted = await certManagerContext.CertificateVersions.Where(x => x.CertificateVersionId == id).ExecuteDeleteAsync();
+		int rowsDeleted = await certificateVersionService.DeleteCertificateVersion(id);
 		if (rowsDeleted > 0) return Ok();
 
 		return NotFound();
@@ -115,31 +68,20 @@ public class CertificateVersionController : ControllerBase
 	[HttpGet("CertificateVersions", Name = nameof(GetCertificateVersions))]
 	[ProducesResponseType(typeof(List<CertificateVersionModel>), 200)]
 	[RequiredScope(AuthenticationScopes.ReadScope)]
-	public async Task<IActionResult> GetCertificateVersions([FromQuery] List<Guid> CertificateIds, [FromQuery] DateTime? MinimumExpirationTimeUTC = null)
+	public async Task<IActionResult> GetCertificateVersions(
+		[FromQuery] List<Guid> CertificateIds,
+		[FromQuery] DateTime? MinimumUtcExpirationTime,
+		[FromQuery] DateTime? MaximumUtcExpirationTime,
+		[FromQuery] DateTime? MinimumUtcActivationTime,
+		[FromQuery] DateTime? MaximumUtcActivationTime
+	)
 	{
-		var query = certManagerContext.CertificateVersions.AsQueryable();
-
-		if(CertificateIds.Any()){
-			query = query.Where(x => CertificateIds.Contains(x.CertificateId));
-		}
-
-		if(MinimumExpirationTimeUTC != null){
-			query = query.Where(x => x.ExpiryDate > MinimumExpirationTimeUTC);
-		}
-		
-		var results = await query
-				.Select(x => new CertificateVersionModel
-				{
-					ActivationDate = x.ActivationDate,
-					Cn = x.Cn,
-					ExpiryDate = x.ExpiryDate,
-					IssuerName = x.IssuerName,
-					Thumbprint = x.Thumbprint,
-					RawCertificate = x.RawCertificate,
-					CertificateId = x.CertificateId,
-					CertificateVersionId = x.CertificateVersionId
-				})
-				.ToListAsync();
+		var results = await certificateVersionService.GetCertificateVersions(
+			CertificateIds,
+			MinimumUtcExpirationTime,
+			MaximumUtcExpirationTime,
+			MinimumUtcActivationTime,
+			MaximumUtcActivationTime);
 
 		return Ok(results);
 	}

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using CertManager;
 using CertManager.Database;
 using CertManager.Features.Authentication;
@@ -17,7 +18,8 @@ internal class Program
 			config.ReadFrom.Configuration(context.Configuration);
 		});
 		builder.Services.AddHealthChecks();
-		builder.Services.AddControllers();
+		builder.Services.AddControllers()
+				.AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 		builder.Services.AddEndpointsApiExplorer();
 		builder.Services.AddSwaggerGen(c =>
 		{
