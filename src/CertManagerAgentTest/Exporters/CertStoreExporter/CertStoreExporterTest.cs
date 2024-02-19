@@ -1,11 +1,10 @@
 using System.Security.Cryptography.X509Certificates;
-using CertManagerAgent.Exporters.CertStoreExporter;
 using CertManagerAgent.Lib.CertificateStoreAbstraction;
 using CertManagerClient;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace CertManagerTest.Features.CertificateVersions;
+namespace CertManagerAgentTest.Exporters.CertStoreExporter;
 
 public class InMemoryCertStoreWrapper : ICertStoreWrapper
 {
@@ -25,7 +24,7 @@ public class CertStoreExporterTest
 	private readonly Task<ICollection<CertificateModelWithId>> defaultCertificate;
 	private readonly Task<ICollection<CertificateVersionModel>> defaultCertificateVersions;
 	private readonly Mock<IGeneratedCertManagerClient> mock;
-	private readonly CertStoreExporter certStoreExporter;
+	private readonly CertManagerAgent.Exporters.CertStoreExporter.CertStoreExporter certStoreExporter;
 	private readonly InMemoryCertStoreWrapper certStoreWrapper;
 	public CertStoreExporterTest()
 	{
@@ -66,7 +65,10 @@ public class CertStoreExporterTest
 		mock.Setup(l =>
 				l.GetCertificateVersionsAsync(
 					It.IsAny<IEnumerable<Guid>>(),
-					It.IsAny<DateTimeOffset>(),
+					It.IsAny<DateTimeOffset?>(),
+					It.IsAny<DateTimeOffset?>(),
+					It.IsAny<DateTimeOffset?>(),
+					It.IsAny<DateTimeOffset?>(),
 					It.IsAny<CancellationToken>())
 		).Returns(
 			defaultCertificateVersions
@@ -84,7 +86,7 @@ public class CertStoreExporterTest
 		certStoreExporter = new(
 			mock.Object,
 			factoryMock.Object,
-			Mock.Of<ILogger<CertStoreExporter>>()
+			Mock.Of<ILogger<CertManagerAgent.Exporters.CertStoreExporter.CertStoreExporter>>()
 		);
 	}
 

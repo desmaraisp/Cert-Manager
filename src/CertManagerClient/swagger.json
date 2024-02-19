@@ -321,6 +321,14 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "certificateType",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/CertificateFormat"
+            }
           }
         ],
         "requestBody": {
@@ -532,7 +540,34 @@
             }
           },
           {
-            "name": "MinimumExpirationTimeUTC",
+            "name": "MinimumUtcExpirationTime",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "MaximumUtcExpirationTime",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "MinimumUtcActivationTime",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "MaximumUtcActivationTime",
             "in": "query",
             "style": "form",
             "schema": {
@@ -577,6 +612,14 @@
   },
   "components": {
     "schemas": {
+      "CertificateFormat": {
+        "enum": [
+          "PEM",
+          "PFX",
+          "CER"
+        ],
+        "type": "string"
+      },
       "CertificateModel": {
         "type": "object",
         "properties": {

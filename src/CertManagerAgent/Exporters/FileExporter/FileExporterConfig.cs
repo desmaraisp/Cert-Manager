@@ -4,6 +4,7 @@ public enum ExportFormat {
 	PEM_Encoded_PKCS1_PrivateKey,
 	PEM_Encoded_PKCS8_PrivateKey,
 	RSA_PublicKey,
+	PEM_Encoded_CertificateWithoutPrivateKey,
 	PFX,
 	CER
 }

@@ -6,7 +6,7 @@ using CertManagerClient;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace CertManagerTest.Features.CertificateVersions;
+namespace CertManagerAgentTest.Exporters.FileExporter;
 
 [TestClass]
 public class FileExporterTest
@@ -16,7 +16,7 @@ public class FileExporterTest
 	private readonly Task<ICollection<CertificateModelWithId>> defaultCertificate;
 	private readonly Task<ICollection<CertificateVersionModel>> defaultCertificateVersions;
 	private readonly Mock<IGeneratedCertManagerClient> mock;
-	private readonly FileExporter fileExporter;
+	private readonly CertManagerAgent.Exporters.FileExporter.FileExporter fileExporter;
 	public FileExporterTest()
 	{
 		TestCertificate = new X509Certificate2(
@@ -57,7 +57,10 @@ public class FileExporterTest
 		mock.Setup(l =>
 			l.GetCertificateVersionsAsync(
 				It.IsAny<IEnumerable<Guid>>(),
-				It.IsAny<DateTimeOffset>(),
+				It.IsAny<DateTimeOffset?>(),
+				It.IsAny<DateTimeOffset?>(),
+				It.IsAny<DateTimeOffset?>(),
+				It.IsAny<DateTimeOffset?>(),
 				It.IsAny<CancellationToken>())
 		).Returns(
 			defaultCertificateVersions
@@ -65,7 +68,7 @@ public class FileExporterTest
 
 		fileExporter = new(mock.Object,
 					 fileSystem,
-					 Mock.Of<ILogger<FileExporter>>()
+					 Mock.Of<ILogger<CertManagerAgent.Exporters.FileExporter.FileExporter>>()
 		);
 	}
 
@@ -93,6 +96,27 @@ public class FileExporterTest
 		using var newCert = new X509Certificate2(bytes, (string?)null, X509KeyStorageFlags.EphemeralKeySet);
 		Assert.IsTrue(TestCertificate.RawData.SequenceEqual(newCert.RawData));
 		Assert.AreEqual(TestCertificate.Subject, newCert.Subject);
+	}
+
+	[TestMethod]
+	public async Task TestPemExportWithoutPrivateKey()
+	{
+		await fileExporter.ExportCertificates(new()
+		{
+			OutputDirectory = "C:/TestDir",
+			ExportFormat = ExportFormat.PEM_Encoded_CertificateWithoutPrivateKey,
+			CertificateSearchBehavior = CertificateSearchBehavior.MatchAll,
+			TagFilters = []
+		}, CancellationToken.None);
+
+		string path = $"C:/TestDir/{defaultCertificateVersions.Result.First().CertificateVersionId}.pem";
+		Assert.IsTrue(fileSystem.File.Exists(path));
+
+		var bytes = fileSystem.File.ReadAllBytes(path);
+		using var newCert = new X509Certificate2(bytes, (string?)null, X509KeyStorageFlags.EphemeralKeySet);
+		Assert.IsTrue(TestCertificate.RawData.SequenceEqual(newCert.RawData));
+		Assert.AreEqual(TestCertificate.Subject, newCert.Subject);
+		Assert.IsNull(newCert.GetRSAPrivateKey());
 	}
 
 	[TestMethod]
@@ -127,7 +151,7 @@ public class FileExporterTest
 	{
 		var testPem = File.ReadAllText(
 			GetCertificatePath(
-				"TestCertificate.pem"
+				"TestCertificate_PublicKey.pem"
 			)
 		);
 
@@ -151,7 +175,7 @@ public class FileExporterTest
 	{
 		var testKey = File.ReadAllText(
 			GetCertificatePath(
-				"TestCertificate.pkcs1.key"
+				"TestCertificate_PrivateKey.pkcs1.key"
 			)
 		);
 
@@ -175,7 +199,7 @@ public class FileExporterTest
 	{
 		var testKey = File.ReadAllText(
 			GetCertificatePath(
-				"TestCertificate.pkcs8.key"
+				"TestCertificate_PrivateKey.pkcs8.key"
 			)
 		);
 

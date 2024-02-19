@@ -16,7 +16,14 @@ public class CertStoreExporter(
 	public async Task ExportCertificates(CertStoreExporterConfig ExporterConfiguration, CancellationToken CancellationToken)
 	{
 		var certificates = await client.GetAllCertificatesAsync(ExporterConfiguration.TagFilters, ExporterConfiguration.CertificateSearchBehavior, CancellationToken);
-		var certificateVersions = await client.GetCertificateVersionsAsync(certificates.Select(x => x.CertificateId), DateTimeOffset.UtcNow.AddDays(2), CancellationToken);
+		var certificateVersions = await client.GetCertificateVersionsAsync(
+			certificates.Select(x => x.CertificateId),
+			minimumUtcExpirationTime: DateTimeOffset.UtcNow.AddDays(2),
+			null,
+			null,
+			null,
+			cancellationToken: CancellationToken
+		);
 
 		ExportCertificateToCertStoreAsync(certificateVersions.ToList(), ExporterConfiguration);
 	}

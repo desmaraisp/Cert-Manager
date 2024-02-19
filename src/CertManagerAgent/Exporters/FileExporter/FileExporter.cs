@@ -18,7 +18,14 @@ public class FileExporter(
 	{
 		var certificates = await client.GetAllCertificatesAsync(ExporterConfiguration.TagFilters, ExporterConfiguration.CertificateSearchBehavior, CancellationToken);
 
-		var certificateVersions = await client.GetCertificateVersionsAsync(certificates.Select(x => x.CertificateId), DateTimeOffset.UtcNow.AddDays(2), CancellationToken);
+		var certificateVersions = await client.GetCertificateVersionsAsync(
+			certificates.Select(x => x.CertificateId),
+			minimumUtcExpirationTime: DateTimeOffset.UtcNow.AddDays(2),
+			null,
+			null,
+			null,
+			cancellationToken: CancellationToken
+		);
 
 		foreach (var certificateVersion in certificateVersions)
 		{
@@ -44,6 +51,7 @@ public class FileExporter(
 			ExportFormat.RSA_PublicKey => ExportRSAPublicKeyAsync(certificate, CertificateVersion.CertificateVersionId, OutputDirectory),
 			ExportFormat.PEM_Encoded_PKCS1_PrivateKey => Export_PEM_Encoded_PKCS1_PrivateKeyAsync(certificate, CertificateVersion.CertificateVersionId, OutputDirectory),
 			ExportFormat.PEM_Encoded_PKCS8_PrivateKey => Export_PEM_Encoded_PKCS8_PrivateKeyAsync(certificate, CertificateVersion.CertificateVersionId, OutputDirectory),
+			ExportFormat.PEM_Encoded_CertificateWithoutPrivateKey => ExportPEMEncodedCertAsync(certificate, CertificateVersion.CertificateVersionId, OutputDirectory),
 			_ => throw new NotImplementedException(),
 		};
 		await task;
@@ -101,6 +109,15 @@ public class FileExporter(
 			Path.Combine(OutputDirectory, cert.FriendlyName + CertificateVersionId + ".pem")
 		);
 		await outputFile.WriteAsync(pubKeyPem);
+	}
+	private async Task ExportPEMEncodedCertAsync(X509Certificate2 cert, Guid CertificateVersionId, string OutputDirectory)
+	{
+		var pem = cert.ExportCertificatePem();
+
+		using var outputFile = fileSystem.File.CreateText(
+			Path.Combine(OutputDirectory, cert.FriendlyName + CertificateVersionId + ".pem")
+		);
+		await outputFile.WriteAsync(pem);
 	}
 	private async Task ExportToPFXAsync(X509Certificate2 cert, Guid CertificateVersionId, string OutputDirectory)
 	{
