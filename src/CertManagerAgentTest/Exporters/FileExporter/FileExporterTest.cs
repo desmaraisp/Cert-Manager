@@ -66,9 +66,10 @@ public class FileExporterTest
 			defaultCertificateVersions
 		);
 
-		fileExporter = new(mock.Object,
-					 fileSystem,
-					 Mock.Of<ILogger<CertManagerAgent.Exporters.FileExporter.FileExporter>>()
+		fileExporter = new(
+			mock.Object,
+			Mock.Of<ILogger<CertManagerAgent.Exporters.FileExporter.FileExporter>>(),
+			fileSystem
 		);
 	}
 
@@ -89,7 +90,7 @@ public class FileExporterTest
 			TagFilters = []
 		}, CancellationToken.None);
 
-		string path = $"C:/TestDir/{defaultCertificateVersions.Result.First().CertificateVersionId}.pfx";
+		string path = $"C:/TestDir/test{defaultCertificateVersions.Result.First().CertificateVersionId}.pfx";
 		Assert.IsTrue(fileSystem.File.Exists(path));
 
 		var bytes = fileSystem.File.ReadAllBytes(path);
@@ -109,7 +110,7 @@ public class FileExporterTest
 			TagFilters = []
 		}, CancellationToken.None);
 
-		string path = $"C:/TestDir/{defaultCertificateVersions.Result.First().CertificateVersionId}.pem";
+		string path = $"C:/TestDir/test{defaultCertificateVersions.Result.First().CertificateVersionId}.pem";
 		Assert.IsTrue(fileSystem.File.Exists(path));
 
 		var bytes = fileSystem.File.ReadAllBytes(path);
@@ -136,7 +137,7 @@ public class FileExporterTest
 			TagFilters = []
 		}, CancellationToken.None);
 
-		string path = $"C:/TestDir/{defaultCertificateVersions.Result.First().CertificateVersionId}.cer";
+		string path = $"C:/TestDir/test{defaultCertificateVersions.Result.First().CertificateVersionId}.cer";
 		Assert.IsTrue(fileSystem.File.Exists(path));
 
 		var bytes = fileSystem.File.ReadAllBytes(path);
@@ -163,7 +164,7 @@ public class FileExporterTest
 			TagFilters = []
 		}, CancellationToken.None);
 
-		string path = $"C:/TestDir/{defaultCertificateVersions.Result.First().CertificateVersionId}.pem";
+		string path = $"C:/TestDir/test{defaultCertificateVersions.Result.First().CertificateVersionId}.pem";
 		Assert.IsTrue(fileSystem.File.Exists(path));
 
 		var certContents = fileSystem.File.ReadAllText(path);
@@ -187,7 +188,7 @@ public class FileExporterTest
 			TagFilters = []
 		}, CancellationToken.None);
 
-		string path = $"C:/TestDir/{defaultCertificateVersions.Result.First().CertificateVersionId}.key";
+		string path = $"C:/TestDir/test{defaultCertificateVersions.Result.First().CertificateVersionId}.key";
 		Assert.IsTrue(fileSystem.File.Exists(path));
 
 		var certContents = fileSystem.File.ReadAllText(path);
@@ -211,7 +212,7 @@ public class FileExporterTest
 			TagFilters = []
 		}, CancellationToken.None);
 
-		string path = $"C:/TestDir/{defaultCertificateVersions.Result.First().CertificateVersionId}.key";
+		string path = $"C:/TestDir/test{defaultCertificateVersions.Result.First().CertificateVersionId}.key";
 		Assert.IsTrue(fileSystem.File.Exists(path));
 
 		var certContents = fileSystem.File.ReadAllText(path);

@@ -12,5 +12,6 @@ public enum ExportFormat {
 
 public class FileExporterConfig : BaseExporterConfig {
 	public string? OutputDirectory { get; set; }
+	public bool AppendCertificateVersionId { get; set; } = true;
 	public ExportFormat ExportFormat { get; set; } = ExportFormat.PFX;
 }

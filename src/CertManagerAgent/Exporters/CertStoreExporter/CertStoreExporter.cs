@@ -4,40 +4,17 @@ using CertManagerClient;
 
 namespace CertManagerAgent.Exporters.CertStoreExporter;
 
-public class CertStoreExporter(
-	IGeneratedCertManagerClient client,
-	ICertStoreWrapperFactory certStoreWrapperFactory,
-	ILogger<CertStoreExporter> logger) : IExporter<CertStoreExporterConfig>
+public class CertStoreExporter(IGeneratedCertManagerClient client, ILogger<BaseExporter<CertStoreExporterConfig>> logger, ICertStoreWrapperFactory certStoreWrapperFactory) : BaseExporter<CertStoreExporterConfig>(client, logger)
 {
-	private readonly IGeneratedCertManagerClient client = client;
-	private readonly ILogger<CertStoreExporter> logger = logger;
 	private readonly ICertStoreWrapperFactory certStoreWrapperFactory = certStoreWrapperFactory;
 
-	public async Task ExportCertificates(CertStoreExporterConfig ExporterConfiguration, CancellationToken CancellationToken)
+	protected override Task ExportCertificateVersion(CertificateVersionModel certificateVersion, CertStoreExporterConfig ExporterConfig)
 	{
-		var certificates = await client.GetAllCertificatesAsync(ExporterConfiguration.TagFilters, ExporterConfiguration.CertificateSearchBehavior, CancellationToken);
-		var certificateVersions = await client.GetCertificateVersionsAsync(
-			certificates.Select(x => x.CertificateId),
-			minimumUtcExpirationTime: DateTimeOffset.UtcNow.AddDays(2),
-			null,
-			null,
-			null,
-			cancellationToken: CancellationToken
-		);
+		using ICertStoreWrapper certStore = certStoreWrapperFactory.CreateCertStoreWrapper(ExporterConfig.StoreName, ExporterConfig.StoreLocation);
+		using var certificate = new X509Certificate2(certificateVersion.RawCertificate, (string?)null, X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable);
 
-		ExportCertificateToCertStoreAsync(certificateVersions.ToList(), ExporterConfiguration);
-	}
-
-	private void ExportCertificateToCertStoreAsync(List<CertificateVersionModel> CertificateVersions, CertStoreExporterConfig certStoreExporterConfig)
-	{
-		using ICertStoreWrapper certStore = certStoreWrapperFactory.CreateCertStoreWrapper(certStoreExporterConfig.StoreName, certStoreExporterConfig.StoreLocation);
-
-		foreach (var certificateVersion in CertificateVersions)
-		{
-			using var certificate = new X509Certificate2(certificateVersion.RawCertificate, (string?)null, X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable);
-
-			logger.LogInformation("Exported certificate {cert} to cert store", certificate.Subject);
-			certStore.AddCertificate(certificate);
-		}
+		logger.LogInformation("Exported certificate {cert} to cert store", certificate.Subject);
+		certStore.AddCertificate(certificate);
+		return Task.CompletedTask;
 	}
 }

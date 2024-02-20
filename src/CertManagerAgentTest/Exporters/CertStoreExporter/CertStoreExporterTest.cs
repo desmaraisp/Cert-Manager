@@ -85,8 +85,8 @@ public class CertStoreExporterTest
 
 		certStoreExporter = new(
 			mock.Object,
-			factoryMock.Object,
-			Mock.Of<ILogger<CertManagerAgent.Exporters.CertStoreExporter.CertStoreExporter>>()
+			Mock.Of<ILogger<CertManagerAgent.Exporters.CertStoreExporter.CertStoreExporter>>(),
+			factoryMock.Object
 		);
 	}
 
