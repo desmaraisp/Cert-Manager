@@ -41,6 +41,41 @@ namespace CertManager.Migrations.Postgresql.Migrations
                     b.ToTable("Certificates");
                 });
 
+            modelBuilder.Entity("CertManager.Database.CertificateRenewalSubscription", b =>
+                {
+                    b.Property<Guid>("SubscriptionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CertificateCommonName")
+                        .IsRequired()
+                        .HasMaxLength(75)
+                        .HasColumnType("character varying(75)");
+
+                    b.Property<string>("CertificateSubject")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<Guid>("DestinationCertificateId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ParentCertificateId")
+                        .HasColumnType("uuid");
+
+                    b.Property<TimeSpan>("RenewalOffsetBeforeExpiration")
+                        .HasColumnType("interval");
+
+                    b.HasKey("SubscriptionId");
+
+                    b.HasIndex("DestinationCertificateId")
+                        .IsUnique();
+
+                    b.HasIndex("ParentCertificateId");
+
+                    b.ToTable("CertificateRenewalSubscriptions");
+                });
+
             modelBuilder.Entity("CertManager.Database.CertificateTag", b =>
                 {
                     b.Property<Guid>("CertificateTagId")
@@ -52,7 +87,8 @@ namespace CertManager.Migrations.Postgresql.Migrations
 
                     b.Property<string>("Tag")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("CertificateTagId");
 
@@ -101,6 +137,25 @@ namespace CertManager.Migrations.Postgresql.Migrations
                     b.HasIndex("CertificateId");
 
                     b.ToTable("CertificateVersions");
+                });
+
+            modelBuilder.Entity("CertManager.Database.CertificateRenewalSubscription", b =>
+                {
+                    b.HasOne("CertManager.Database.Certificate", "DestinationCertificate")
+                        .WithMany()
+                        .HasForeignKey("DestinationCertificateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CertManager.Database.Certificate", "ParentCertificate")
+                        .WithMany()
+                        .HasForeignKey("ParentCertificateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DestinationCertificate");
+
+                    b.Navigation("ParentCertificate");
                 });
 
             modelBuilder.Entity("CertManager.Database.CertificateTag", b =>
