@@ -4,6 +4,7 @@ public class CertificateModel
 {
 	public required string CertificateName { get; init; }
 	public required List<string> Tags { get; init; }
+	public required string? CertificateDescription { get; init; }
 }
 
 public class CertificateModelWithId : CertificateModel

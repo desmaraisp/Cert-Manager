@@ -23,6 +23,7 @@ public class CertificateControllerTests
 	{
 		var payload = new CertificateModel
 		{
+			CertificateDescription = null,
 			CertificateName = "TestCertificate",
 			Tags = new List<string> { "Tag1", "Tag2" }
 		};
@@ -44,8 +45,9 @@ public class CertificateControllerTests
 	{
 		context.Certificates.Add(new()
 		{
+			CertificateDescription = null,
 			CertificateName = "TestCertificate",
-			CertificateTags = new List<CertificateTag>()
+			CertificateTags = []
 		});
 		await context.SaveChangesAsync();
 
@@ -53,6 +55,7 @@ public class CertificateControllerTests
 		{
 			await controller.CreateCertificate(new CertificateModel
 			{
+				CertificateDescription = null,
 				CertificateName = "TestCertificate",
 				Tags = new List<string>()
 			});
@@ -71,7 +74,7 @@ public class CertificateControllerTests
 	[TestMethod]
 	public async Task GetCertificateById_ReturnsOkResult_WhenCertificateExists()
 	{
-		var sampleCertificate = new Certificate { CertificateId = Guid.NewGuid(), CertificateName = "" };
+		var sampleCertificate = new Certificate { CertificateDescription = null, CertificateId = Guid.NewGuid(), CertificateName = "" };
 		context.Certificates.Add(sampleCertificate);
 		await context.SaveChangesAsync();
 
@@ -100,9 +103,10 @@ public class CertificateControllerTests
 	{
 		var sampleCertificate = new Certificate
 		{
+			CertificateDescription = null,
 			CertificateId = Guid.NewGuid(),
 			CertificateName = "OldCertificateName",
-			CertificateTags = new List<CertificateTag> { new CertificateTag { Tag = "OldTag", CertificateId = Guid.NewGuid() } }
+			CertificateTags = [new CertificateTag { Tag = "OldTag", CertificateId = Guid.NewGuid() }]
 		};
 		context.Certificates.Add(sampleCertificate);
 		await context.SaveChangesAsync();
@@ -110,8 +114,9 @@ public class CertificateControllerTests
 
 		var payload = new CertificateModel
 		{
+			CertificateDescription = null,
 			CertificateName = "NewCertificateName",
-			Tags = new List<string> { "NewTag1", "NewTag2" }
+			Tags = ["NewTag1", "NewTag2"]
 		};
 
 		var result = await controller.EditCertificateById(payload, sampleCertificate.CertificateId) as OkObjectResult;
@@ -139,8 +144,9 @@ public class CertificateControllerTests
 	{
 		var payload = new CertificateModel
 		{
+			CertificateDescription = null,
 			CertificateName = "NewCertificateName",
-			Tags = new List<string> { "NewTag1", "NewTag2" }
+			Tags = ["NewTag1", "NewTag2"]
 		};
 
 		var result = await controller.EditCertificateById(payload, Guid.NewGuid()) as NotFoundResult;
@@ -157,15 +163,17 @@ public class CertificateControllerTests
 		{
 			new Certificate
 			{
+				CertificateDescription = null,
 				CertificateId = Guid.NewGuid(),
 				CertificateName = "Certificate1",
-				CertificateTags = new List<CertificateTag>()
+				CertificateTags = []
 			},
 			new Certificate
 			{
+				CertificateDescription = null,
 				CertificateId = Guid.NewGuid(),
 				CertificateName = "Certificate2",
-				CertificateTags = new List<CertificateTag>()
+				CertificateTags = []
 			}
 		};
 
@@ -189,12 +197,14 @@ public class CertificateControllerTests
 			{
 				new Certificate
 				{
+					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
 					CertificateName = "Certificate1",
 					CertificateTags = new List<CertificateTag> { new CertificateTag { Tag = "Tag1" } }
 				},
 				new Certificate
 				{
+					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
 					CertificateName = "Certificate2",
 					CertificateTags = new List<CertificateTag> { new CertificateTag { Tag = "Tag2" } }
@@ -220,12 +230,14 @@ public class CertificateControllerTests
 			{
 				new Certificate
 				{
+					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
 					CertificateName = "Certificate1",
 					CertificateTags = new List<CertificateTag> { new() { Tag = "Tag1" } }
 				},
 				new Certificate
 				{
+					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
 					CertificateName = "Certificate2",
 					CertificateTags = new List<CertificateTag> { new() { Tag = "Tag2" } }
@@ -251,12 +263,14 @@ public class CertificateControllerTests
 			{
 				new Certificate
 				{
+					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
 					CertificateName = "Certificate1",
 					CertificateTags = new List<CertificateTag> { new() { Tag = "Tag1" },  new() { Tag = "Tag2" } }
 				},
 				new Certificate
 				{
+					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
 					CertificateName = "Certificate2",
 					CertificateTags = new List<CertificateTag> { new() { Tag = "Tag2" } }
@@ -282,18 +296,21 @@ public class CertificateControllerTests
 			{
 				new Certificate
 				{
+					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
 					CertificateName = "Certificate0",
 					CertificateTags = new List<CertificateTag> { new() { Tag = "Tag1" },  new() { Tag = "Tag3" } }
 				},
 				new Certificate
 				{
+					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
 					CertificateName = "Certificate1",
 					CertificateTags = new List<CertificateTag> { new() { Tag = "Tag3" } }
 				},
 				new Certificate
 				{
+					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
 					CertificateName = "Certificate2",
 					CertificateTags = new List<CertificateTag> { new() { Tag = "Tag2" },  new() { Tag = "Tag3" } }
@@ -315,7 +332,7 @@ public class CertificateControllerTests
 	[TestMethod]
 	public async Task DeleteCertificateById_ReturnsOkResult_WhenCertificateExists()
 	{
-		var sampleCertificate = new Certificate { CertificateId = Guid.NewGuid(), CertificateName = "" };
+		var sampleCertificate = new Certificate { CertificateDescription = null, CertificateId = Guid.NewGuid(), CertificateName = "" };
 		context.Certificates.Add(sampleCertificate);
 		await context.SaveChangesAsync();
 

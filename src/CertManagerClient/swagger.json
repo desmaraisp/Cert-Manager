@@ -854,6 +854,10 @@
               "type": "string"
             },
             "nullable": true
+          },
+          "certificateDescription": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -870,6 +874,10 @@
             "items": {
               "type": "string"
             },
+            "nullable": true
+          },
+          "certificateDescription": {
+            "type": "string",
             "nullable": true
           },
           "certificateId": {

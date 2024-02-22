@@ -28,6 +28,10 @@ namespace CertManager.Migrations.Postgresql.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("CertificateDescription")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
                     b.Property<string>("CertificateName")
                         .IsRequired()
                         .HasMaxLength(100)

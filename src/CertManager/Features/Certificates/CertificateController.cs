@@ -9,15 +9,9 @@ namespace CertManager.Features.Certificates;
 [ApiController]
 [Authorize]
 [Route("api/v1")]
-public class CertificateController : ControllerBase
+public class CertificateController(CertManagerContext certManagerContext) : ControllerBase
 {
-	private readonly CertManagerContext certManagerContext;
-
-	public CertificateController(CertManagerContext certManagerContext)
-	{
-		this.certManagerContext = certManagerContext;
-	}
-
+	private readonly CertManagerContext certManagerContext = certManagerContext;
 
 	[HttpPost("Certificate", Name = nameof(CreateCertificate))]
 	[ProducesResponseType(typeof(CertificateModelWithId), 200)]
@@ -27,6 +21,7 @@ public class CertificateController : ControllerBase
 		Certificate newCertificate = new()
 		{
 			CertificateName = payload.CertificateName,
+			CertificateDescription = payload.CertificateDescription,
 			CertificateTags = payload.Tags.ConvertAll(x => new CertificateTag { Tag = x }),
 		};
 		certManagerContext.Certificates.Add(newCertificate);
@@ -36,6 +31,7 @@ public class CertificateController : ControllerBase
 		{
 			CertificateName = newCertificate.CertificateName,
 			CertificateId = newCertificate.CertificateId,
+			CertificateDescription = newCertificate.CertificateDescription,
 			Tags = newCertificate.CertificateTags.Select(x => x.Tag).ToList()
 		});
 	}
@@ -52,6 +48,7 @@ public class CertificateController : ControllerBase
 		return Ok(new CertificateModelWithId
 		{
 			CertificateName = foundCertificate.CertificateName,
+			CertificateDescription = foundCertificate.CertificateDescription,
 			CertificateId = foundCertificate.CertificateId,
 			Tags = foundCertificate.CertificateTags.Select(x => x.Tag).ToList()
 		});
@@ -75,6 +72,7 @@ public class CertificateController : ControllerBase
 
 		return Ok(new CertificateModelWithId
 		{
+			CertificateDescription = payload.CertificateDescription,
 			CertificateName = payload.CertificateName,
 			CertificateId = id,
 			Tags = payload.Tags
@@ -102,6 +100,7 @@ public class CertificateController : ControllerBase
 		var certificates = await query
 			.Select(x => new CertificateModelWithId
 			{
+				CertificateDescription = x.CertificateDescription,
 				Tags = x.CertificateTags.Select(x => x.Tag).ToList(),
 				CertificateName = x.CertificateName,
 				CertificateId = x.CertificateId
