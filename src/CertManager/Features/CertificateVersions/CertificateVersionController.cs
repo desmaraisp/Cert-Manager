@@ -24,7 +24,6 @@ public class CertificateVersionController : ControllerBase
 	[HttpPost("CertificateVersion", Name = nameof(CreateCertificateVersion))]
 	[ProducesResponseType(typeof(CertificateVersionModel), 200)]
 	[ProducesResponseType(400)]
-	[ProducesResponseType(404)]
 	[RequiredScope(AuthenticationScopes.WriteScope)]
 	public async Task<IActionResult> CreateCertificateVersion(IFormFile Certificate, string? Password, Guid CertificateId, CertificateFormat certificateType)
 	{
@@ -35,6 +34,16 @@ public class CertificateVersionController : ControllerBase
 			CertificateFormat.PEM => await Certificate.ReadCertificateAsync(null),
 			_ => throw new BadHttpRequestException($"Unrecognized cert type {certificateType}")
 		};
+		var allowCA = cert.Extensions.OfType<X509BasicConstraintsExtension>().FirstOrDefault()?.CertificateAuthority;
+		var hasCAKeyUsageFlag = cert.Extensions.OfType<X509KeyUsageExtension>().FirstOrDefault()?.KeyUsages.HasFlag(X509KeyUsageFlags.KeyCertSign);
+
+		// Since we don't allow editing IsCertificateAuthority, no need to do any concurrency handling here
+		var certificateData = await certManagerContext.Certificates.FindAsync(CertificateId);
+		if ((certificateData?.IsCertificateAuthority ?? true) && (allowCA ?? false) && (hasCAKeyUsageFlag ?? false))
+		{
+			return BadRequest("Certificate is missing basic constraint or KeyUsage certificate properties required for it to be used as CA");
+		}
+
 		var newCertVersion = await certificateVersionService.AddCertificateVersion(CertificateId, cert);
 
 		return Ok(newCertVersion);

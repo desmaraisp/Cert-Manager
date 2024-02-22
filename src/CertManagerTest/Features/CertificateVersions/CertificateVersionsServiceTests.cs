@@ -51,7 +51,7 @@ public class CertificateVersionServiceTests
 
 	private async Task<Guid> CreateDefaultCertificate()
 	{
-		Certificate entity = new() { CertificateDescription = null, CertificateId = Guid.NewGuid(), CertificateName = $"certificate1-{Guid.NewGuid()}" };
+		Certificate entity = new() { IsCertificateAuthority = false, CertificateDescription = null, CertificateId = Guid.NewGuid(), CertificateName = $"certificate1-{Guid.NewGuid()}" };
 		context.Certificates.Add(entity);
 		await context.SaveChangesAsync();
 		return entity.CertificateId;

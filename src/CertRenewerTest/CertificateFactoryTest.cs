@@ -9,7 +9,6 @@ public class CertificateFactoryTest
 	private readonly X509Certificate2 TestCertificate;
 	public CertificateFactoryTest()
 	{
-		CertificateFactory.tmp();
 		TestCertificate = new X509Certificate2(
 			GetCertificatePath(
 				"TestCACertificate.pfx"

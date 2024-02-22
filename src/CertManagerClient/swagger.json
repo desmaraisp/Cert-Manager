@@ -236,6 +236,85 @@
             }
           }
         }
+      },
+      "patch": {
+        "tags": [
+          "Certificate"
+        ],
+        "operationId": "EditCertificateById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CertificateUpdateModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CertificateUpdateModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CertificateUpdateModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CertificateModelWithId"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CertificateModelWithId"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CertificateModelWithId"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/Certificates": {
@@ -374,26 +453,6 @@
           },
           "400": {
             "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -844,6 +903,9 @@
       "CertificateModel": {
         "type": "object",
         "properties": {
+          "isCertificateAuthority": {
+            "type": "boolean"
+          },
           "certificateName": {
             "type": "string",
             "nullable": true
@@ -865,6 +927,9 @@
       "CertificateModelWithId": {
         "type": "object",
         "properties": {
+          "isCertificateAuthority": {
+            "type": "boolean"
+          },
           "certificateName": {
             "type": "string",
             "nullable": true
@@ -974,6 +1039,27 @@
           "MatchAny"
         ],
         "type": "string"
+      },
+      "CertificateUpdateModel": {
+        "type": "object",
+        "properties": {
+          "newCertificateName": {
+            "type": "string",
+            "nullable": true
+          },
+          "newTags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "newCertificateDescription": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "CertificateVersionModel": {
         "type": "object",

@@ -20,6 +20,7 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 	{
 		Certificate newCertificate = new()
 		{
+			IsCertificateAuthority = payload.IsCertificateAuthority,
 			CertificateName = payload.CertificateName,
 			CertificateDescription = payload.CertificateDescription,
 			CertificateTags = payload.Tags.ConvertAll(x => new CertificateTag { Tag = x }),
@@ -29,6 +30,7 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 
 		return Ok(new CertificateModelWithId
 		{
+			IsCertificateAuthority = payload.IsCertificateAuthority,
 			CertificateName = newCertificate.CertificateName,
 			CertificateId = newCertificate.CertificateId,
 			CertificateDescription = newCertificate.CertificateDescription,
@@ -47,6 +49,7 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 
 		return Ok(new CertificateModelWithId
 		{
+			IsCertificateAuthority = foundCertificate.IsCertificateAuthority,
 			CertificateName = foundCertificate.CertificateName,
 			CertificateDescription = foundCertificate.CertificateDescription,
 			CertificateId = foundCertificate.CertificateId,
@@ -72,6 +75,7 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 
 		return Ok(new CertificateModelWithId
 		{
+			IsCertificateAuthority = payload.IsCertificateAuthority,
 			CertificateDescription = payload.CertificateDescription,
 			CertificateName = payload.CertificateName,
 			CertificateId = id,
@@ -100,6 +104,7 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 		var certificates = await query
 			.Select(x => new CertificateModelWithId
 			{
+				IsCertificateAuthority = x.IsCertificateAuthority,
 				CertificateDescription = x.CertificateDescription,
 				Tags = x.CertificateTags.Select(x => x.Tag).ToList(),
 				CertificateName = x.CertificateName,
@@ -120,5 +125,26 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 		if (rowsDeleted > 0) return Ok();
 
 		return NotFound();
+	}
+
+	[HttpPatch("Certificates/{id}", Name = nameof(EditCertificateById))]
+	[ProducesResponseType(typeof(CertificateModelWithId), 200)]
+	[ProducesResponseType(404)]
+	[RequiredScope(AuthenticationScopes.WriteScope)]
+	public async Task<IActionResult> EditCertificateById(Guid id, CertificateUpdateModel payload)
+	{
+		var cert = await certManagerContext.Certificates.FindAsync(id);
+		if (cert == null) return NotFound();
+
+		await certManagerContext.SaveChangesAsync();
+
+		return Ok(new CertificateModelWithId
+		{
+			IsCertificateAuthority = cert.IsCertificateAuthority,
+			CertificateDescription = cert.CertificateDescription,
+			Tags = cert.CertificateTags.Select(x => x.Tag).ToList(),
+			CertificateName = cert.CertificateName,
+			CertificateId = cert.CertificateId
+		});
 	}
 }

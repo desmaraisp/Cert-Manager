@@ -37,6 +37,9 @@ namespace CertManager.Migrations.Postgresql.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<bool>("IsCertificateAuthority")
+                        .HasColumnType("boolean");
+
                     b.HasKey("CertificateId");
 
                     b.HasIndex("CertificateName")
