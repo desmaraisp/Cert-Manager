@@ -83,6 +83,7 @@ jobs:
         run: |
           docker build --file "./src/CertManager/Dockerfile" -t desmaraisp/cert-manager:latest .
           docker build --file "./src/CertManagerAgent/Dockerfile" -t desmaraisp/cert-manager-agent:latest .
+          docker build --file "./src/CertRenewer/Dockerfile" -t desmaraisp/cert-manager-renewer:latest .
 
       - name: Create migration image
         run: |
