@@ -23,7 +23,7 @@ public class Main(IExporter<FileExporterConfig> fileExporter,
 		{
 			await fileExporter.ExportCertificates(fileExporterConfig, cancellationToken);
 		}
-		
+
 		logger.LogInformation("Found {x} cert store exporters", options.Value.Exporters.CertStoreExporters.Count);
 		foreach (var certExporterConfig in options.Value.Exporters.CertStoreExporters)
 		{

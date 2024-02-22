@@ -886,9 +886,8 @@
             "type": "string",
             "format": "uuid"
           },
-          "certificateCommonName": {
-            "type": "string",
-            "nullable": true
+          "certificateDuration": {
+            "$ref": "#/components/schemas/TimeSpan"
           },
           "certificateSubject": {
             "type": "string",
@@ -912,9 +911,8 @@
       "CertificateRenewalSubscriptionModel": {
         "type": "object",
         "properties": {
-          "certificateCommonName": {
-            "type": "string",
-            "nullable": true
+          "certificateDuration": {
+            "$ref": "#/components/schemas/TimeSpan"
           },
           "certificateSubject": {
             "type": "string",
@@ -937,9 +935,8 @@
       "CertificateRenewalSubscriptionModelWithId": {
         "type": "object",
         "properties": {
-          "certificateCommonName": {
-            "type": "string",
-            "nullable": true
+          "certificateDuration": {
+            "$ref": "#/components/schemas/TimeSpan"
           },
           "certificateSubject": {
             "type": "string",

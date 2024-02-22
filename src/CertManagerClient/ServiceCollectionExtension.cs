@@ -18,9 +18,10 @@ public static class ServiceCollectionExtension
 
 
 		services.AddClientCredentialsTokenManagement();
-		
+
 		services.AddOptions<OAuthClientOptions>("cert-manager.client")
-				.PostConfigure<IOptions<CertManagerClientOptions>>((oauthOptions, certManagerOptions)=> {
+				.PostConfigure<IOptions<CertManagerClientOptions>>((oauthOptions, certManagerOptions) =>
+				{
 					oauthOptions.Scope = certManagerOptions.Value.Scope;
 					oauthOptions.TokenEndpoint = certManagerOptions.Value.TokenEndpoint;
 					oauthOptions.ClientSecret = certManagerOptions.Value.ClientSecret;

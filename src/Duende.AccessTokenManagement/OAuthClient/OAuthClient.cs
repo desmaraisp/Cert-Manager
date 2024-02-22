@@ -52,7 +52,8 @@ public class OAuthClient : IOAuthClient
 	{
 		using HttpResponseMessage httpResponse = await client.SendAsync(request, cancellationToken);
 
-		if(httpResponse.StatusCode == System.Net.HttpStatusCode.OK){
+		if (httpResponse.StatusCode == System.Net.HttpStatusCode.OK)
+		{
 			using var stream = await httpResponse.Content.ReadAsStreamAsync();
 			var oAuthResponse = await JsonSerializer.DeserializeAsync(stream, TokenSourceGenerationContext.Default.OAuthResponse, cancellationToken);
 			return oAuthResponse ?? throw new HttpRequestException("OAuth client returned null response");

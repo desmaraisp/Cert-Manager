@@ -91,7 +91,8 @@ public class CertificateController : ControllerBase
 		{
 			query = query.Where(x => x.CertificateTags.Any(tag => TagsToSearch.Contains(tag.Tag)));
 		}
-		if(TagsSearchBehavior == CertificateSearchBehavior.MatchAll){
+		if (TagsSearchBehavior == CertificateSearchBehavior.MatchAll)
+		{
 			foreach (var tag in TagsToSearch)
 			{
 				query = query.Where(x => x.CertificateTags.Select(x => x.Tag).Contains(tag));

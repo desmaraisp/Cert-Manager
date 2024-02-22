@@ -2,7 +2,7 @@ namespace CertManager.Features.CertificateRenewal;
 
 public class CertificateRenewalSubscriptionModel
 {
-	public required string CertificateCommonName { get; init; }
+	public required TimeSpan CertificateDuration { get; init; }
 	public required string CertificateSubject { get; init; }
 	public TimeSpan RenewalOffsetBeforeExpiration { get; init; }
 	public required Guid DestinationCertificateId { get; init; }

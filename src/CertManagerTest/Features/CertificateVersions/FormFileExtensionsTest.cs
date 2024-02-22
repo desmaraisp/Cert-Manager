@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace CertManagerTest.Features.CertificateVersions;
 
-public class FormFileExtensionsTest {
+public class FormFileExtensionsTest
+{
 	private readonly X509Certificate2 defaultCertificate;
 
 	public FormFileExtensionsTest()
@@ -23,7 +24,8 @@ public class FormFileExtensionsTest {
 		FileName
 	);
 
-	public async Task TestCerTransformation(){
+	public async Task TestCerTransformation()
+	{
 		var certificateBytes = File.ReadAllBytes(GetCertificatePath("TestCertificate.cer"));
 		IFormFile formFile = new FormFile(new MemoryStream(certificateBytes), 0, certificateBytes.Length, "TestCertificate", "TestCertificate_Password_Is_123.pfx");
 
@@ -32,7 +34,8 @@ public class FormFileExtensionsTest {
 		Assert.AreEqual(defaultCertificate.PublicKey.GetRSAPublicKey(), certificate.PublicKey.GetRSAPublicKey());
 		Assert.IsNull(certificate.GetRSAPrivateKey());
 	}
-	public async Task TestPfxTransformation(){
+	public async Task TestPfxTransformation()
+	{
 		var certificateBytes = File.ReadAllBytes(GetCertificatePath("TestCertificate_Password_Is_123.pfx"));
 		IFormFile formFile = new FormFile(new MemoryStream(certificateBytes), 0, certificateBytes.Length, "TestCertificate", "TestCertificate_Password_Is_123.pfx");
 
@@ -41,7 +44,8 @@ public class FormFileExtensionsTest {
 		Assert.AreEqual(defaultCertificate.PublicKey.GetRSAPublicKey(), certificate.PublicKey.GetRSAPublicKey());
 		Assert.IsNotNull(certificate.GetRSAPrivateKey());
 	}
-	public async Task TestPemTransformation_WithPrivateKey(){
+	public async Task TestPemTransformation_WithPrivateKey()
+	{
 		var certificateBytes = File.ReadAllBytes(GetCertificatePath("TestCertificate_PEM_WithPrivateKey.pem"));
 		IFormFile formFile = new FormFile(new MemoryStream(certificateBytes), 0, certificateBytes.Length, "TestCertificate", "TestCertificate_Password_Is_123.pfx");
 
@@ -50,7 +54,8 @@ public class FormFileExtensionsTest {
 		Assert.AreEqual(defaultCertificate.PublicKey.GetRSAPublicKey(), certificate.PublicKey.GetRSAPublicKey());
 		Assert.IsNotNull(certificate.GetRSAPrivateKey());
 	}
-	public async Task TestPemTransformation_WithoutPrivateKey(){
+	public async Task TestPemTransformation_WithoutPrivateKey()
+	{
 		var certificateBytes = File.ReadAllBytes(GetCertificatePath("TestCertificate_PEM_WithoutPrivateKey.pem"));
 		IFormFile formFile = new FormFile(new MemoryStream(certificateBytes), 0, certificateBytes.Length, "TestCertificate", "TestCertificate_Password_Is_123.pfx");
 

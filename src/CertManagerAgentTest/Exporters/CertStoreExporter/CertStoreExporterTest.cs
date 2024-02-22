@@ -36,16 +36,18 @@ public class CertStoreExporterTest
 
 		defaultCertificate = Task.FromResult(
 			(ICollection<CertificateModelWithId>)[
-						new(){
-					CertificateId = Guid.NewGuid(),
-					CertificateName = "TestCertificate",
-					Tags = []
-				}
+						new()
+						{
+							CertificateId = Guid.NewGuid(),
+							CertificateName = "TestCertificate",
+							Tags = []
+						}
 			]
 		);
 		defaultCertificateVersions = Task.FromResult(
 			(ICollection<CertificateVersionModel>)[
-				new() {
+				new()
+				{
 					Cn = "test",
 					RawCertificate = TestCertificate.Export(X509ContentType.Pkcs12),
 				}

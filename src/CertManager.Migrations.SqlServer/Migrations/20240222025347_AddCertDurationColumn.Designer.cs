@@ -3,35 +3,38 @@ using System;
 using CertManager.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace CertManager.Migrations.Postgresql.Migrations
+namespace CertManager.Migrations.SqlServer.Migrations
 {
     [DbContext(typeof(CertManagerContext))]
-    partial class CertManagerContextModelSnapshot : ModelSnapshot
+    [Migration("20240222025347_AddCertDurationColumn")]
+    partial class AddCertDurationColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.1")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("CertManager.Database.Certificate", b =>
                 {
                     b.Property<Guid>("CertificateId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CertificateName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("CertificateId");
 
@@ -45,24 +48,24 @@ namespace CertManager.Migrations.Postgresql.Migrations
                 {
                     b.Property<Guid>("SubscriptionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<TimeSpan>("CertificateDuration")
-                        .HasColumnType("interval");
+                        .HasColumnType("time");
 
                     b.Property<string>("CertificateSubject")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<Guid>("DestinationCertificateId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ParentCertificateId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<TimeSpan>("RenewalOffsetBeforeExpiration")
-                        .HasColumnType("interval");
+                        .HasColumnType("time");
 
                     b.HasKey("SubscriptionId");
 
@@ -78,15 +81,15 @@ namespace CertManager.Migrations.Postgresql.Migrations
                 {
                     b.Property<Guid>("CertificateTagId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CertificateId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Tag")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("CertificateTagId");
 
@@ -99,36 +102,36 @@ namespace CertManager.Migrations.Postgresql.Migrations
                 {
                     b.Property<Guid>("CertificateVersionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("ActivationDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("CertificateId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Cn")
                         .IsRequired()
                         .HasMaxLength(442)
-                        .HasColumnType("character varying(442)")
+                        .HasColumnType("nvarchar(442)")
                         .HasColumnName("CN");
 
                     b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("IssuerName")
                         .IsRequired()
                         .HasMaxLength(442)
-                        .HasColumnType("character varying(442)");
+                        .HasColumnType("nvarchar(442)");
 
                     b.Property<byte[]>("RawCertificate")
                         .IsRequired()
-                        .HasColumnType("bytea");
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Thumbprint")
                         .IsRequired()
                         .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
+                        .HasColumnType("nvarchar(60)");
 
                     b.HasKey("CertificateVersionId");
 

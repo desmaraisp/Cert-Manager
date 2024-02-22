@@ -3,7 +3,8 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace CertManager.Features.CertificateVersions;
 
-public static class FormFileExtensions {
+public static class FormFileExtensions
+{
 	public static async Task<X509Certificate2> ReadCertificateAsync(this IFormFile formFile, string? Password)
 	{
 		byte[] bytes = await ReadBytesFromFormFile(formFile);

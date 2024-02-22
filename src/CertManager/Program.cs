@@ -99,7 +99,7 @@ internal class Program
 		}
 
 		app.MapHealthChecks("/health");
-		
+
 		app.UseSerilogRequestLogging();
 		app.UseAuthentication();
 		app.UseAuthorization();

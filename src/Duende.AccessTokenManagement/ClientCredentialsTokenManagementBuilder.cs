@@ -8,16 +8,16 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public class ClientCredentialsTokenManagementBuilder
 {
-    private readonly IServiceCollection _services;
+	private readonly IServiceCollection _services;
 
-    public ClientCredentialsTokenManagementBuilder(IServiceCollection services)
-    {
-        _services = services;
-    }
+	public ClientCredentialsTokenManagementBuilder(IServiceCollection services)
+	{
+		_services = services;
+	}
 
-    public ClientCredentialsTokenManagementBuilder AddClient(string name, Action<OAuthClientOptions> configureOptions)
-    {
-        _services.Configure(name, configureOptions);
-        return this;
-    }
+	public ClientCredentialsTokenManagementBuilder AddClient(string name, Action<OAuthClientOptions> configureOptions)
+	{
+		_services.Configure(name, configureOptions);
+		return this;
+	}
 }

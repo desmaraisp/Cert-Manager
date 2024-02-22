@@ -21,7 +21,7 @@ public class CertificateRenewalService(CertManagerContext context)
 				.Where(x => x.ExpiryDate - x.subs.RenewalOffsetBeforeExpiration < MaximumUtcScheduledTime)
 				.Select(x => new CertificateRenewalScheduleModel
 				{
-					CertificateCommonName = x.subs.CertificateCommonName,
+					CertificateDuration = x.subs.CertificateDuration,
 					CertificateSubject = x.subs.CertificateSubject,
 					DestinationCertificateId = x.subs.DestinationCertificateId,
 					ParentCertificateId = x.subs.ParentCertificateId,
@@ -38,7 +38,7 @@ public class CertificateRenewalService(CertManagerContext context)
 				.Where(x => CertificateIds.Contains(x.DestinationCertificateId))
 				.Select(x => new CertificateRenewalSubscriptionModelWithId
 				{
-					CertificateCommonName = x.CertificateCommonName,
+					CertificateDuration = x.CertificateDuration,
 					CertificateSubject = x.CertificateSubject,
 					DestinationCertificateId = x.DestinationCertificateId,
 					ParentCertificateId = x.ParentCertificateId,
@@ -51,7 +51,7 @@ public class CertificateRenewalService(CertManagerContext context)
 	{
 		var newItem = new CertificateRenewalSubscription
 		{
-			CertificateCommonName = Payload.CertificateCommonName,
+			CertificateDuration = Payload.CertificateDuration,
 			CertificateSubject = Payload.CertificateSubject,
 			DestinationCertificateId = Payload.DestinationCertificateId,
 			ParentCertificateId = Payload.ParentCertificateId,
@@ -64,7 +64,7 @@ public class CertificateRenewalService(CertManagerContext context)
 
 		return new CertificateRenewalSubscriptionModelWithId
 		{
-			CertificateCommonName = newItem.CertificateCommonName,
+			CertificateDuration = newItem.CertificateDuration,
 			CertificateSubject = newItem.CertificateSubject,
 			DestinationCertificateId = newItem.DestinationCertificateId,
 			ParentCertificateId = newItem.ParentCertificateId,

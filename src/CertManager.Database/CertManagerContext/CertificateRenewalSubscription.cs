@@ -2,9 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CertManager.Database;
 
-public class CertificateRenewalSubscription {
+public class CertificateRenewalSubscription
+{
 	[Key] public Guid SubscriptionId { get; set; }
-	[MaxLength(75)] public required string CertificateCommonName { get; set; }
+	public required TimeSpan CertificateDuration { get; set; }
 	[MaxLength(150)] public required string CertificateSubject { get; set; }
 	public TimeSpan RenewalOffsetBeforeExpiration { get; set; } = TimeSpan.FromDays(10);
 

@@ -224,7 +224,7 @@ public class CertificateVersionServiceTests
 		result = await service.GetCertificateVersions([], MaximumUtcExpirationTime: DateTime.UtcNow.AddDays(-25));
 		Assert.AreEqual(0, result.Count);
 
-		result = await service.GetCertificateVersions([],MinimumUtcExpirationTime: DateTime.UtcNow.AddDays(-1), MaximumUtcExpirationTime: DateTime.UtcNow.AddDays(1));
+		result = await service.GetCertificateVersions([], MinimumUtcExpirationTime: DateTime.UtcNow.AddDays(-1), MaximumUtcExpirationTime: DateTime.UtcNow.AddDays(1));
 		Assert.AreEqual(1, result.Count);
 
 		result = await service.GetCertificateVersions([], MinimumUtcActivationTime: DateTime.UtcNow.AddDays(-1));
@@ -232,11 +232,11 @@ public class CertificateVersionServiceTests
 
 		result = await service.GetCertificateVersions([], MaximumUtcActivationTime: DateTime.UtcNow.AddDays(-1));
 		Assert.AreEqual(1, result.Count);
-		
+
 		result = await service.GetCertificateVersions([], MaximumUtcActivationTime: DateTime.UtcNow.AddDays(-25));
 		Assert.AreEqual(0, result.Count);
 
-		result = await service.GetCertificateVersions([],MinimumUtcActivationTime: DateTime.UtcNow.AddDays(-1), MaximumUtcActivationTime: DateTime.UtcNow.AddDays(1));
+		result = await service.GetCertificateVersions([], MinimumUtcActivationTime: DateTime.UtcNow.AddDays(-1), MaximumUtcActivationTime: DateTime.UtcNow.AddDays(1));
 		Assert.AreEqual(1, result.Count);
 	}
 }
