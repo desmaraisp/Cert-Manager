@@ -102,6 +102,28 @@ public class FileExporterTest
 	}
 
 	[TestMethod]
+	public async Task TestPFXExport_WithoutCertificateVersionId()
+	{
+		await fileExporter.ExportCertificates(new()
+		{
+			OutputDirectory = "C:/TestDir",
+			ExportFormat = ExportFormat.PFX,
+			CertificateSearchBehavior = CertificateSearchBehavior.MatchAll,
+			TagFilters = [],
+			AppendCertificateVersionId = false
+		}, CancellationToken.None);
+
+		string path = $"C:/TestDir/test.pfx";
+		Assert.IsTrue(fileSystem.File.Exists(path));
+
+		var bytes = fileSystem.File.ReadAllBytes(path);
+		using var newCert = new X509Certificate2(bytes, (string?)null, X509KeyStorageFlags.EphemeralKeySet);
+		Assert.IsTrue(TestCertificate.RawData.SequenceEqual(newCert.RawData));
+		Assert.AreEqual(TestCertificate.Subject, newCert.Subject);
+	}
+
+
+	[TestMethod]
 	public async Task TestPemExportWithoutPrivateKey()
 	{
 		await fileExporter.ExportCertificates(new()
