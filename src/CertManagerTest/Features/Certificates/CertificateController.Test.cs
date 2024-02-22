@@ -116,46 +116,44 @@ public class CertificateControllerTests
 		await context.SaveChangesAsync();
 
 
-		var payload = new CertificateModel
+		var payload = new CertificateUpdateModel
 		{
-			IsCertificateAuthority = false,
-			CertificateDescription = null,
-			CertificateName = "NewCertificateName",
-			Tags = ["NewTag1", "NewTag2"]
+			NewCertificateDescription = null,
+			NewCertificateName = "NewCertificateName",
+			NewTags = ["NewTag1", "NewTag2"]
 		};
 
-		var result = await controller.EditCertificateById(payload, sampleCertificate.CertificateId) as OkObjectResult;
+		var result = await controller.EditCertificateById(sampleCertificate.CertificateId, payload) as OkObjectResult;
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual(200, result.StatusCode);
 
 		var editedCertificate = result.Value as CertificateModelWithId;
 		Assert.IsNotNull(editedCertificate);
-		Assert.AreEqual(payload.CertificateName, editedCertificate.CertificateName);
+		Assert.AreEqual(payload.NewCertificateName, editedCertificate.CertificateName);
 		Assert.AreEqual(sampleCertificate.CertificateId, editedCertificate.CertificateId);
-		CollectionAssert.AreEqual(payload.Tags, editedCertificate.Tags);
+		CollectionAssert.AreEqual(payload.NewTags, editedCertificate.Tags);
 
 		var updatedCertificate = await context.Certificates
 			.Include(x => x.CertificateTags)
 			.FirstOrDefaultAsync(x => x.CertificateId == sampleCertificate.CertificateId);
 
 		Assert.IsNotNull(updatedCertificate);
-		Assert.AreEqual(payload.CertificateName, updatedCertificate.CertificateName);
-		CollectionAssert.AreEqual(payload.Tags, updatedCertificate.CertificateTags.Select(t => t.Tag).ToList());
+		Assert.AreEqual(payload.NewCertificateName, updatedCertificate.CertificateName);
+		CollectionAssert.AreEqual(payload.NewTags, updatedCertificate.CertificateTags.Select(t => t.Tag).ToList());
 	}
 
 	[TestMethod]
 	public async Task EditCertificateById_ReturnsNotFound_WhenCertificateNotFound()
 	{
-		var payload = new CertificateModel
+		var payload = new CertificateUpdateModel
 		{
-			IsCertificateAuthority = false,
-			CertificateDescription = null,
-			CertificateName = "NewCertificateName",
-			Tags = ["NewTag1", "NewTag2"]
+			NewCertificateDescription = null,
+			NewCertificateName = "NewCertificateName",
+			NewTags = ["NewTag1", "NewTag2"]
 		};
 
-		var result = await controller.EditCertificateById(payload, Guid.NewGuid()) as NotFoundResult;
+		var result = await controller.EditCertificateById(Guid.NewGuid(), payload) as NotFoundResult;
 
 		// Assert
 		Assert.IsNotNull(result);

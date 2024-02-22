@@ -57,32 +57,6 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 		});
 	}
 
-	[HttpPut("Certificates/{id}", Name = nameof(EditCertificateById))]
-	[ProducesResponseType(typeof(CertificateModelWithId), 200)]
-	[ProducesResponseType(404)]
-	[RequiredScope(AuthenticationScopes.WriteScope)]
-	public async Task<IActionResult> EditCertificateById(CertificateModel payload, Guid id)
-	{
-		var certificate = await certManagerContext.Certificates.Include(x => x.CertificateTags).FirstOrDefaultAsync(x => x.CertificateId == id);
-
-		if (certificate == null) return NotFound();
-
-		certManagerContext.CertificateTags.RemoveRange(certificate.CertificateTags.ToList());
-
-		certificate.CertificateTags = payload.Tags.ConvertAll(x => new CertificateTag { Tag = x, CertificateId = id });
-		certificate.CertificateName = payload.CertificateName;
-		await certManagerContext.SaveChangesAsync();
-
-		return Ok(new CertificateModelWithId
-		{
-			IsCertificateAuthority = payload.IsCertificateAuthority,
-			CertificateDescription = payload.CertificateDescription,
-			CertificateName = payload.CertificateName,
-			CertificateId = id,
-			Tags = payload.Tags
-		});
-	}
-
 	[HttpGet("Certificates", Name = nameof(GetAllCertificates))]
 	[ProducesResponseType(typeof(List<CertificateModelWithId>), 200)]
 	[RequiredScope(AuthenticationScopes.ReadScope)]
@@ -133,10 +107,21 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 	[RequiredScope(AuthenticationScopes.WriteScope)]
 	public async Task<IActionResult> EditCertificateById(Guid id, CertificateUpdateModel payload)
 	{
+		using var trn = certManagerContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
 		var cert = await certManagerContext.Certificates.FindAsync(id);
 		if (cert == null) return NotFound();
 
+		cert.CertificateDescription = payload.NewCertificateDescription;
+		if (!string.IsNullOrWhiteSpace(payload.NewCertificateName))
+		{
+			cert.CertificateName = payload.NewCertificateName;
+		}
+		cert.CertificateTags = payload?.NewTags?.ConvertAll(x => new CertificateTag
+		{
+			Tag = x
+		}) ?? [];
 		await certManagerContext.SaveChangesAsync();
+		await trn.CommitAsync();
 
 		return Ok(new CertificateModelWithId
 		{
