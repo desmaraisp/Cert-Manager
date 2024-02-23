@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using CertManager.Features.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +12,12 @@ namespace CertManager.Features.CertificateRenewal;
 public class CertificateRenewalController : ControllerBase
 {
 	private readonly CertificateRenewalService renewalService;
+	private readonly ILogger<CertificateRenewalController> logger;
 
-	public CertificateRenewalController(CertificateRenewalService renewalService)
+	public CertificateRenewalController(CertificateRenewalService renewalService, ILogger<CertificateRenewalController> logger)
 	{
 		this.renewalService = renewalService;
+		this.logger = logger;
 	}
 
 	[HttpGet("CertificateRenewalSchedules", Name = nameof(GetCertificateRenewalSchedules))]
@@ -53,6 +57,15 @@ public class CertificateRenewalController : ControllerBase
 	[RequiredScope(AuthenticationScopes.WriteScope)]
 	public async Task<IActionResult> CreateCertificateRenewalSubscriptions(CertificateRenewalSubscriptionModel Payload)
 	{
+		try
+		{
+			_ = new X500DistinguishedName(Payload.CertificateSubject);
+		}
+		catch (CryptographicException e)
+		{
+			logger.LogDebug(e, "{x} isn't a valid certificate subject", Payload.CertificateSubject);
+			return BadRequest("Certificate subject isn't valid");
+		}
 		var createdItem = await renewalService.CreateRenewalSubscription(Payload);
 
 		return Ok(createdItem);
