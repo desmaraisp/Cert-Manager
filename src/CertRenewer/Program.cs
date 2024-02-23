@@ -20,9 +20,12 @@ internal class Program
 		});
 		builder.ConfigureServices((context, services) =>
 		{
+			services.AddDistributedMemoryCache();
+			services.AddScoped<Main>();
 			services.AddCertManager("CertManagerApi");
 		});
 
-		await builder.Build().Services.GetRequiredService<Main>().Run();
+		using IServiceScope scope = builder.Build().Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+		await scope.ServiceProvider.GetRequiredService<Main>().Run();
 	}
 }

@@ -11,38 +11,39 @@ public class CertificateRenewalService(CertManagerContext context)
 	{
 		var innerQuery = from subs in certManagerContext.CertificateRenewalSubscriptions
 						 join version in certManagerContext.CertificateVersions on subs.DestinationCertificateId equals version.CertificateId
-						 where version.ExpiryDate - subs.RenewalOffsetBeforeExpiration > MinimumUtcScheduledTime
-						 orderby version.ExpiryDate descending
-						 select new { subs, version.ExpiryDate, version.CertificateVersionId };
+						 where version.ExpiryDate.AddDays(-subs.RenewalOffsetBeforeExpirationDays) > MinimumUtcScheduledTime
+						 select new { subs, ScheduledDate = version.ExpiryDate.AddDays(-subs.RenewalOffsetBeforeExpirationDays), version.CertificateVersionId };
+
 
 		var query = innerQuery.GroupBy(x => x.subs.DestinationCertificateId)
-				.Where(x => x.Count() == 1)
-				.Select(x => x.First())
-				.Where(x => x.ExpiryDate - x.subs.RenewalOffsetBeforeExpiration < MaximumUtcScheduledTime)
-				.Select(x => new CertificateRenewalScheduleModel
+				.Where(x => x.Count(y => y.ScheduledDate > MaximumUtcScheduledTime) == 0)
+				.Select(a => new CertificateRenewalScheduleModel
 				{
-					CertificateDuration = x.subs.CertificateDuration,
-					CertificateSubject = x.subs.CertificateSubject,
-					DestinationCertificateId = x.subs.DestinationCertificateId,
-					ParentCertificateId = x.subs.ParentCertificateId,
-					ScheduledRenewalTime = x.ExpiryDate - x.subs.RenewalOffsetBeforeExpiration,
-					SubscriptionId = x.subs.SubscriptionId
+					CertificateDuration = a.First().subs.CertificateDuration,
+					CertificateSubject = a.First().subs.CertificateSubject,
+					DestinationCertificateId = a.First().subs.DestinationCertificateId,
+					ParentCertificateId = a.First().subs.ParentCertificateId,
+					ScheduledRenewalTime = a.First().ScheduledDate,
+					SubscriptionId = a.First().subs.SubscriptionId
 				});
-
 		return await query.ToListAsync();
 	}
 
 	public async Task<List<CertificateRenewalSubscriptionModelWithId>> GetRenewalSubscriptions(List<Guid> CertificateIds)
 	{
-		return await certManagerContext.CertificateRenewalSubscriptions
-				.Where(x => CertificateIds.Contains(x.DestinationCertificateId))
+		var query = certManagerContext.CertificateRenewalSubscriptions.AsQueryable();
+
+		if (CertificateIds.Count != 0)
+			query = query.Where(x => CertificateIds.Contains(x.DestinationCertificateId));
+
+		return await query
 				.Select(x => new CertificateRenewalSubscriptionModelWithId
 				{
 					CertificateDuration = x.CertificateDuration,
 					CertificateSubject = x.CertificateSubject,
 					DestinationCertificateId = x.DestinationCertificateId,
 					ParentCertificateId = x.ParentCertificateId,
-					RenewalOffsetBeforeExpiration = x.RenewalOffsetBeforeExpiration,
+					RenewalOffsetBeforeExpirationDays = x.RenewalOffsetBeforeExpirationDays,
 					SubscriptionId = x.SubscriptionId
 				}).ToListAsync();
 	}
@@ -55,7 +56,7 @@ public class CertificateRenewalService(CertManagerContext context)
 			CertificateSubject = Payload.CertificateSubject,
 			DestinationCertificateId = Payload.DestinationCertificateId,
 			ParentCertificateId = Payload.ParentCertificateId,
-			RenewalOffsetBeforeExpiration = Payload.RenewalOffsetBeforeExpiration,
+			RenewalOffsetBeforeExpirationDays = Payload.RenewalOffsetBeforeExpirationDays,
 		};
 		certManagerContext.CertificateRenewalSubscriptions
 				.Add(newItem);
@@ -68,7 +69,7 @@ public class CertificateRenewalService(CertManagerContext context)
 			CertificateSubject = newItem.CertificateSubject,
 			DestinationCertificateId = newItem.DestinationCertificateId,
 			ParentCertificateId = newItem.ParentCertificateId,
-			RenewalOffsetBeforeExpiration = newItem.RenewalOffsetBeforeExpiration,
+			RenewalOffsetBeforeExpirationDays = newItem.RenewalOffsetBeforeExpirationDays,
 			SubscriptionId = newItem.SubscriptionId
 		};
 	}

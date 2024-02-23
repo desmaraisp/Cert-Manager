@@ -68,8 +68,8 @@ namespace CertManager.Migrations.Postgresql.Migrations
                     b.Property<Guid>("ParentCertificateId")
                         .HasColumnType("uuid");
 
-                    b.Property<TimeSpan>("RenewalOffsetBeforeExpiration")
-                        .HasColumnType("interval");
+                    b.Property<int>("RenewalOffsetBeforeExpirationDays")
+                        .HasColumnType("integer");
 
                     b.HasKey("SubscriptionId");
 

@@ -298,6 +298,210 @@
         }
       }
     },
+    "/api/v1/CertificateRenewalSchedules": {
+      "get": {
+        "tags": [
+          "CertificateRenewal"
+        ],
+        "operationId": "GetCertificateRenewalSchedules",
+        "parameters": [
+          {
+            "name": "MinimumUtcScheduledTime",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "MaximumUtcScheduledTime",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CertificateRenewalScheduleModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CertificateRenewalScheduleModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CertificateRenewalScheduleModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/CertificateRenewalSubscriptions": {
+      "get": {
+        "tags": [
+          "CertificateRenewal"
+        ],
+        "operationId": "GetCertificateRenewalSubscriptions",
+        "parameters": [
+          {
+            "name": "CertificateIds",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CertificateRenewalSubscriptionModelWithId"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CertificateRenewalSubscriptionModelWithId"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CertificateRenewalSubscriptionModelWithId"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "CertificateRenewal"
+        ],
+        "operationId": "CreateCertificateRenewalSubscriptions",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CertificateRenewalSubscriptionModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CertificateRenewalSubscriptionModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CertificateRenewalSubscriptionModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CertificateRenewalSubscriptionModelWithId"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CertificateRenewalSubscriptionModelWithId"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CertificateRenewalSubscriptionModelWithId"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/CertificateRenewalSubscriptions/{id}": {
+      "delete": {
+        "tags": [
+          "CertificateRenewal"
+        ],
+        "operationId": "DeleteCertificateRenewalSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/CertificateVersion": {
       "post": {
         "tags": [
@@ -320,14 +524,6 @@
             "schema": {
               "type": "string",
               "format": "uuid"
-            }
-          },
-          {
-            "name": "certificateType",
-            "in": "query",
-            "style": "form",
-            "schema": {
-              "$ref": "#/components/schemas/CertificateFormat"
             }
           }
         ],
@@ -588,239 +784,10 @@
           }
         }
       }
-    },
-    "/api/v1/CertificateRenewalSchedules": {
-      "get": {
-        "tags": [
-          "PendingCertificateRenewal"
-        ],
-        "operationId": "GetCertificateRenewalSchedules",
-        "parameters": [
-          {
-            "name": "MinimumUtcScheduledTime",
-            "in": "query",
-            "style": "form",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            }
-          },
-          {
-            "name": "MaximumUtcScheduledTime",
-            "in": "query",
-            "style": "form",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CertificateRenewalScheduleModel"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CertificateRenewalScheduleModel"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CertificateRenewalScheduleModel"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/CertificateRenewalSubscriptions": {
-      "get": {
-        "tags": [
-          "PendingCertificateRenewal"
-        ],
-        "operationId": "GetCertificateRenewalSubscriptions",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "format": "uuid"
-                }
-              }
-            },
-            "text/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "format": "uuid"
-                }
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "format": "uuid"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CertificateRenewalSubscriptionModelWithId"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CertificateRenewalSubscriptionModelWithId"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CertificateRenewalSubscriptionModelWithId"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "PendingCertificateRenewal"
-        ],
-        "operationId": "CreateCertificateRenewalSubscriptions",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CertificateRenewalSubscriptionModel"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CertificateRenewalSubscriptionModel"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CertificateRenewalSubscriptionModel"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/CertificateRenewalSubscriptionModelWithId"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CertificateRenewalSubscriptionModelWithId"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CertificateRenewalSubscriptionModelWithId"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/CertificateRenewalSubscriptions/{id}": {
-      "delete": {
-        "tags": [
-          "PendingCertificateRenewal"
-        ],
-        "operationId": "DeleteCertificateRenewalSubscription",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "style": "simple",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
     "schemas": {
-      "CertificateFormat": {
-        "enum": [
-          "PEM",
-          "PFX",
-          "CER"
-        ],
-        "type": "string"
-      },
       "CertificateModel": {
         "type": "object",
         "properties": {
@@ -881,7 +848,8 @@
             "format": "uuid"
           },
           "certificateDuration": {
-            "$ref": "#/components/schemas/TimeSpan"
+            "type": "string",
+            "format": "time-span"
           },
           "certificateSubject": {
             "type": "string",
@@ -906,14 +874,18 @@
         "type": "object",
         "properties": {
           "certificateDuration": {
-            "$ref": "#/components/schemas/TimeSpan"
+            "type": "string",
+            "format": "time-span"
           },
           "certificateSubject": {
             "type": "string",
             "nullable": true
           },
-          "renewalOffsetBeforeExpiration": {
-            "$ref": "#/components/schemas/TimeSpan"
+          "renewalOffsetBeforeExpirationDays": {
+            "maximum": 365,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
           },
           "destinationCertificateId": {
             "type": "string",
@@ -930,14 +902,18 @@
         "type": "object",
         "properties": {
           "certificateDuration": {
-            "$ref": "#/components/schemas/TimeSpan"
+            "type": "string",
+            "format": "time-span"
           },
           "certificateSubject": {
             "type": "string",
             "nullable": true
           },
-          "renewalOffsetBeforeExpiration": {
-            "$ref": "#/components/schemas/TimeSpan"
+          "renewalOffsetBeforeExpirationDays": {
+            "maximum": 365,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
           },
           "destinationCertificateId": {
             "type": "string",
@@ -1047,86 +1023,6 @@
           }
         },
         "additionalProperties": { }
-      },
-      "TimeSpan": {
-        "type": "object",
-        "properties": {
-          "ticks": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "days": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "hours": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "milliseconds": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "microseconds": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "nanoseconds": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "minutes": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "seconds": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "totalDays": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalHours": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalMilliseconds": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalMicroseconds": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalNanoseconds": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalMinutes": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalSeconds": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          }
-        },
-        "additionalProperties": false
       }
     },
     "securitySchemes": {

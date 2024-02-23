@@ -4,6 +4,7 @@ using CertManager.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CertManager.Migrations.SqlServer.Migrations
 {
     [DbContext(typeof(CertManagerContext))]
-    partial class CertManagerContextModelSnapshot : ModelSnapshot
+    [Migration("20240223123130_UpdateRenewalScheduleOffsetToIntDays")]
+    partial class UpdateRenewalScheduleOffsetToIntDays
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

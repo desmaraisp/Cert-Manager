@@ -27,8 +27,7 @@ public class Main(IGeneratedCertManagerClient certManagerClient)
 			var newCertBytes = newCert.Export(X509ContentType.Pfx);
 
 			await certManagerClient.CreateCertificateVersionAsync(
-				"", scheduledRenewal.DestinationCertificateId,
-				CertificateFormat.PFX, new(new MemoryStream(newCertBytes))
+				"", scheduledRenewal.DestinationCertificateId, new(new MemoryStream(newCertBytes))
 			);
 		}
 
