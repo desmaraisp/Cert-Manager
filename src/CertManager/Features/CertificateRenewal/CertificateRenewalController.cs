@@ -7,11 +7,11 @@ namespace CertManager.Features.CertificateRenewal;
 [Authorize]
 [Route("api/v1")]
 [ApiController]
-public class PendingCertificateRenewalController : ControllerBase
+public class CertificateRenewalController : ControllerBase
 {
 	private readonly CertificateRenewalService renewalService;
 
-	public PendingCertificateRenewalController(CertificateRenewalService renewalService)
+	public CertificateRenewalController(CertificateRenewalService renewalService)
 	{
 		this.renewalService = renewalService;
 	}
@@ -29,7 +29,7 @@ public class PendingCertificateRenewalController : ControllerBase
 	[HttpGet("CertificateRenewalSubscriptions", Name = nameof(GetCertificateRenewalSubscriptions))]
 	[ProducesResponseType(typeof(List<CertificateRenewalSubscriptionModelWithId>), 200)]
 	[RequiredScope(AuthenticationScopes.ReadScope)]
-	public async Task<IActionResult> GetCertificateRenewalSubscriptions(List<Guid> CertificateIds)
+	public async Task<IActionResult> GetCertificateRenewalSubscriptions([FromQuery] List<Guid> CertificateIds)
 	{
 		var schedules = await renewalService.GetRenewalSubscriptions(CertificateIds);
 

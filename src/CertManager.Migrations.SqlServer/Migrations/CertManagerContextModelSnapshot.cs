@@ -147,15 +147,15 @@ namespace CertManager.Migrations.SqlServer.Migrations
             modelBuilder.Entity("CertManager.Database.CertificateRenewalSubscription", b =>
                 {
                     b.HasOne("CertManager.Database.Certificate", "DestinationCertificate")
-                        .WithMany()
-                        .HasForeignKey("DestinationCertificateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithOne("RenewedBySubscription")
+                        .HasForeignKey("CertManager.Database.CertificateRenewalSubscription", "DestinationCertificateId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("CertManager.Database.Certificate", "ParentCertificate")
-                        .WithMany()
+                        .WithMany("DependentRenewalSubscriptions")
                         .HasForeignKey("ParentCertificateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("DestinationCertificate");
@@ -190,6 +190,10 @@ namespace CertManager.Migrations.SqlServer.Migrations
                     b.Navigation("CertificateTags");
 
                     b.Navigation("CertificateVersions");
+
+                    b.Navigation("DependentRenewalSubscriptions");
+
+                    b.Navigation("RenewedBySubscription");
                 });
 #pragma warning restore 612, 618
         }

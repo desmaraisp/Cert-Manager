@@ -16,4 +16,6 @@ public partial class Certificate
 
 	public ICollection<CertificateVersion> CertificateVersions { get; set; } = [];
 	public ICollection<CertificateTag> CertificateTags { get; set; } = [];
+	public virtual CertificateRenewalSubscription? RenewedBySubscription { get; set; }
+	public virtual ICollection<CertificateRenewalSubscription> DependentRenewalSubscriptions { get; set; } = [];
 }

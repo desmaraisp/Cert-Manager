@@ -1,4 +1,3 @@
-using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using CertManager.Database;
 using CertManager.Features.Authentication;
@@ -25,21 +24,15 @@ public class CertificateVersionController : ControllerBase
 	[ProducesResponseType(typeof(CertificateVersionModel), 200)]
 	[ProducesResponseType(400)]
 	[RequiredScope(AuthenticationScopes.WriteScope)]
-	public async Task<IActionResult> CreateCertificateVersion(IFormFile Certificate, string? Password, Guid CertificateId, CertificateFormat certificateType)
+	public async Task<IActionResult> CreateCertificateVersion(IFormFile Certificate, string? Password, Guid CertificateId)
 	{
-		using X509Certificate2 cert = certificateType switch
-		{
-			CertificateFormat.PFX => await Certificate.ReadCertificateAsync(Password),
-			CertificateFormat.CER => await Certificate.ReadCertificateAsync(null),
-			CertificateFormat.PEM => await Certificate.ReadCertificateAsync(null),
-			_ => throw new BadHttpRequestException($"Unrecognized cert type {certificateType}")
-		};
+		using X509Certificate2 cert = await Certificate.ReadCertificateAsync(Password);
 		var allowCA = cert.Extensions.OfType<X509BasicConstraintsExtension>().FirstOrDefault()?.CertificateAuthority;
 		var hasCAKeyUsageFlag = cert.Extensions.OfType<X509KeyUsageExtension>().FirstOrDefault()?.KeyUsages.HasFlag(X509KeyUsageFlags.KeyCertSign);
 
 		// Since we don't allow editing IsCertificateAuthority, no need to do any concurrency handling here
 		var certificateData = await certManagerContext.Certificates.FindAsync(CertificateId);
-		if ((certificateData?.IsCertificateAuthority ?? true) && (allowCA ?? false) && (hasCAKeyUsageFlag ?? false))
+		if ((certificateData?.IsCertificateAuthority ?? true) && !(allowCA ?? false) && !(hasCAKeyUsageFlag ?? false))
 		{
 			return BadRequest("Certificate is missing basic constraint or KeyUsage certificate properties required for it to be used as CA");
 		}

@@ -2,6 +2,8 @@ using System.Text.Json.Serialization;
 using CertManager;
 using CertManager.Database;
 using CertManager.Features.Authentication;
+using CertManager.Features.CertificateRenewal;
+using CertManager.Features.CertificateVersions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -23,6 +25,7 @@ internal class Program
 		builder.Services.AddEndpointsApiExplorer();
 		builder.Services.AddSwaggerGen(c =>
 		{
+			c.MapType<TimeSpan>(() => new OpenApiSchema { Type = "string", Format = "time-span" });
 			c.SwaggerDoc("v1", new()
 			{
 				Title = "CertManager API",
@@ -88,7 +91,8 @@ internal class Program
 				_ => throw new InvalidDataException($"{provider} not recognized")
 			};
 		});
-
+		builder.Services.AddScoped<CertificateVersionService>()
+					.AddScoped<CertificateRenewalService>();
 		builder.Services.RegisterAuthentication(builder.Configuration);
 
 		var app = builder.Build();

@@ -95,10 +95,20 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 	[RequiredScope(AuthenticationScopes.WriteScope)]
 	public async Task<IActionResult> DeleteCertificateById(Guid id)
 	{
-		int rowsDeleted = await certManagerContext.Certificates.Where(x => x.CertificateId == id).ExecuteDeleteAsync();
-		if (rowsDeleted > 0) return Ok();
+		using var trn = certManagerContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
+		var cert = await certManagerContext.Certificates.FindAsync(id);
 
-		return NotFound();
+		if (cert == null) return NotFound();
+
+		if(cert.RenewedBySubscription != null){
+			certManagerContext.Remove(cert.RenewedBySubscription);
+		}
+		certManagerContext.RemoveRange(cert.DependentRenewalSubscriptions);
+		certManagerContext.Remove(cert);
+
+		await certManagerContext.SaveChangesAsync();
+		await trn.CommitAsync();
+		return Ok();
 	}
 
 	[HttpPatch("Certificates/{id}", Name = nameof(EditCertificateById))]
