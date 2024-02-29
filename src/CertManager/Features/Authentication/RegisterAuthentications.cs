@@ -7,7 +7,7 @@ public static class ServiceCollectionExtensions
 {
 	public static IServiceCollection RegisterAuthentication(this IServiceCollection services, IConfiguration configuration)
 	{
-		var config = configuration.GetRequiredSection("Authentication").Get<AuthenticationConfig>() ?? throw new InvalidDataException("Invalid config section Authentication");
+		var config = configuration.GetSection("Authentication").Get<AuthenticationConfig>() ?? new();
 		Validator.ValidateObject(config, new(config), true);
 
 		services.AddSingleton<IAuthorizationHandler, ScopeAuthorizationHandler>();

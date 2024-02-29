@@ -47,7 +47,7 @@ resource "keycloak_openid_audience_protocol_mapper" "audience_mapper" {
   for_each = keycloak_openid_client.client_credentials_clients
   realm_id = each.value.realm_id
 
-  client_id = each.value.client_id
+  client_id = each.value.id
   name      = "audience-mapper"
 
   included_custom_audience = "cert-manager"
@@ -69,12 +69,12 @@ resource "keycloak_openid_client_scope" "cert-write-scope" {
 }
 
 resource "keycloak_openid_client_optional_scopes" "client_optional_scopes" {
-  count     = length(var.KEYLCOAK_REALMS)
-  realm_id  = keycloak_realm.realms[count.index].id
-  client_id = keycloak_openid_client.client_credentials_clients[count.index].id
+  for_each  = var.KEYLCOAK_REALMS
+  realm_id  = keycloak_realm.realms[each.value].id
+  client_id = keycloak_openid_client.client_credentials_clients[each.value].id
 
   optional_scopes = [
-    keycloak_openid_client_scope.cert-write-scope[count.index].name,
-    keycloak_openid_client_scope.cert-read-scope[count.index].name
+    keycloak_openid_client_scope.cert-write-scope[each.value].name,
+    keycloak_openid_client_scope.cert-read-scope[each.value].name
   ]
 }

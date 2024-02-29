@@ -16,4 +16,5 @@ if [ $DBSTATUS -ne 0 ] OR [ $ERRCODE -ne 0 ]; then
 	exit 1
 fi
 
+sleep 5
 exit 0

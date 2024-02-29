@@ -7,7 +7,7 @@ public class AuthenticationConfig
 {
 	public bool RequireHttpsMetadata { get; init; } = true;
 
-	[MinLength(1)] public List<JWTProvider> Providers { get; init; } = [];
+	public List<JWTProvider> Providers { get; init; } = [];
 }
 
 public class JWTProvider
