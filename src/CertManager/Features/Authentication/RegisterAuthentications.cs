@@ -7,6 +7,7 @@ public static class ServiceCollectionExtensions
 {
 	public static IServiceCollection RegisterAuthentication(this IServiceCollection services, IConfiguration configuration)
 	{
+		services.AddOptions<AuthenticationConfig>().BindConfiguration("Authentication").ValidateDataAnnotations();
 		var config = configuration.GetSection("Authentication").Get<AuthenticationConfig>() ?? new();
 		Validator.ValidateObject(config, new(config), true);
 

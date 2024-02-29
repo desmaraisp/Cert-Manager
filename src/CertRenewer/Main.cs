@@ -7,15 +7,16 @@ public class Main(IGeneratedCertManagerClient certManagerClient)
 {
 	private readonly IGeneratedCertManagerClient certManagerClient = certManagerClient;
 
-	public async Task Run()
+	public async Task Run(string Organization)
 	{
-		var scheduledRenewals = await certManagerClient.GetCertificateRenewalSchedulesAsync(DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
+		var scheduledRenewals = await certManagerClient.GetCertificateRenewalSchedulesAsync(DateTime.UtcNow, DateTime.UtcNow.AddDays(1), Organization);
 		var parentCertificateVersions = await certManagerClient.GetCertificateVersionsAsync(
 			scheduledRenewals.Select(x => x.ParentCertificateId).Distinct().ToList(),
 			DateTime.UtcNow.AddDays(10),
 			null,
 			null,
-			null
+			null,
+			Organization
 		);
 
 		foreach (var scheduledRenewal in scheduledRenewals)
@@ -27,7 +28,10 @@ public class Main(IGeneratedCertManagerClient certManagerClient)
 			var newCertBytes = newCert.Export(X509ContentType.Pfx);
 
 			await certManagerClient.CreateCertificateVersionAsync(
-				"", scheduledRenewal.DestinationCertificateId, new(new MemoryStream(newCertBytes))
+				"",
+				scheduledRenewal.DestinationCertificateId,
+				Organization,
+				new(new MemoryStream(newCertBytes))
 			);
 		}
 

@@ -46,6 +46,7 @@ public class CertificateControllerTests
 	{
 		context.Certificates.Add(new()
 		{
+			OrganizationId = "",
 			IsCertificateAuthority = false,
 			CertificateDescription = null,
 			CertificateName = "TestCertificate",
@@ -77,7 +78,14 @@ public class CertificateControllerTests
 	[TestMethod]
 	public async Task GetCertificateById_ReturnsOkResult_WhenCertificateExists()
 	{
-		var sampleCertificate = new Certificate { IsCertificateAuthority = false, CertificateDescription = null, CertificateId = Guid.NewGuid(), CertificateName = "" };
+		var sampleCertificate = new Certificate
+		{
+			OrganizationId = "",
+			IsCertificateAuthority = false,
+			CertificateDescription = null,
+			CertificateId = Guid.NewGuid(),
+			CertificateName = ""
+		};
 		context.Certificates.Add(sampleCertificate);
 		await context.SaveChangesAsync();
 
@@ -106,6 +114,7 @@ public class CertificateControllerTests
 	{
 		var sampleCertificate = new Certificate
 		{
+			OrganizationId = "",
 			IsCertificateAuthority = false,
 			CertificateDescription = null,
 			CertificateId = Guid.NewGuid(),
@@ -167,6 +176,7 @@ public class CertificateControllerTests
 		{
 			new Certificate
 			{
+				OrganizationId = "",
 				IsCertificateAuthority = false,
 				CertificateDescription = null,
 				CertificateId = Guid.NewGuid(),
@@ -175,6 +185,7 @@ public class CertificateControllerTests
 			},
 			new Certificate
 			{
+				OrganizationId = "",
 				IsCertificateAuthority = false,
 				CertificateDescription = null,
 				CertificateId = Guid.NewGuid(),
@@ -203,6 +214,7 @@ public class CertificateControllerTests
 			{
 				new Certificate
 				{
+					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
@@ -211,6 +223,7 @@ public class CertificateControllerTests
 				},
 				new Certificate
 				{
+					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
@@ -238,6 +251,7 @@ public class CertificateControllerTests
 			{
 				new Certificate
 				{
+					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
@@ -246,6 +260,7 @@ public class CertificateControllerTests
 				},
 				new Certificate
 				{
+					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
@@ -273,6 +288,7 @@ public class CertificateControllerTests
 			{
 				new Certificate
 				{
+					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
@@ -281,6 +297,7 @@ public class CertificateControllerTests
 				},
 				new Certificate
 				{
+					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
@@ -309,6 +326,7 @@ public class CertificateControllerTests
 				new Certificate
 				{
 					IsCertificateAuthority = false,
+					OrganizationId = "",
 					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
 					CertificateName = "Certificate0",
@@ -316,6 +334,7 @@ public class CertificateControllerTests
 				},
 				new Certificate
 				{
+					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
@@ -324,6 +343,7 @@ public class CertificateControllerTests
 				},
 				new Certificate
 				{
+					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
@@ -347,7 +367,14 @@ public class CertificateControllerTests
 	[TestMethod]
 	public async Task DeleteCertificateById_ReturnsOkResult_WhenCertificateExists()
 	{
-		var sampleCertificate = new Certificate { IsCertificateAuthority = false, CertificateDescription = null, CertificateId = Guid.NewGuid(), CertificateName = "" };
+		var sampleCertificate = new Certificate
+		{
+			OrganizationId = "",
+			IsCertificateAuthority = false,
+			CertificateDescription = null,
+			CertificateId = Guid.NewGuid(),
+			CertificateName = ""
+		};
 		context.Certificates.Add(sampleCertificate);
 		await context.SaveChangesAsync();
 

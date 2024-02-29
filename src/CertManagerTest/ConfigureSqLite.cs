@@ -16,6 +16,7 @@ public static class ConfigureSqLite
 
 		var CertManagerContext = new CertManagerContext(contextOptions);
 		CertManagerContext.Database.EnsureCreated();
+		CertManagerContext.OrganizationId = "";
 		return CertManagerContext;
 	}
 

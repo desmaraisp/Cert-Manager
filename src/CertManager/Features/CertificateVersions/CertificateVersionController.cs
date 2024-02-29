@@ -8,7 +8,7 @@ namespace CertManager.Features.CertificateVersions;
 
 [ApiController]
 [Authorize]
-[Route("api/v1")]
+[Route("{organization-id}/api/v1")]
 public class CertificateVersionController : ControllerBase
 {
 	private readonly CertManagerContext certManagerContext;

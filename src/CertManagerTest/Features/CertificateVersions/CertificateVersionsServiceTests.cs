@@ -36,6 +36,7 @@ public class CertificateVersionServiceTests
 	{
 		CertificateVersion newCertVersion = new()
 		{
+			OrganizationId = "",
 			ActivationDate = expirationTimeOverride ?? DateTime.Now,
 			CertificateId = id,
 			Cn = defaultCertificate.GetNameInfo(X509NameType.SimpleName, false),
@@ -51,7 +52,14 @@ public class CertificateVersionServiceTests
 
 	private async Task<Guid> CreateDefaultCertificate()
 	{
-		Certificate entity = new() { IsCertificateAuthority = false, CertificateDescription = null, CertificateId = Guid.NewGuid(), CertificateName = $"certificate1-{Guid.NewGuid()}" };
+		Certificate entity = new()
+		{
+			OrganizationId = "",
+			IsCertificateAuthority = false,
+			CertificateDescription = null,
+			CertificateId = Guid.NewGuid(),
+			CertificateName = $"certificate1-{Guid.NewGuid()}"
+		};
 		context.Certificates.Add(entity);
 		await context.SaveChangesAsync();
 		return entity.CertificateId;

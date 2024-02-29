@@ -31,7 +31,8 @@ public static class ServiceCollectionExtensions
 					TokenUrl = new(config.PasswordAuthentication.OpenIdTokenEndpoint),
 					Scopes = {
 						{ AuthenticationScopes.ReadScope, "Read access" },
-						{ AuthenticationScopes.WriteScope, "write access" }
+						{ AuthenticationScopes.WriteScope, "write access" },
+						{ AuthenticationScopes.CrossOrgAccessScope, "cross-org access" }
 					}
 				};
 			}
@@ -43,7 +44,8 @@ public static class ServiceCollectionExtensions
 					TokenUrl = new(config.ClientCredentialsAuthentication.OpenIdTokenEndpoint),
 					Scopes = {
 						{ AuthenticationScopes.ReadScope, "Read access" },
-						{ AuthenticationScopes.WriteScope, "write access" }
+						{ AuthenticationScopes.WriteScope, "write access" },
+						{ AuthenticationScopes.CrossOrgAccessScope, "cross-org access" }
 					}
 				};
 			}

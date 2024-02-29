@@ -6,7 +6,7 @@ namespace CertManager.Features.Authentication;
 public class AuthenticationConfig
 {
 	public bool RequireHttpsMetadata { get; init; } = true;
-
+	[StringLength(25, MinimumLength = 1)] public string OrganizationIdClaimName { get; init; } = "organization_id";
 	public List<JWTProvider> Providers { get; init; } = [];
 }
 

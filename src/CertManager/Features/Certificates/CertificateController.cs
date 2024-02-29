@@ -8,7 +8,7 @@ namespace CertManager.Features.Certificates;
 
 [ApiController]
 [Authorize]
-[Route("api/v1")]
+[Route("{organization-id}/api/v1")]
 public class CertificateController(CertManagerContext certManagerContext) : ControllerBase
 {
 	private readonly CertManagerContext certManagerContext = certManagerContext;
@@ -20,6 +20,7 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 	{
 		Certificate newCertificate = new()
 		{
+			OrganizationId = certManagerContext.OrganizationId,
 			IsCertificateAuthority = payload.IsCertificateAuthority,
 			CertificateName = payload.CertificateName,
 			CertificateDescription = payload.CertificateDescription,

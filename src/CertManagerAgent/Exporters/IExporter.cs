@@ -14,7 +14,7 @@ public abstract class BaseExporter<T>(IGeneratedCertManagerClient client, ILogge
 
 	public async Task ExportCertificates(T ExporterConfiguration, CancellationToken CancellationToken)
 	{
-		var certificates = await client.GetAllCertificatesAsync(ExporterConfiguration.TagFilters, ExporterConfiguration.CertificateSearchBehavior, CancellationToken);
+		var certificates = await client.GetAllCertificatesAsync(ExporterConfiguration.TagFilters, ExporterConfiguration.CertificateSearchBehavior, ExporterConfiguration.OrganizationId, CancellationToken);
 
 		var certificateVersions = await client.GetCertificateVersionsAsync(
 			certificates.Select(x => x.CertificateId),
@@ -22,6 +22,7 @@ public abstract class BaseExporter<T>(IGeneratedCertManagerClient client, ILogge
 			null,
 			null,
 			null,
+			ExporterConfiguration.OrganizationId,
 			cancellationToken: CancellationToken
 		);
 

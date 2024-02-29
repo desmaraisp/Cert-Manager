@@ -8,6 +8,7 @@ public class CertificateRenewalSubscription
 	public required TimeSpan CertificateDuration { get; set; }
 	[MaxLength(150)] public required string CertificateSubject { get; set; }
 	public int RenewalOffsetBeforeExpirationDays { get; set; }
+	[MaxLength(50)] public required string OrganizationId { get; set; }
 
 	public required Guid DestinationCertificateId { get; init; }
 	public Certificate DestinationCertificate { get; init; } = null!;

@@ -21,8 +21,10 @@ internal class Program
 			config.ReadFrom.Configuration(context.Configuration);
 		});
 		builder.Services.AddHealthChecks();
-		builder.Services.AddControllers()
-				.AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+		builder.Services.AddControllers(c => {
+			c.Filters.Add(new OrganizationIdActionFilterAttribute());
+		}).AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
 		builder.Services.AddEndpointsApiExplorer();
 		var swaggerConfig = builder.Services.ConfigureSwagger(builder.Configuration);
 

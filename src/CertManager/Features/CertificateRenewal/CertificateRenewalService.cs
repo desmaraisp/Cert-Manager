@@ -52,6 +52,7 @@ public class CertificateRenewalService(CertManagerContext context)
 	{
 		var newItem = new CertificateRenewalSubscription
 		{
+			OrganizationId = certManagerContext.OrganizationId,
 			CertificateDuration = Payload.CertificateDuration,
 			CertificateSubject = Payload.CertificateSubject,
 			DestinationCertificateId = Payload.DestinationCertificateId,

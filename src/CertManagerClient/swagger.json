@@ -5,12 +5,23 @@
     "version": "v1"
   },
   "paths": {
-    "/api/v1/Certificate": {
+    "/{organization-id}/api/v1/Certificate": {
       "post": {
         "tags": [
           "Certificate"
         ],
         "operationId": "CreateCertificate",
+        "parameters": [
+          {
+            "name": "organization-id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -54,7 +65,7 @@
         }
       }
     },
-    "/api/v1/Certificates/{id}": {
+    "/{organization-id}/api/v1/Certificates/{id}": {
       "get": {
         "tags": [
           "Certificate"
@@ -69,6 +80,15 @@
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -130,6 +150,15 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "organization-id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -173,6 +202,15 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "organization-id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -238,7 +276,7 @@
         }
       }
     },
-    "/api/v1/Certificates": {
+    "/{organization-id}/api/v1/Certificates": {
       "get": {
         "tags": [
           "Certificate"
@@ -263,6 +301,15 @@
             "schema": {
               "$ref": "#/components/schemas/CertificateSearchBehavior"
             }
+          },
+          {
+            "name": "organization-id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -298,7 +345,7 @@
         }
       }
     },
-    "/api/v1/CertificateRenewalSchedules": {
+    "/{organization-id}/api/v1/CertificateRenewalSchedules": {
       "get": {
         "tags": [
           "CertificateRenewal"
@@ -322,6 +369,15 @@
               "type": "string",
               "format": "date-time"
             }
+          },
+          {
+            "name": "organization-id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -357,7 +413,7 @@
         }
       }
     },
-    "/api/v1/CertificateRenewalSubscriptions": {
+    "/{organization-id}/api/v1/CertificateRenewalSubscriptions": {
       "get": {
         "tags": [
           "CertificateRenewal"
@@ -374,6 +430,15 @@
                 "type": "string",
                 "format": "uuid"
               }
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -414,6 +479,17 @@
           "CertificateRenewal"
         ],
         "operationId": "CreateCertificateRenewalSubscriptions",
+        "parameters": [
+          {
+            "name": "organization-id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -457,7 +533,7 @@
         }
       }
     },
-    "/api/v1/CertificateRenewalSubscriptions/{id}": {
+    "/{organization-id}/api/v1/CertificateRenewalSubscriptions/{id}": {
       "delete": {
         "tags": [
           "CertificateRenewal"
@@ -472,6 +548,15 @@
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -502,7 +587,7 @@
         }
       }
     },
-    "/api/v1/CertificateVersion": {
+    "/{organization-id}/api/v1/CertificateVersion": {
       "post": {
         "tags": [
           "CertificateVersion"
@@ -524,6 +609,15 @@
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -591,7 +685,7 @@
         }
       }
     },
-    "/api/v1/CertificateVersions/{id}": {
+    "/{organization-id}/api/v1/CertificateVersions/{id}": {
       "get": {
         "tags": [
           "CertificateVersion"
@@ -606,6 +700,15 @@
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -667,6 +770,15 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "organization-id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -696,7 +808,7 @@
         }
       }
     },
-    "/api/v1/CertificateVersions": {
+    "/{organization-id}/api/v1/CertificateVersions": {
       "get": {
         "tags": [
           "CertificateVersion"
@@ -749,6 +861,15 @@
             "schema": {
               "type": "string",
               "format": "date-time"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -1043,7 +1164,7 @@
             "tokenUrl": "http://localhost:8080/realms/master/protocol/openid-connect/token",
             "scopes": {
               "cert-manager/read": "Read access",
-              "cert-manager/write": "Write access"
+              "cert-manager/write": "write access"
             }
           }
         }

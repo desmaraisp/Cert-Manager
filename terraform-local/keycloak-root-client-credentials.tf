@@ -5,9 +5,16 @@ resource "keycloak_openid_client" "root_client_credentials_client" {
   name        = "root client"
   enabled     = true
   web_origins = ["*"]
+  access_token_lifespan = 3600
 
-  access_type                  = "CONFIDENTIAL"
+  access_type = "CONFIDENTIAL"
+  valid_redirect_uris = [
+    "http://localhost:3222/openid-callback"
+  ]
+
   client_secret                = "BAD_CLIENT_SECRET"
+  standard_flow_enabled        = true
+  service_accounts_enabled     = true
   direct_access_grants_enabled = true
 }
 
@@ -31,6 +38,12 @@ resource "keycloak_openid_client_scope" "root-cert-write-scope" {
   description            = "Allows read-only access to certManager api"
   include_in_token_scope = true
 }
+resource "keycloak_openid_client_scope" "root-cert-cross-scope" {
+  realm_id               = "master"
+  name                   = "cert-manager/cross-org-access"
+  description            = "Allows bypassing the requirement for orgId in claims to certManager api"
+  include_in_token_scope = true
+}
 
 resource "keycloak_openid_client_optional_scopes" "root_client_optional_scopes" {
   realm_id  = "master"
@@ -38,6 +51,7 @@ resource "keycloak_openid_client_optional_scopes" "root_client_optional_scopes" 
 
   optional_scopes = [
     keycloak_openid_client_scope.root-cert-write-scope.name,
-    keycloak_openid_client_scope.root-cert-read-scope.name
+    keycloak_openid_client_scope.root-cert-read-scope.name,
+    keycloak_openid_client_scope.root-cert-cross-scope.name
   ]
 }
