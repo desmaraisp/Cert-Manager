@@ -5,7 +5,6 @@ namespace CertManagerAgent.Lib.CertificateStoreAbstraction;
 public interface ICertStoreWrapper : IDisposable
 {
 	public void AddCertificate(X509Certificate2 x509Certificate2);
-
 }
 
 public class CertStoreWrapper : ICertStoreWrapper
