@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using CertManager.Database;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
 
@@ -12,7 +13,14 @@ public class OrganizationIdActionFilterAttribute : ActionFilterAttribute
 		var httpContext = context.HttpContext ?? throw new InvalidDataException("Cannot access httpContext");
 		string? organizationId = context.RouteData.Values.GetValueOrDefault("organization-id") as string;
 
-		if (string.IsNullOrWhiteSpace(organizationId)) throw new NotImplementedException("Org id can't be empty");
+		if (string.IsNullOrWhiteSpace(organizationId))
+		{
+			context.Result = new ObjectResult("No Organization Id provided")
+			{
+				StatusCode = 400
+			};
+			return;
+		}
 
 		if (HasCrossOrgScope(httpContext.User))
 		{
@@ -27,7 +35,11 @@ public class OrganizationIdActionFilterAttribute : ActionFilterAttribute
 
 		if (claimOrganizationId != organizationId)
 		{
-			throw new InvalidDataException("Org id not match");
+			context.Result = new ObjectResult("You're not authorized to access this organization")
+			{
+				StatusCode = 403
+			};
+			return;
 		}
 		httpContext.RequestServices.GetRequiredService<CertManagerContext>().OrganizationId = organizationId;
 	}
