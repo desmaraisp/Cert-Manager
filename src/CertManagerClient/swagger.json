@@ -1156,7 +1156,8 @@
             "tokenUrl": "http://localhost:8080/realms/master/protocol/openid-connect/token",
             "scopes": {
               "cert-manager/read": "Read access",
-              "cert-manager/write": "write access"
+              "cert-manager/write": "write access",
+              "cert-manager/cross-org-access": "cross-org access"
             }
           },
           "clientCredentials": {
@@ -1164,7 +1165,8 @@
             "tokenUrl": "http://localhost:8080/realms/master/protocol/openid-connect/token",
             "scopes": {
               "cert-manager/read": "Read access",
-              "cert-manager/write": "write access"
+              "cert-manager/write": "write access",
+              "cert-manager/cross-org-access": "cross-org access"
             }
           }
         }
