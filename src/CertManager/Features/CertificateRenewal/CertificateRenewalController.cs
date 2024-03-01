@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CertManager.Features.CertificateRenewal;
 
 [Authorize]
-[Route("api/v1")]
+[Route("{organization-id}/api/v1")]
 [ApiController]
 public class CertificateRenewalController : ControllerBase
 {

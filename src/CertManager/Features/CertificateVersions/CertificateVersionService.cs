@@ -14,6 +14,7 @@ public class CertificateVersionService(CertManagerContext certManagerContext)
 
 		CertificateVersion newCertVersion = new()
 		{
+			OrganizationId = certManagerContext.OrganizationId,
 			ActivationDate = DateTime.UtcNow,
 			CertificateId = CertificateId,
 			Cn = cert.GetNameInfo(X509NameType.SimpleName, false),

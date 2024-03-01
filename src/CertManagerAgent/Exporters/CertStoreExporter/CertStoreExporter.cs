@@ -11,7 +11,7 @@ public class CertStoreExporter(IGeneratedCertManagerClient client, ILogger<BaseE
 	protected override Task ExportCertificateVersion(CertificateVersionModel certificateVersion, CertStoreExporterConfig ExporterConfig)
 	{
 		using ICertStoreWrapper certStore = certStoreWrapperFactory.CreateCertStoreWrapper(ExporterConfig.StoreName, ExporterConfig.StoreLocation);
-		using var certificate = new X509Certificate2(certificateVersion.RawCertificate, (string?)null, X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable);
+		using var certificate = new X509Certificate2(certificateVersion.RawCertificate, (string?)null, X509KeyStorageFlags.EphemeralKeySet);
 
 		logger.LogInformation("Exported certificate {cert} to cert store", certificate.Subject);
 		certStore.AddCertificate(certificate);

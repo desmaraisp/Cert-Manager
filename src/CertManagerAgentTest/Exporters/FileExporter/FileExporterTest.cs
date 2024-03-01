@@ -50,6 +50,7 @@ public class FileExporterTest
 		mock.Setup(l => l.GetAllCertificatesAsync(
 			It.IsAny<List<string>>(),
 			It.IsAny<CertificateSearchBehavior>(),
+			It.IsAny<string>(),
 			It.IsAny<CancellationToken>())
 		)
 		.Returns(
@@ -63,6 +64,7 @@ public class FileExporterTest
 				It.IsAny<DateTimeOffset?>(),
 				It.IsAny<DateTimeOffset?>(),
 				It.IsAny<DateTimeOffset?>(),
+				It.IsAny<string>(),
 				It.IsAny<CancellationToken>())
 		).Returns(
 			defaultCertificateVersions

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 
 namespace CertManager.Features.Authentication;
@@ -7,27 +7,33 @@ public static class ServiceCollectionExtensions
 {
 	public static IServiceCollection RegisterAuthentication(this IServiceCollection services, IConfiguration configuration)
 	{
+		services.AddOptions<AuthenticationConfig>().BindConfiguration("Authentication").ValidateDataAnnotations();
+		var config = configuration.GetSection("Authentication").Get<AuthenticationConfig>() ?? new();
+		Validator.ValidateObject(config, new(config), true);
 
 		services.AddSingleton<IAuthorizationHandler, ScopeAuthorizationHandler>();
-
 		services.AddAuthorizationBuilder()
-				.SetDefaultPolicy(new AuthorizationPolicyBuilder()
+				.SetDefaultPolicy(new AuthorizationPolicyBuilder(config.Providers.Select(x => x.AuthenticationScheme).ToArray())
 					.RequireAuthenticatedUser()
 					.AddRequirements(new ScopeAuthorizationRequirement())
 					.Build()
 				);
 
-		services.AddAuthentication(options =>
+		var authBuilder = services.AddAuthentication(options =>
 		{
-			options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-			options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-		})
-		.AddJwtBearer((options) =>
+			options.DefaultAuthenticateScheme = config.Providers.First().AuthenticationScheme;
+			options.DefaultChallengeScheme = config.Providers.First().AuthenticationScheme;
+		});
+
+		config.Providers.ForEach(x =>
 		{
-			options.MetadataAddress = configuration.GetValue<string>("Authentication:OpenIdConfigurationEndpoint") ?? throw new InvalidDataException();
-			options.Authority = configuration.GetValue<string>("Authentication:JwtAuthority");
-			options.RequireHttpsMetadata = configuration.GetValue("Authentication:RequireHttpsMetadata", true);
-			options.Audience = "cert-manager";
+			authBuilder.AddJwtBearer(x.AuthenticationScheme, (options) =>
+			{
+				options.MetadataAddress = x.OpenIdConfigurationEndpoint;
+				options.Authority = x.JwtAuthority;
+				options.RequireHttpsMetadata = config.RequireHttpsMetadata;
+				options.Audience = "cert-manager";
+			});
 		});
 
 		return services;

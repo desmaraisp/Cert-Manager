@@ -40,6 +40,11 @@ namespace CertManager.Migrations.SqlServer.Migrations
                     b.Property<bool>("IsCertificateAuthority")
                         .HasColumnType("bit");
 
+                    b.Property<string>("OrganizationId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.HasKey("CertificateId");
 
                     b.HasIndex("CertificateName")
@@ -64,6 +69,11 @@ namespace CertManager.Migrations.SqlServer.Migrations
 
                     b.Property<Guid>("DestinationCertificateId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("OrganizationId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<Guid>("ParentCertificateId")
                         .HasColumnType("uniqueidentifier");
@@ -127,6 +137,11 @@ namespace CertManager.Migrations.SqlServer.Migrations
                         .IsRequired()
                         .HasMaxLength(442)
                         .HasColumnType("nvarchar(442)");
+
+                    b.Property<string>("OrganizationId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<byte[]>("RawCertificate")
                         .IsRequired()

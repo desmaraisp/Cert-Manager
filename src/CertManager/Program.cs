@@ -4,6 +4,7 @@ using CertManager.Database;
 using CertManager.Features.Authentication;
 using CertManager.Features.CertificateRenewal;
 using CertManager.Features.CertificateVersions;
+using CertManager.Features.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -20,64 +21,12 @@ internal class Program
 			config.ReadFrom.Configuration(context.Configuration);
 		});
 		builder.Services.AddHealthChecks();
-		builder.Services.AddControllers()
-				.AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+		builder.Services.AddControllers(c => {
+			c.Filters.Add(new OrganizationIdActionFilterAttribute());
+		}).AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
 		builder.Services.AddEndpointsApiExplorer();
-		builder.Services.AddSwaggerGen(c =>
-		{
-			c.MapType<TimeSpan>(() => new OpenApiSchema { Type = "string", Format = "time-span" });
-			c.SwaggerDoc("v1", new()
-			{
-				Title = "CertManager API",
-				Version = "v1"
-			});
-			c.AddSecurityDefinition("JWTBearerAuth", new OpenApiSecurityScheme()
-			{
-				Flows = new()
-				{
-					ClientCredentials = new()
-					{
-						AuthorizationUrl = new Uri(builder.Configuration.GetValue<string>("Authentication:OpenIdAuthEndpoint") ?? ""),
-						TokenUrl = new Uri(builder.Configuration.GetValue<string>("Authentication:OpenIdTokenEndpoint") ?? ""),
-						Scopes = new Dictionary<string, string>
-						{
-							{ AuthenticationScopes.ReadScope, "Read access" },
-							{ AuthenticationScopes.WriteScope, "Write access" }
-						}
-					},
-					Password = new()
-					{
-						AuthorizationUrl = new Uri(builder.Configuration.GetValue<string>("Authentication:OpenIdAuthEndpoint") ?? ""),
-						TokenUrl = new Uri(builder.Configuration.GetValue<string>("Authentication:OpenIdTokenEndpoint") ?? ""),
-						Scopes = new Dictionary<string, string>
-						{
-							{ AuthenticationScopes.ReadScope, "Read access" },
-							{ AuthenticationScopes.WriteScope, "write access" }
-						}
-					}
-
-				},
-				Name = "Bearer",
-				BearerFormat = "JWT",
-				Scheme = JwtBearerDefaults.AuthenticationScheme,
-				Description = "Specify the authorization token.",
-				In = ParameterLocation.Header,
-				Type = SecuritySchemeType.OAuth2,
-			});
-
-			OpenApiSecurityScheme securityScheme = new()
-			{
-				Reference = new OpenApiReference()
-				{
-					Id = "JWTBearerAuth",
-					Type = ReferenceType.SecurityScheme
-				}
-			};
-			c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-			{
-				{securityScheme, []},
-			});
-		});
+		var swaggerConfig = builder.Services.ConfigureSwagger(builder.Configuration);
 
 		builder.Services.AddDbContext<CertManagerContext>(o =>
 		{
@@ -96,7 +45,7 @@ internal class Program
 		builder.Services.RegisterAuthentication(builder.Configuration);
 
 		var app = builder.Build();
-		if (builder.Configuration.GetValue<bool>("EnableSwagger"))
+		if (swaggerConfig?.Enabled ?? false)
 		{
 			app.UseSwagger();
 			app.UseSwaggerUI();

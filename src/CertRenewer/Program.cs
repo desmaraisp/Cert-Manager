@@ -26,6 +26,11 @@ internal class Program
 		});
 
 		using IServiceScope scope = builder.Build().Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
-		await scope.ServiceProvider.GetRequiredService<Main>().Run();
+		var orgs = scope.ServiceProvider.GetRequiredService<IConfiguration>().GetSection("Organizations").Get<List<string>>() ?? [];
+
+		foreach (var org in orgs)
+		{
+			await scope.ServiceProvider.GetRequiredService<Main>().Run(org);
+		}
 	}
 }

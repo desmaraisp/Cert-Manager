@@ -19,6 +19,7 @@ public partial class CertificateVersion
 	[Column("CN")]
 	[MaxLength(442)]
 	public required string Cn { get; set; }
+	[MaxLength(50)] public required string OrganizationId { get; set; }
 
 	public Guid CertificateId { get; init; }
 	public Certificate Certificate { get; init; } = null!;

@@ -13,6 +13,7 @@ public partial class Certificate
 	public required string? CertificateDescription { get; set; }
 
 	public required bool IsCertificateAuthority { get; set; }
+	[MaxLength(50)] public required string OrganizationId { get; set; }
 
 	public ICollection<CertificateVersion> CertificateVersions { get; set; } = [];
 	public ICollection<CertificateTag> CertificateTags { get; set; } = [];
