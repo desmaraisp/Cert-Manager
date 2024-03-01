@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 
 namespace CertManager.Features.Authentication;
@@ -13,7 +14,7 @@ public static class ServiceCollectionExtensions
 
 		services.AddSingleton<IAuthorizationHandler, ScopeAuthorizationHandler>();
 		services.AddAuthorizationBuilder()
-				.SetDefaultPolicy(new AuthorizationPolicyBuilder(config.Providers.Select(x => x.AuthenticationScheme).ToArray())
+				.SetDefaultPolicy(new AuthorizationPolicyBuilder([JwtBearerDefaults.AuthenticationScheme, .. config.Organizations.Select(x => x.OrganizationId).ToArray()])
 					.RequireAuthenticatedUser()
 					.AddRequirements(new ScopeAuthorizationRequirement())
 					.Build()
@@ -21,13 +22,21 @@ public static class ServiceCollectionExtensions
 
 		var authBuilder = services.AddAuthentication(options =>
 		{
-			options.DefaultAuthenticateScheme = config.Providers.First().AuthenticationScheme;
-			options.DefaultChallengeScheme = config.Providers.First().AuthenticationScheme;
+			options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+			options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+		});
+		authBuilder.AddJwtBearer((options) =>
+		{
+			options.MetadataAddress = config.Master.OpenIdConfigurationEndpoint;
+			options.Authority = config.Master.JwtAuthority;
+			options.RequireHttpsMetadata = config.RequireHttpsMetadata;
+			options.Audience = "cert-manager";
 		});
 
-		config.Providers.ForEach(x =>
+
+		config.Organizations.ForEach(x =>
 		{
-			authBuilder.AddJwtBearer(x.AuthenticationScheme, (options) =>
+			authBuilder.AddJwtBearer(x.OrganizationId, (options) =>
 			{
 				options.MetadataAddress = x.OpenIdConfigurationEndpoint;
 				options.Authority = x.JwtAuthority;

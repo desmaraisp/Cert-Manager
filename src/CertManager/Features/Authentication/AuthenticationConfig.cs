@@ -6,13 +6,16 @@ namespace CertManager.Features.Authentication;
 public class AuthenticationConfig
 {
 	public bool RequireHttpsMetadata { get; init; } = true;
-	[StringLength(25, MinimumLength = 1)] public string OrganizationIdClaimName { get; init; } = "organization_id";
-	public List<JWTProvider> Providers { get; init; } = [];
+	public List<JWTProviderWithOrganizationId> Organizations { get; init; } = [];
+	public JWTProvider Master { get; init; } = new();
 }
 
 public class JWTProvider
 {
-	[StringLength(25, MinimumLength = 4)] public required string AuthenticationScheme { get; init; } = JwtBearerDefaults.AuthenticationScheme;
-	[Url] public required string OpenIdConfigurationEndpoint { get; init; }
-	[Url] public required string JwtAuthority { get; init; }
+	[Url] public string OpenIdConfigurationEndpoint { get; init; } = "";
+	[Url] public string JwtAuthority { get; init; } = "";
+}
+public class JWTProviderWithOrganizationId: JWTProvider
+{
+	[StringLength(25, MinimumLength = 4)] public required string OrganizationId { get; init; }
 }

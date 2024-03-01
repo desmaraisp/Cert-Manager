@@ -32,7 +32,6 @@ public static class ServiceCollectionExtensions
 					Scopes = {
 						{ AuthenticationScopes.ReadScope, "Read access" },
 						{ AuthenticationScopes.WriteScope, "write access" },
-						{ AuthenticationScopes.CrossOrgAccessScope, "cross-org access" }
 					}
 				};
 			}
@@ -45,7 +44,6 @@ public static class ServiceCollectionExtensions
 					Scopes = {
 						{ AuthenticationScopes.ReadScope, "Read access" },
 						{ AuthenticationScopes.WriteScope, "write access" },
-						{ AuthenticationScopes.CrossOrgAccessScope, "cross-org access" }
 					}
 				};
 			}
