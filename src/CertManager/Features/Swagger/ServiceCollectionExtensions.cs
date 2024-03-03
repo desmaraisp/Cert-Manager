@@ -22,58 +22,71 @@ public static class ServiceCollectionExtensions
 				Title = "CertManager API",
 				Version = "v1"
 			});
-			OpenApiOAuthFlows openApiOAuthFlows = new();
-			if (config.PasswordAuthentication != null)
+
+			foreach (var scheme in config.AuthorizationSchemes)
 			{
-				openApiOAuthFlows.Password = new()
+				c.AddSecurityDefinition(scheme.SchemeName, new OpenApiSecurityScheme()
 				{
-					AuthorizationUrl = new(config.PasswordAuthentication.OpenIdAuthEndpoint),
-					TokenUrl = new(config.PasswordAuthentication.OpenIdTokenEndpoint),
-					Scopes = {
-						{ AuthenticationScopes.ReadScope, "Read access" },
-						{ AuthenticationScopes.WriteScope, "write access" },
-					}
-				};
-			}
-			if (config.ClientCredentialsAuthentication != null)
-			{
-				openApiOAuthFlows.ClientCredentials = new()
-				{
-					AuthorizationUrl = new(config.ClientCredentialsAuthentication.OpenIdAuthEndpoint),
-					TokenUrl = new(config.ClientCredentialsAuthentication.OpenIdTokenEndpoint),
-					Scopes = {
-						{ AuthenticationScopes.ReadScope, "Read access" },
-						{ AuthenticationScopes.WriteScope, "write access" },
-					}
-				};
+					Flows = GenerateOauthFlow(scheme),
+					Name = "Bearer",
+					BearerFormat = "JWT",
+					Scheme = scheme.SchemeName,
+					Description = "Specify the authorization token.",
+					In = ParameterLocation.Header,
+					Type = SecuritySchemeType.OAuth2,
+				});
 			}
 
-
-			c.AddSecurityDefinition("JWTBearerAuth", new OpenApiSecurityScheme()
-			{
-				Flows = openApiOAuthFlows,
-				Name = "Bearer",
-				BearerFormat = "JWT",
-				Scheme = JwtBearerDefaults.AuthenticationScheme,
-				Description = "Specify the authorization token.",
-				In = ParameterLocation.Header,
-				Type = SecuritySchemeType.OAuth2,
-			});
-
-			OpenApiSecurityScheme securityScheme = new()
-			{
-				Reference = new OpenApiReference()
-				{
-					Id = "JWTBearerAuth",
-					Type = ReferenceType.SecurityScheme
-				}
-			};
-			c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-			{
-				{ securityScheme, []},
-			});
+			var securityRequirement = new OpenApiSecurityRequirement();
+			foreach(var scheme in config.AuthorizationSchemes){
+				securityRequirement.Add(GenerateSecurityScheme(scheme.SchemeName), []);
+			}
+			c.AddSecurityRequirement(securityRequirement);
 		});
 
 		return config;
+	}
+
+	private static OpenApiSecurityScheme GenerateSecurityScheme(string Name)
+	{
+		return new()
+		{
+			Reference = new OpenApiReference()
+			{
+				Id = Name,
+				Type = ReferenceType.SecurityScheme
+			}
+		};
+	}
+
+	private static OpenApiOAuthFlows GenerateOauthFlow(AuthorizationScheme config)
+	{
+		OpenApiOAuthFlows openApiOAuthFlows = new();
+
+		if (config.PasswordAuthentication != null)
+		{
+			openApiOAuthFlows.Password = new()
+			{
+				AuthorizationUrl = new(config.PasswordAuthentication.OpenIdAuthEndpoint),
+				TokenUrl = new(config.PasswordAuthentication.OpenIdTokenEndpoint),
+				Scopes = {
+						{ AuthenticationScopes.ReadScope, "Read access" },
+						{ AuthenticationScopes.WriteScope, "write access" },
+					}
+			};
+		}
+		if (config.ClientCredentialsAuthentication != null)
+		{
+			openApiOAuthFlows.ClientCredentials = new()
+			{
+				AuthorizationUrl = new(config.ClientCredentialsAuthentication.OpenIdAuthEndpoint),
+				TokenUrl = new(config.ClientCredentialsAuthentication.OpenIdTokenEndpoint),
+				Scopes = {
+						{ AuthenticationScopes.ReadScope, "Read access" },
+						{ AuthenticationScopes.WriteScope, "write access" },
+					}
+			};
+		}
+		return openApiOAuthFlows;
 	}
 }

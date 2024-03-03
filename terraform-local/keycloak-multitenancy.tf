@@ -49,17 +49,6 @@ resource "keycloak_openid_audience_protocol_mapper" "audience_mapper" {
   included_custom_audience = "cert-manager"
 }
 
-resource "keycloak_openid_hardcoded_claim_protocol_mapper" "org_mapper" {
-  for_each = keycloak_openid_client.client_credentials_clients
-  realm_id = each.value.realm_id
-
-  client_id   = each.value.id
-  claim_name  = "organization_id"
-  name        = "organization_id_mapper"
-  claim_value = each.value.realm_id
-}
-
-
 resource "keycloak_openid_client_scope" "cert-read-scope" {
   for_each               = keycloak_realm.realms
   realm_id               = each.value.id
