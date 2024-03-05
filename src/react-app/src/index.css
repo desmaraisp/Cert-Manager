@@ -1,6 +1,11 @@
-@tailwind base;
+@import '@mantine/core/styles.css';
 @tailwind components;
 @tailwind utilities;
+
+@layer tailwind {
+	@tailwind base;
+}
+
 
 html {
 	@apply dark:bg-slate-800 dark:text-white
