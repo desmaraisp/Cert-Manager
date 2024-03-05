@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom"
 import { hooks } from "../zodios/client-hooks"
 import { GetAuthorizationHeader } from "../zodios/get-auth-header"
-import { Anchor, Box, Card, Group, LoadingOverlay, Stack, Table, TableData, Text } from "@mantine/core"
+import { Anchor, Box, Card, Flex, Group, LoadingOverlay, Pill, Stack, Table, TableData, Text } from "@mantine/core"
 import { DeleteButton } from "./delete-button"
 import { schemas } from "../../generated/client"
 import { z } from "zod"
@@ -38,11 +38,14 @@ function CertificatesTable({ data, invalidate }: { data: z.infer<typeof schemas.
 	const organizationId = useParams()["organization-id"]
 
 	const tableData: TableData = {
-		head: ['Name', 'Type', 'Description', ''],
+		head: ['Name', 'Type', 'Tags', 'Description', ''],
 		body: data.map(c => [
-			<Anchor href={`/${organizationId}/certificates/${c.certificateId}`}>c.certificateName</Anchor>,
+			<Anchor href={`/${organizationId}/certificates/${c.certificateId}`}>{c.certificateName}</Anchor>,
 			c.isCertificateAuthority ? 'CA' : 'Normal',
-			c.certificateDescription,
+			<Flex wrap={"wrap"} style={{maxWidth: 150}}>
+				{c.tags?.map(y => <Pill key={y}>{y}</Pill>)}
+			</Flex>,
+			<Text style={{ whiteSpace: 'pre-line', wordBreak: 'break-word' }}>{c.certificateDescription}</Text>,
 			<Group>
 				<DeleteButton certificateId={c.certificateId!} onDeleteComplete={invalidate} />
 			</Group>
