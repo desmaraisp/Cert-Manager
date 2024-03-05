@@ -13,7 +13,7 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 {
 	private readonly CertManagerContext certManagerContext = certManagerContext;
 
-	[HttpPost("Certificate", Name = nameof(CreateCertificate))]
+	[HttpPost("Certificates", Name = nameof(CreateCertificate))]
 	[ProducesResponseType(typeof(CertificateModelWithId), 200)]
 	[RequiredScope(AuthenticationScopes.WriteScope)]
 	public async Task<IActionResult> CreateCertificate(CertificateModel payload)

@@ -90,25 +90,6 @@ export const schemas = {
 
 const endpoints = makeApi([
   {
-    method: "post",
-    path: "/:organizationId/api/v1/Certificate",
-    alias: "CreateCertificate",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: CertificateModel,
-      },
-      {
-        name: "organizationId",
-        type: "Path",
-        schema: z.string(),
-      },
-    ],
-    response: CertificateModelWithId,
-  },
-  {
     method: "get",
     path: "/:organizationId/api/v1/CertificateRenewalSchedules",
     alias: "GetCertificateRenewalSchedules",
@@ -204,6 +185,25 @@ const endpoints = makeApi([
           .passthrough(),
       },
     ],
+  },
+  {
+    method: "post",
+    path: "/:organizationId/api/v1/Certificates",
+    alias: "CreateCertificate",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CertificateModel,
+      },
+      {
+        name: "organizationId",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: CertificateModelWithId,
   },
   {
     method: "get",

@@ -5,7 +5,7 @@
     "version": "v1"
   },
   "paths": {
-    "/{organization-id}/api/v1/Certificate": {
+    "/{organization-id}/api/v1/Certificates": {
       "post": {
         "tags": [
           "Certificate"
@@ -58,6 +58,73 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CertificateModelWithId"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Certificate"
+        ],
+        "operationId": "GetAllCertificates",
+        "parameters": [
+          {
+            "name": "TagsToSearch",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "TagsSearchBehavior",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/CertificateSearchBehavior"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CertificateModelWithId"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CertificateModelWithId"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CertificateModelWithId"
+                  }
                 }
               }
             }
@@ -269,75 +336,6 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/{organization-id}/api/v1/Certificates": {
-      "get": {
-        "tags": [
-          "Certificate"
-        ],
-        "operationId": "GetAllCertificates",
-        "parameters": [
-          {
-            "name": "TagsToSearch",
-            "in": "query",
-            "style": "form",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          },
-          {
-            "name": "TagsSearchBehavior",
-            "in": "query",
-            "style": "form",
-            "schema": {
-              "$ref": "#/components/schemas/CertificateSearchBehavior"
-            }
-          },
-          {
-            "name": "organization-id",
-            "in": "path",
-            "required": true,
-            "style": "simple",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CertificateModelWithId"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CertificateModelWithId"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CertificateModelWithId"
-                  }
                 }
               }
             }
