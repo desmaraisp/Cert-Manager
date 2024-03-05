@@ -43,6 +43,13 @@ internal class Program
 		builder.Services.AddScoped<CertificateVersionService>()
 					.AddScoped<CertificateRenewalService>();
 		builder.Services.RegisterAuthentication(builder.Configuration);
+		builder.Services.AddCors(x =>
+		{
+			x.AddDefaultPolicy(x =>
+			{
+				x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+			});
+		});
 
 		var app = builder.Build();
 		if (swaggerConfig?.Enabled ?? false)
@@ -54,6 +61,7 @@ internal class Program
 		app.MapHealthChecks("/health");
 
 		app.UseSerilogRequestLogging();
+		app.UseCors();
 		app.UseAuthentication();
 		app.UseAuthorization();
 		app.MapControllers();
