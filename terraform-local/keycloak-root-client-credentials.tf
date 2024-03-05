@@ -4,18 +4,12 @@ resource "keycloak_openid_client" "root_client_credentials_client" {
 
   name        = "root client"
   enabled     = true
-  web_origins = ["*"]
   access_token_lifespan = 3600
 
   access_type = "CONFIDENTIAL"
-  valid_redirect_uris = [
-    "http://localhost:3222/openid-callback"
-  ]
 
   client_secret                = "BAD_CLIENT_SECRET"
-  standard_flow_enabled        = true
   service_accounts_enabled     = true
-  direct_access_grants_enabled = true
 }
 
 resource "keycloak_openid_audience_protocol_mapper" "root_audience_mapper" {
