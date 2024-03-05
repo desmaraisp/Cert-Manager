@@ -5,8 +5,3 @@
 @layer tailwind {
 	@tailwind base;
 }
-
-
-html {
-	@apply dark:bg-slate-800 dark:text-white
-}

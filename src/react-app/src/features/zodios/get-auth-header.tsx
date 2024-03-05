@@ -7,7 +7,7 @@ export function GetAuthorizationHeader() {
 	const organizationId = useParams()["organization-id"]
 
 	return {
-		Ready: !!auth.userData?.access_token,
+		Ready: !auth.isLoading,
 		AuthorizationHeader: `Bearer ${auth.userData?.access_token}`,
 		organizationId
 	};

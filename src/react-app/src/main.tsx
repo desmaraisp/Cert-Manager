@@ -10,9 +10,15 @@ import { CertificatesDisplay } from './features/certificates/certificates-displa
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CertificatesAddForm } from './features/certificates/certificates-add';
 import { AppShell, createTheme, MantineProvider, Stack, Text } from '@mantine/core';
+import { ErrorWrapper } from './components/error-wrapper';
 
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+	defaultOptions: {
+		mutations: { useErrorBoundary: true },
+		queries: { useErrorBoundary: true }
+	}
+})
 const router = createBrowserRouter([
 	{
 		path: "/",
@@ -20,11 +26,11 @@ const router = createBrowserRouter([
 	},
 	{
 		path: ":organization-id/certificates",
-		element: <Stack><CertificatesDisplay /><CertificatesAddForm /></Stack>
+		element: <ErrorWrapper><Stack><CertificatesDisplay /><CertificatesAddForm /></Stack></ErrorWrapper>
 	},
 	{
 		path: "oidc-callback",
-		element: <OidcCallbackPage />
+		element: <ErrorWrapper><OidcCallbackPage /></ErrorWrapper>
 	}
 ]);
 const theme = createTheme({
