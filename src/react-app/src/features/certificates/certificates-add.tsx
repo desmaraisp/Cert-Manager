@@ -18,7 +18,7 @@ export function CertificatesAddForm() {
 	}, {
 		enabled: auth.Ready
 	});
-	const { mutateAsync } = hooks.usePost("/:organizationId/api/v1/Certificates", {
+	const { mutateAsync, isLoading } = hooks.usePost("/:organizationId/api/v1/Certificates", {
 		params: { organizationId: auth.organizationId ?? "" },
 		headers: { Authorization: auth.AuthorizationHeader }
 	}, {});
@@ -43,7 +43,7 @@ export function CertificatesAddForm() {
 					<TagsInput label="Certificate tags" placeholder="Enter tag" {...form.getInputProps('tags')} />
 
 
-					<Button type='submit'>Create</Button>
+					<Button loading={isLoading} type='submit'>Create</Button>
 				</Stack>
 			</form>
 		</Card>
