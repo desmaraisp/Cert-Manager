@@ -1,11 +1,12 @@
 import { useAuth } from "oidc-react"
+import { Button } from "../../components/button"
 
 export function LoginButton() {
 	const auth = useAuth()
 
-	return <button className="btn" onClick={async () => {
+	return <Button onClick={async () => {
 		await auth.signIn({
 			scope: 'openid cert-manager/write cert-manager/read'
 		})
-	}}>Login</button>
+	}}>Login</Button>
 }

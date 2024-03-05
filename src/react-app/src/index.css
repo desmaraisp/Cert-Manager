@@ -2,12 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
-	.btn {
-		@apply bg-green-400 rounded-md p-2 shadow-md;
-	}
-}
-
 html {
 	@apply dark:bg-slate-800 dark:text-white
 }

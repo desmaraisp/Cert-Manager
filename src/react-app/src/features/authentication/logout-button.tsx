@@ -1,7 +1,8 @@
 import { useAuth } from "oidc-react"
+import { Button } from "../../components/button"
 
 export function LogoutButton() {
 	const auth = useAuth()
 
-	return <button className="btn" onClick={async () => {await auth.signOut()}}>Logout</button>
+	return <Button onClick={async () => {await auth.signOut()}}>Logout</Button>
 }
