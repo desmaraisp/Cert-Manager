@@ -30,14 +30,16 @@ jobs:
           docker build -f ./src/CertManager/Dockerfile -t "certmanager:latest" .
 
       - name: check if swagger doc is up to date
+        shell: pwsh
         run: |
-          docker run -e ASPNETCORE_ENVIRONMENT=Development -p 5156:5156 certmanager &
-          cd ./src/CertManagerClient
-          dotnet openapi refresh http://localhost:5156/swagger/v1/swagger.json
+          docker run -e ASPNETCORE_ENVIRONMENT=Development -d -p 5156:5156 certmanager
+          ./dev-scripts/refresh-openapi.ps1
 
-          if [ -z "$(git status --short)" ]; then
+          $status = $(git status --short)
+          if(-not $status){
             echo "Working directory clean, swagger is up-to-date"
-          else
+          }
+          else {
             echo "Working directory not clean, swagger is not up-to-date"
             exit 1
-          fi
+          }

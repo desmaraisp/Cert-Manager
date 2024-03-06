@@ -22,3 +22,5 @@ plugins:
     - name: "ghcr.io/desmaraisp/cert-manager-renewer:latest"
   - - "@semantic-release-plus/docker"
     - name: "ghcr.io/desmaraisp/cert-manager-migrations:latest"
+  - - "@semantic-release-plus/docker"
+    - name: "ghcr.io/desmaraisp/cert-manager-frontend:latest"

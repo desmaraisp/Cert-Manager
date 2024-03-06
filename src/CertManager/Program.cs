@@ -23,7 +23,10 @@ internal class Program
 		builder.Services.AddHealthChecks();
 		builder.Services.AddControllers(c => {
 			c.Filters.Add(new OrganizationIdActionFilterAttribute());
-		}).AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+		}).AddJsonOptions(options => {
+			options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+			options.JsonSerializerOptions.Converters.Add(new DatetimeUtcSerializationConverter());
+		});
 
 		builder.Services.AddEndpointsApiExplorer();
 		var swaggerConfig = builder.Services.ConfigureSwagger(builder.Configuration);
@@ -43,6 +46,13 @@ internal class Program
 		builder.Services.AddScoped<CertificateVersionService>()
 					.AddScoped<CertificateRenewalService>();
 		builder.Services.RegisterAuthentication(builder.Configuration);
+		builder.Services.AddCors(x =>
+		{
+			x.AddDefaultPolicy(x =>
+			{
+				x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+			});
+		});
 
 		var app = builder.Build();
 		if (swaggerConfig?.Enabled ?? false)
@@ -54,6 +64,7 @@ internal class Program
 		app.MapHealthChecks("/health");
 
 		app.UseSerilogRequestLogging();
+		app.UseCors();
 		app.UseAuthentication();
 		app.UseAuthorization();
 		app.MapControllers();
