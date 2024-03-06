@@ -1,13 +1,9 @@
-import { AuthProviderProps } from 'oidc-react';
+import { AuthProviderProps } from 'react-oidc-context';
 
 export const oidcConfig: AuthProviderProps = {
-	onSignIn: () => {
-		console.log("Logged in")
-		window.location.replace("/")
-	},
-	autoSignIn: false,
+	onSigninCallback: () => { window.location.replace("/") },
 	loadUserInfo: false,
 	authority: 'http://localhost:8080/realms/first_realm',
-	clientId: 'first_realm-public-client',
-	redirectUri: 'http://localhost:3000/oidc-callback',
+	client_id: 'first_realm-public-client',
+	redirect_uri: 'http://localhost:3000/oidc-callback',
 };

@@ -1,12 +1,12 @@
 import { Button } from "@mantine/core";
 import { hooks } from "../zodios/client-hooks";
-import { GetAuthorizationHeader } from "../zodios/get-auth-header";
+import { useAuthHelperForceAuthenticated } from "../authentication/auth-provider-helper-context";
 
-export function DeleteButton({ certificateId, onDeleteComplete }: { certificateId: string, onDeleteComplete: () => Promise<void> }) {
-	const auth = GetAuthorizationHeader()
+export function DeleteButton({ certificateId, organizationId, onDeleteComplete }: { certificateId: string, organizationId: string, onDeleteComplete: () => Promise<void> }) {
+	const { bearerToken } = useAuthHelperForceAuthenticated()
 	const { mutateAsync, isLoading } = hooks.useDeleteCertificateById({
-		params: { organizationId: auth.organizationId ?? "", id: certificateId },
-		headers: { Authorization: auth.AuthorizationHeader }
+		params: { organizationId: organizationId, id: certificateId },
+		headers: { Authorization: bearerToken }
 	}, {});
 
 

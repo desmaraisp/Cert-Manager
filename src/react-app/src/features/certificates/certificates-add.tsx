@@ -1,26 +1,24 @@
 import { schemas } from "../../generated/client"
 import { z } from "zod";
 import { hooks } from "../zodios/client-hooks";
-import { GetAuthorizationHeader } from "../zodios/get-auth-header";
 import { useForm, zodResolver } from "@mantine/form";
 import { Card, Stack, Checkbox, Button, TextInput, Textarea, TagsInput } from "@mantine/core";
+import { useAuthHelperForceAuthenticated } from "../authentication/auth-provider-helper-context";
 
-export function CertificatesAddForm() {
+export function CertificatesAddForm({ organizationId }: { organizationId: string }) {
 	const form = useForm<z.infer<typeof schemas.CertificateModel>>({
 		validate: zodResolver(schemas.CertificateModel),
 		initialValues: { certificateDescription: '', certificateName: '', isCertificateAuthority: false, tags: [] }
 	})
 
-	const auth = GetAuthorizationHeader()
+	const {bearerToken} = useAuthHelperForceAuthenticated()
 	const { invalidate } = hooks.useQuery("/:organizationId/api/v1/Certificates", {
-		params: { organizationId: auth.organizationId ?? "" },
-		headers: { Authorization: auth.AuthorizationHeader }
-	}, {
-		enabled: auth.Ready
+		params: { organizationId: organizationId ?? "" },
+		headers: { Authorization: bearerToken }
 	});
 	const { mutateAsync, isLoading } = hooks.usePost("/:organizationId/api/v1/Certificates", {
-		params: { organizationId: auth.organizationId ?? "" },
-		headers: { Authorization: auth.AuthorizationHeader }
+		params: { organizationId: organizationId ?? "" },
+		headers: { Authorization: bearerToken }
 	}, {});
 
 	const handler = form.onSubmit(async (data) => {

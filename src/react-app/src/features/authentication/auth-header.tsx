@@ -1,15 +1,15 @@
-import { useAuth } from "oidc-react";
 import { Button } from "@mantine/core";
+import { useAuthHelper } from "./auth-provider-helper-context";
 
 export function AuthHeader() {
-	const auth = useAuth()
+	const { auth } = useAuthHelper()
 
-	if (!auth.userData) return <Button onClick={async () => {
-		await auth.signIn({
+	if (!auth.isAuthenticated) return <Button onClick={async () => {
+		await auth.signinRedirect({
 			scope: 'openid cert-manager/write cert-manager/read'
 		})
 	}}>Login</Button>
 
 
-	return <Button onClick={async () => {await auth.signOut()}}>Logout</Button>
+	return <Button onClick={async () => { await auth.signoutRedirect() }}>Logout</Button>
 }
