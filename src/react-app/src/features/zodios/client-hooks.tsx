@@ -1,8 +1,7 @@
 import { createApiClient } from "../../generated/client";
 import { ZodiosHooks } from "@zodios/react";
 
-
-export const client = createApiClient("https://localhost:7181", {
+export const client = createApiClient(import.meta.env.VITE_API_URL, {
 	axiosConfig: {
 		paramsSerializer: {
 			indexes: null
