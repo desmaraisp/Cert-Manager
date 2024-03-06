@@ -13,11 +13,11 @@ export function CertificatesAddForm({ organizationId }: { organizationId: string
 
 	const {bearerToken} = useAuthHelperForceAuthenticated()
 	const { invalidate } = hooks.useQuery("/:organizationId/api/v1/Certificates", {
-		params: { organizationId: organizationId ?? "" },
+		params: { organizationId: organizationId },
 		headers: { Authorization: bearerToken }
 	});
 	const { mutateAsync, isLoading } = hooks.usePost("/:organizationId/api/v1/Certificates", {
-		params: { organizationId: organizationId ?? "" },
+		params: { organizationId: organizationId },
 		headers: { Authorization: bearerToken }
 	}, {});
 

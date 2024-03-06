@@ -28,7 +28,7 @@ export function CertificateDisplay({ certificateId, organizationId }: { certific
 
 function InternalCertificateDisplay({ data }: { data: z.infer<typeof schemas.CertificateModelWithId> }) {
 	return <Stack>
-		<Group justify="left" gap={65}>
+		<Group justify="left">
 			<Text>Certificate name</Text>
 			<Text>{data.certificateName}</Text>
 			<Flex wrap={"wrap"} style={{ maxWidth: 150 }}>
