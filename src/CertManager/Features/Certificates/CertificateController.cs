@@ -45,17 +45,20 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 	[RequiredScope(AuthenticationScopes.ReadScope)]
 	public async Task<IActionResult> GetCertificateById(Guid id)
 	{
-		var foundCertificate = await certManagerContext.Certificates.FirstOrDefaultAsync(x => x.CertificateId == id);
+		var foundCertificate = await certManagerContext.Certificates
+					.Select(x => new CertificateModelWithId
+					{
+						IsCertificateAuthority = x.IsCertificateAuthority,
+						CertificateName = x.CertificateName,
+						CertificateDescription = x.CertificateDescription,
+						CertificateId = x.CertificateId,
+						Tags = x.CertificateTags.Select(x => x.Tag).ToList()
+					})
+					.FirstOrDefaultAsync(x => x.CertificateId == id);
+
 		if (foundCertificate == null) return NotFound();
 
-		return Ok(new CertificateModelWithId
-		{
-			IsCertificateAuthority = foundCertificate.IsCertificateAuthority,
-			CertificateName = foundCertificate.CertificateName,
-			CertificateDescription = foundCertificate.CertificateDescription,
-			CertificateId = foundCertificate.CertificateId,
-			Tags = foundCertificate.CertificateTags.Select(x => x.Tag).ToList()
-		});
+		return Ok(foundCertificate);
 	}
 
 	[HttpGet("Certificates", Name = nameof(GetAllCertificates))]
@@ -101,7 +104,8 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 
 		if (cert == null) return NotFound();
 
-		if(cert.RenewedBySubscription != null){
+		if (cert.RenewedBySubscription != null)
+		{
 			certManagerContext.Remove(cert.RenewedBySubscription);
 		}
 		certManagerContext.RemoveRange(cert.DependentRenewalSubscriptions);
