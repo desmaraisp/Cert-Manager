@@ -31,6 +31,8 @@ public static class ServiceCollectionExtensions
 			options.Authority = config.Master.JwtAuthority;
 			options.RequireHttpsMetadata = config.RequireHttpsMetadata;
 			options.Audience = "cert-manager";
+
+			options.TokenValidationParameters.ValidateAudience = config.Master.ValidateJwtAudience;
 		});
 
 
@@ -42,6 +44,7 @@ public static class ServiceCollectionExtensions
 				options.Authority = x.JwtAuthority;
 				options.RequireHttpsMetadata = config.RequireHttpsMetadata;
 				options.Audience = "cert-manager";
+				options.TokenValidationParameters.ValidateAudience = x.ValidateJwtAudience;
 			});
 		});
 

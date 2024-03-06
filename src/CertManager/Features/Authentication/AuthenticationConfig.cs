@@ -14,6 +14,7 @@ public class JWTProvider
 {
 	[Url] public string OpenIdConfigurationEndpoint { get; init; } = "";
 	[Url] public string JwtAuthority { get; init; } = "";
+	public bool ValidateJwtAudience { get; init; } = true;
 }
 public class JWTProviderWithOrganizationId: JWTProvider
 {
