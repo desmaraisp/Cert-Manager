@@ -23,7 +23,10 @@ internal class Program
 		builder.Services.AddHealthChecks();
 		builder.Services.AddControllers(c => {
 			c.Filters.Add(new OrganizationIdActionFilterAttribute());
-		}).AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+		}).AddJsonOptions(options => {
+			options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+			options.JsonSerializerOptions.Converters.Add(new DatetimeUtcSerializationConverter());
+		});
 
 		builder.Services.AddEndpointsApiExplorer();
 		var swaggerConfig = builder.Services.ConfigureSwagger(builder.Configuration);
