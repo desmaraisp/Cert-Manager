@@ -8,3 +8,7 @@ do
     # sed JS and CSS only
     find /usr/share/nginx/html -type f \( -name '*.js' -o -name '*.css' \) -exec sed -i "s|${key}|${value}|g" '{}' +
 done
+
+if [ -z "${CERTMANAGER_TOML}" ]; then
+    echo $CERTMANAGER_TOML | base64 --decode > /usr/share/nginx/html/assets/config.toml
+fi
