@@ -8,7 +8,7 @@ import { useAuthHelperForceAuthenticated } from "../authentication/auth-provider
 export function CertificatesDisplay({ organizationId }: { organizationId: string }) {
 	const { bearerToken } = useAuthHelperForceAuthenticated()
 
-	const { data, isLoading, invalidate } = hooks.useGetAllCertificates({
+	const { data, isLoading } = hooks.useGetAllCertificates({
 		params: { organizationId: organizationId },
 		headers: { Authorization: bearerToken }
 	})
@@ -24,13 +24,13 @@ export function CertificatesDisplay({ organizationId }: { organizationId: string
 					overlayProps={{ radius: 'sm', blur: 2 }}
 					loaderProps={{ color: 'pink', type: 'bars' }}
 				/>
-				{(!data || data.length === 0) ? <Text>No data yet</Text> : <CertificatesTable data={data} invalidate={invalidate} organizationId={organizationId} />}
+				{(!data || data.length === 0) ? <Text>No data yet</Text> : <CertificatesTable data={data} organizationId={organizationId} />}
 			</Box>
 		</Stack>
 	</Card>
 }
 
-function CertificatesTable({ data, invalidate, organizationId }: { data: z.infer<typeof schemas.CertificateModelWithId>[], invalidate: () => Promise<void>, organizationId: string }) {
+function CertificatesTable({ data, organizationId }: { data: z.infer<typeof schemas.CertificateModelWithId>[], organizationId: string }) {
 	const tableData: TableData = {
 		head: ['Name', 'Type', 'Tags', 'Description', ''],
 		body: data.map(c => [
@@ -41,7 +41,7 @@ function CertificatesTable({ data, invalidate, organizationId }: { data: z.infer
 			</Flex>,
 			<Text style={{ whiteSpace: 'pre-line', wordBreak: 'break-word' }}>{c.certificateDescription}</Text>,
 			<Group>
-				<DeleteButton certificateId={c.certificateId!} organizationId={organizationId} onDeleteComplete={invalidate} />
+				<DeleteButton certificateId={c.certificateId!} organizationId={organizationId} />
 			</Group>
 		])
 	};

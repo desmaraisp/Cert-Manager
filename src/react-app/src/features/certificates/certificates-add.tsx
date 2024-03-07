@@ -4,6 +4,7 @@ import { hooks } from "../zodios/client-hooks";
 import { useForm, zodResolver } from "@mantine/form";
 import { Card, Stack, Checkbox, Button, TextInput, Textarea, TagsInput } from "@mantine/core";
 import { useAuthHelperForceAuthenticated } from "../authentication/auth-provider-helper-context";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function CertificatesAddForm({ organizationId }: { organizationId: string }) {
 	const form = useForm<z.infer<typeof schemas.CertificateModel>>({
@@ -12,18 +13,18 @@ export function CertificatesAddForm({ organizationId }: { organizationId: string
 	})
 
 	const {bearerToken} = useAuthHelperForceAuthenticated()
-	const { invalidate } = hooks.useQuery("/:organizationId/api/v1/Certificates", {
-		params: { organizationId: organizationId },
-		headers: { Authorization: bearerToken }
-	});
+	const invalidateKey = hooks.getKeyByPath('get', "/:organizationId/api/v1/Certificates");
+	const client = useQueryClient()
+
 	const { mutateAsync, isLoading } = hooks.usePost("/:organizationId/api/v1/Certificates", {
 		params: { organizationId: organizationId },
 		headers: { Authorization: bearerToken }
-	}, {});
+	}, {
+		onMutate: () => client.invalidateQueries([invalidateKey])
+	});
 
 	const handler = form.onSubmit(async (data) => {
 		await mutateAsync(data)
-		invalidate()
 		form.reset()
 	});
 	return (
