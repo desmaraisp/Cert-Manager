@@ -9,6 +9,7 @@ do
     find /usr/share/nginx/html -type f \( -name '*.js' -o -name '*.css' \) -exec sed -i "s|${key}|${value}|g" '{}' +
 done
 
-if [ -z "${CERTMANAGER_TOML}" ]; then
+if [ "${CERTMANAGER_TOML}" ]; then
+	echo "Inserting env var to config file at location /usr/share/nginx/html/config.toml"
     echo $CERTMANAGER_TOML | base64 -d > /usr/share/nginx/html/config.toml
 fi
