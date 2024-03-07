@@ -1,6 +1,6 @@
 import { useForm } from "@mantine/form";
 import { Card, Stack, Button, FileInput } from "@mantine/core";
-import { useAuthHelperForceAuthenticated } from "../authentication/auth-provider-helper-context";
+import { useAuthHelperForceAuthenticated } from "../authentication/use-auth-helper";
 import { } from "@zodios/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { hooks } from "../zodios/client-hooks";

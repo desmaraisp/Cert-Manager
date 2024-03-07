@@ -1,6 +1,6 @@
 import { Button } from "@mantine/core";
 import { hooks } from "../zodios/client-hooks";
-import { useAuthHelperForceAuthenticated } from "../authentication/auth-provider-helper-context";
+import { useAuthHelperForceAuthenticated } from "../authentication/use-auth-helper";
 import { useQueryClient } from "@tanstack/react-query";
 
 export function DeleteButton({ certificateId, organizationId }: { certificateId: string, organizationId: string }) {

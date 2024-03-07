@@ -2,7 +2,7 @@ import { hooks } from "../zodios/client-hooks"
 import { Card, Stack, Box, LoadingOverlay, Text, Flex, Pill, Group } from "@mantine/core"
 import { z } from "zod"
 import { schemas } from "../../generated/client"
-import { useAuthHelperForceAuthenticated } from "../authentication/auth-provider-helper-context"
+import { useAuthHelperForceAuthenticated } from "../authentication/use-auth-helper"
 
 export function CertificateDisplay({ certificateId, organizationId }: { certificateId: string, organizationId: string }) {
 	const {bearerToken} = useAuthHelperForceAuthenticated()

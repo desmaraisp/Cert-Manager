@@ -3,7 +3,7 @@ import { Anchor, Box, Card, Flex, Group, LoadingOverlay, Pill, Stack, Table, Tab
 import { DeleteButton } from "./delete-button"
 import { schemas } from "../../generated/client"
 import { z } from "zod"
-import { useAuthHelperForceAuthenticated } from "../authentication/auth-provider-helper-context"
+import { useAuthHelperForceAuthenticated } from "../authentication/use-auth-helper"
 
 export function CertificatesDisplay({ organizationId }: { organizationId: string }) {
 	const { bearerToken } = useAuthHelperForceAuthenticated()

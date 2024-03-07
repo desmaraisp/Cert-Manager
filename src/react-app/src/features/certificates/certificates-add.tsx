@@ -3,7 +3,7 @@ import { z } from "zod";
 import { hooks } from "../zodios/client-hooks";
 import { useForm, zodResolver } from "@mantine/form";
 import { Card, Stack, Checkbox, Button, TextInput, Textarea, TagsInput } from "@mantine/core";
-import { useAuthHelperForceAuthenticated } from "../authentication/auth-provider-helper-context";
+import { useAuthHelperForceAuthenticated } from "../authentication/use-auth-helper";
 import { useQueryClient } from "@tanstack/react-query";
 
 export function CertificatesAddForm({ organizationId }: { organizationId: string }) {
