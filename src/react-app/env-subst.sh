@@ -10,5 +10,5 @@ do
 done
 
 if [ -z "${CERTMANAGER_TOML}" ]; then
-    echo $CERTMANAGER_TOML | base64 --decode > /usr/share/nginx/html/assets/config.toml
+    echo $CERTMANAGER_TOML | base64 -d > /usr/share/nginx/html/config.toml
 fi
