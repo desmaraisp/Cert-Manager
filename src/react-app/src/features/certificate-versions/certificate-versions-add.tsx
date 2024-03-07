@@ -1,22 +1,24 @@
 import { useForm } from "@mantine/form";
-import { Card, Stack, Button, FileInput } from "@mantine/core";
+import { Card, Stack, Button, FileInput, PasswordInput } from "@mantine/core";
 import { useAuthHelperForceAuthenticated } from "../authentication/use-auth-helper";
-import { } from "@zodios/react";
-import { useQueryClient } from "@tanstack/react-query";
 import { hooks } from "../zodios/client-hooks";
 
 export function CertificateVersionsAddForm({ organizationId, certificateId }: { organizationId: string, certificateId: string }) {
 	const { bearerToken } = useAuthHelperForceAuthenticated()
-	const invalidationKey = hooks.getKeyByPath('get', '/:organizationId/api/v1/CertificateVersions')
-	const client = useQueryClient()
-	const form = useForm<{ file: File }>()
+	const form = useForm<{ file: File, password: string }>({ initialValues: { password: "", file: null! } })
 
-	const { mutateAsync, isLoading } = hooks.usePost("/:organizationId/api/v1/CertificateVersion", {
+	const { invalidate } = hooks.useGetCertificateVersions({
 		params: { organizationId: organizationId },
-		queries: { CertificateId: certificateId },
+		queries: { CertificateIds: [certificateId] },
+		headers: { Authorization: bearerToken }
+	})
+
+	const { mutateAsync, isLoading } = hooks.useCreateCertificateVersion({
+		params: { organizationId: organizationId },
+		queries: { CertificateId: certificateId, Password: form.values.password },
 		headers: { Authorization: bearerToken }
 	}, {
-		onMutate: () => client.invalidateQueries([invalidationKey])
+		onSuccess: invalidate
 	});
 
 	const handler = form.onSubmit(async (data) => {
@@ -27,7 +29,8 @@ export function CertificateVersionsAddForm({ organizationId, certificateId }: { 
 		<Card withBorder>
 			<form onSubmit={handler}>
 				<Stack>
-					<FileInput label="Certificate file" {...form.getInputProps("file")} />
+					<FileInput clearable label="Certificate file" {...form.getInputProps("file")} />
+					<PasswordInput label="Certificate password" {...form.getInputProps("password")} />
 
 					<Button loading={isLoading} type='submit'>Create</Button>
 				</Stack>

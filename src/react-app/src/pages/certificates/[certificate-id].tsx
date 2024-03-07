@@ -4,10 +4,10 @@ import { withAuthenticationRequired } from "react-oidc-context";
 import { Stack } from "@mantine/core";
 import { CertificateVersionDisplay } from "../../features/certificate-versions/certificate-versions-display";
 import { CertificateVersionsAddForm } from "../../features/certificate-versions/certificate-versions-add";
-import { useOrganizationIdForceNotEmpty } from "../../features/multi-tenancy/use-organization-id";
+import { useOrganizationId } from "../../features/multi-tenancy/use-organization-id";
 
 function _CertificateDisplayPage() {
-	const { organizationId } = useOrganizationIdForceNotEmpty()
+	const { organizationId } = useOrganizationId()
 	const certId = useParams()["certificate-id"]
 	if (!certId) throw new Error('No certificate id')
 

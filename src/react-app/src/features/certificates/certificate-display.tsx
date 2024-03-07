@@ -7,7 +7,7 @@ import { useAuthHelperForceAuthenticated } from "../authentication/use-auth-help
 export function CertificateDisplay({ certificateId, organizationId }: { certificateId: string, organizationId: string }) {
 	const {bearerToken} = useAuthHelperForceAuthenticated()
 
-	const { data, isLoading } = hooks.useGetCertificateById({
+	const { data, isFetching } = hooks.useGetCertificateById({
 		params: { organizationId: organizationId, id: certificateId },
 		headers: { Authorization: bearerToken }
 	})
@@ -16,7 +16,7 @@ export function CertificateDisplay({ certificateId, organizationId }: { certific
 	return <Card withBorder>
 		<Box pos='relative'>
 			<LoadingOverlay
-				visible={isLoading}
+				visible={isFetching}
 				zIndex={1000}
 				overlayProps={{ radius: 'sm', blur: 2 }}
 				loaderProps={{ color: 'pink', type: 'bars' }}

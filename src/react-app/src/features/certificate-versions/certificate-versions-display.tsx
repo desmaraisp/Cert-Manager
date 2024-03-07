@@ -7,7 +7,7 @@ import { useAuthHelperForceAuthenticated } from "../authentication/use-auth-help
 export function CertificateVersionDisplay({ certificateId, organizationId }: { certificateId: string, organizationId: string }) {
 	const { bearerToken } = useAuthHelperForceAuthenticated()
 
-	const { data, isLoading } = hooks.useGetCertificateVersions({
+	const { data, isFetching } = hooks.useGetCertificateVersions({
 		params: { organizationId: organizationId },
 		queries: { CertificateIds: [certificateId] },
 		headers: { Authorization: bearerToken }
@@ -17,7 +17,7 @@ export function CertificateVersionDisplay({ certificateId, organizationId }: { c
 		<Text>Certificate versions</Text>
 		<Box pos='relative'>
 			<LoadingOverlay
-				visible={isLoading}
+				visible={isFetching}
 				zIndex={1000}
 				overlayProps={{ radius: 'sm', blur: 2 }}
 				loaderProps={{ color: 'pink', type: 'bars' }}

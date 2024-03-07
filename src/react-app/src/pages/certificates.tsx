@@ -2,10 +2,10 @@ import { Stack } from "@mantine/core";
 import { CertificatesDisplay } from "../features/certificates/certificates-display";
 import { CertificatesAddForm } from "../features/certificates/certificates-add";
 import { withAuthenticationRequired } from "react-oidc-context";
-import { useOrganizationIdForceNotEmpty } from "../features/multi-tenancy/use-organization-id";
+import { useOrganizationId } from "../features/multi-tenancy/use-organization-id";
 
 function _CertificatesPage() {
-	const { organizationId } = useOrganizationIdForceNotEmpty()
+	const { organizationId } = useOrganizationId()
 
 	return <Stack>
 		<CertificatesDisplay organizationId={organizationId} />

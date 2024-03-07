@@ -34,7 +34,7 @@ function CertificatesTable({ data, organizationId }: { data: z.infer<typeof sche
 	const tableData: TableData = {
 		head: ['Name', 'Type', 'Tags', 'Description', ''],
 		body: data.map(c => [
-			<Anchor href={`/${organizationId}/certificates/${c.certificateId}`}>{c.certificateName}</Anchor>,
+			<Anchor href={`/certificates/${c.certificateId}`}>{c.certificateName}</Anchor>,
 			c.isCertificateAuthority ? 'CA' : 'Normal',
 			<Flex wrap={"wrap"} style={{ maxWidth: 150 }}>
 				{c.tags?.map(y => <Pill key={y}>{y}</Pill>)}
