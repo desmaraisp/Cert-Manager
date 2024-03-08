@@ -1,33 +1,25 @@
-resource "keycloak_realm" "realms" {
-  for_each = var.KEYLCOAK_REALMS
-  realm    = each.key
+resource "keycloak_realm" "realm" {
+  realm    = "first_realm"
   enabled  = true
 }
 
-
-resource "keycloak_user" "user_with_initial_password" {
-  for_each = keycloak_realm.realms
-  realm_id = each.value.id
-  username = "alice"
-  enabled  = true
-
-  email = "alice@domain.com"
-  initial_password {
-    value     = "123"
-    temporary = false
-  }
+resource "keycloak_group" "foo" {
+  realm_id = keycloak_realm.realm.id
+  name     = "foo"
+}
+resource "keycloak_group" "bar" {
+  realm_id = keycloak_realm.realm.id
+  name     = "bar"
 }
 
 resource "keycloak_openid_client_scope" "cert-read-scope" {
-  for_each               = keycloak_realm.realms
-  realm_id               = each.value.id
+  realm_id               = keycloak_realm.realm.id
   name                   = "cert-manager/read"
   description            = "Allows read-only access to certManager api"
   include_in_token_scope = true
 }
 resource "keycloak_openid_client_scope" "cert-write-scope" {
-  for_each               = keycloak_realm.realms
-  realm_id               = each.value.id
+  realm_id               = keycloak_realm.realm.id
   name                   = "cert-manager/write"
   description            = "Allows read-only access to certManager api"
   include_in_token_scope = true
