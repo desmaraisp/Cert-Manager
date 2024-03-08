@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions
 
 		services.AddSingleton<IAuthorizationHandler, ScopeAuthorizationHandler>();
 		services.AddAuthorizationBuilder()
-				.SetDefaultPolicy(new AuthorizationPolicyBuilder([JwtBearerDefaults.AuthenticationScheme, .. config.Organizations.Select(x => x.OrganizationId).ToArray()])
+				.SetDefaultPolicy(new AuthorizationPolicyBuilder([JwtBearerDefaults.AuthenticationScheme])
 					.RequireAuthenticatedUser()
 					.AddRequirements(new ScopeAuthorizationRequirement())
 					.Build()
@@ -27,25 +27,12 @@ public static class ServiceCollectionExtensions
 		});
 		authBuilder.AddJwtBearer((options) =>
 		{
-			options.MetadataAddress = config.Master.OpenIdConfigurationEndpoint;
-			options.Authority = config.Master.JwtAuthority;
+			options.MetadataAddress = config.OpenIdConfigurationEndpoint;
+			options.Authority = config.JwtAuthority;
 			options.RequireHttpsMetadata = config.RequireHttpsMetadata;
 			options.Audience = "cert-manager";
 
-			options.TokenValidationParameters.ValidateAudience = config.Master.ValidateJwtAudience;
-		});
-
-
-		config.Organizations.ForEach(x =>
-		{
-			authBuilder.AddJwtBearer(x.OrganizationId, (options) =>
-			{
-				options.MetadataAddress = x.OpenIdConfigurationEndpoint;
-				options.Authority = x.JwtAuthority;
-				options.RequireHttpsMetadata = config.RequireHttpsMetadata;
-				options.Audience = "cert-manager";
-				options.TokenValidationParameters.ValidateAudience = x.ValidateJwtAudience;
-			});
+			options.TokenValidationParameters.ValidateAudience = config.ValidateJwtAudience;
 		});
 
 		return services;

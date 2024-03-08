@@ -1150,28 +1150,6 @@
         "description": "Specify the authorization token.",
         "flows": {
           "password": {
-            "authorizationUrl": "http://localhost:8080/realms/master/protocol/openid-connect/auth",
-            "tokenUrl": "http://localhost:8080/realms/master/protocol/openid-connect/token",
-            "scopes": {
-              "cert-manager/read": "Read access",
-              "cert-manager/write": "write access"
-            }
-          },
-          "clientCredentials": {
-            "authorizationUrl": "http://localhost:8080/realms/master/protocol/openid-connect/auth",
-            "tokenUrl": "http://localhost:8080/realms/master/protocol/openid-connect/token",
-            "scopes": {
-              "cert-manager/read": "Read access",
-              "cert-manager/write": "write access"
-            }
-          }
-        }
-      },
-      "first_realm": {
-        "type": "oauth2",
-        "description": "Specify the authorization token.",
-        "flows": {
-          "password": {
             "authorizationUrl": "http://localhost:8080/realms/first_realm/protocol/openid-connect/auth",
             "tokenUrl": "http://localhost:8080/realms/first_realm/protocol/openid-connect/token",
             "scopes": {
@@ -1182,28 +1160,6 @@
           "clientCredentials": {
             "authorizationUrl": "http://localhost:8080/realms/first_realm/protocol/openid-connect/auth",
             "tokenUrl": "http://localhost:8080/realms/first_realm/protocol/openid-connect/token",
-            "scopes": {
-              "cert-manager/read": "Read access",
-              "cert-manager/write": "write access"
-            }
-          }
-        }
-      },
-      "second_realm": {
-        "type": "oauth2",
-        "description": "Specify the authorization token.",
-        "flows": {
-          "password": {
-            "authorizationUrl": "http://localhost:8080/realms/second_realm/protocol/openid-connect/auth",
-            "tokenUrl": "http://localhost:8080/realms/second_realm/protocol/openid-connect/token",
-            "scopes": {
-              "cert-manager/read": "Read access",
-              "cert-manager/write": "write access"
-            }
-          },
-          "clientCredentials": {
-            "authorizationUrl": "http://localhost:8080/realms/second_realm/protocol/openid-connect/auth",
-            "tokenUrl": "http://localhost:8080/realms/second_realm/protocol/openid-connect/token",
             "scopes": {
               "cert-manager/read": "Read access",
               "cert-manager/write": "write access"
@@ -1215,9 +1171,7 @@
   },
   "security": [
     {
-      "Bearer": [ ],
-      "first_realm": [ ],
-      "second_realm": [ ]
+      "Bearer": [ ]
     }
   ]
 }

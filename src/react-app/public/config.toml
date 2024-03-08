@@ -1,3 +1,0 @@
-OidcProviders = [
-	{ OrganizationId = "first_realm", JwtAuthority = "http://localhost:8080/realms/first_realm", ClientId = "first_realm-public-client" },
-]

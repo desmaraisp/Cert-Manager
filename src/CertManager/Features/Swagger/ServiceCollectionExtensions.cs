@@ -9,7 +9,7 @@ public static class ServiceCollectionExtensions
 {
 	public static SwaggerConfig ConfigureSwagger(this IServiceCollection services, IConfiguration configuration)
 	{
-		var config = configuration.GetSection("Swagger").Get<SwaggerConfig>() ?? new();
+		var config = configuration.GetSection("Swagger").Get<SwaggerConfig>() ?? new() {OpenIdAuthEndpoint = "", OpenIdTokenEndpoint = ""};
 		Validator.ValidateObject(config, new(config), true);
 
 		if (!config.Enabled) return config;
@@ -23,25 +23,21 @@ public static class ServiceCollectionExtensions
 				Version = "v1"
 			});
 
-			foreach (var scheme in config.AuthorizationSchemes)
+			c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme()
 			{
-				c.AddSecurityDefinition(scheme.SchemeName, new OpenApiSecurityScheme()
-				{
-					Flows = GenerateOauthFlow(scheme),
-					Name = "Bearer",
-					BearerFormat = "JWT",
-					Scheme = scheme.SchemeName,
-					Description = "Specify the authorization token.",
-					In = ParameterLocation.Header,
-					Type = SecuritySchemeType.OAuth2,
-				});
-			}
+				Flows = GenerateOauthFlow(config.OpenIdAuthEndpoint, config.OpenIdTokenEndpoint),
+				Name = "Bearer",
+				BearerFormat = "JWT",
+				Scheme = JwtBearerDefaults.AuthenticationScheme,
+				Description = "Specify the authorization token.",
+				In = ParameterLocation.Header,
+				Type = SecuritySchemeType.OAuth2,
+			});
 
-			var securityRequirement = new OpenApiSecurityRequirement();
-			foreach(var scheme in config.AuthorizationSchemes){
-				securityRequirement.Add(GenerateSecurityScheme(scheme.SchemeName), []);
-			}
-			c.AddSecurityRequirement(securityRequirement);
+			c.AddSecurityRequirement(new OpenApiSecurityRequirement
+			{
+				{ GenerateSecurityScheme(JwtBearerDefaults.AuthenticationScheme), [] }
+			});
 		});
 
 		return config;
@@ -59,34 +55,29 @@ public static class ServiceCollectionExtensions
 		};
 	}
 
-	private static OpenApiOAuthFlows GenerateOauthFlow(AuthorizationScheme config)
+	private static OpenApiOAuthFlows GenerateOauthFlow(string AuthEndpoint, string TokenEndpoint)
 	{
-		OpenApiOAuthFlows openApiOAuthFlows = new();
-
-		if (config.PasswordAuthentication != null)
+		OpenApiOAuthFlows openApiOAuthFlows = new()
 		{
-			openApiOAuthFlows.Password = new()
+			Password = new()
 			{
-				AuthorizationUrl = new(config.PasswordAuthentication.OpenIdAuthEndpoint),
-				TokenUrl = new(config.PasswordAuthentication.OpenIdTokenEndpoint),
+				AuthorizationUrl = new(AuthEndpoint),
+				TokenUrl = new(TokenEndpoint),
 				Scopes = {
-						{ AuthenticationScopes.ReadScope, "Read access" },
-						{ AuthenticationScopes.WriteScope, "write access" },
-					}
-			};
-		}
-		if (config.ClientCredentialsAuthentication != null)
-		{
-			openApiOAuthFlows.ClientCredentials = new()
+					{ AuthenticationScopes.ReadScope, "Read access" },
+					{ AuthenticationScopes.WriteScope, "write access" },
+				}
+			},
+			ClientCredentials = new()
 			{
-				AuthorizationUrl = new(config.ClientCredentialsAuthentication.OpenIdAuthEndpoint),
-				TokenUrl = new(config.ClientCredentialsAuthentication.OpenIdTokenEndpoint),
+				AuthorizationUrl = new(AuthEndpoint),
+				TokenUrl = new(TokenEndpoint),
 				Scopes = {
-						{ AuthenticationScopes.ReadScope, "Read access" },
-						{ AuthenticationScopes.WriteScope, "write access" },
-					}
-			};
-		}
+					{ AuthenticationScopes.ReadScope, "Read access" },
+					{ AuthenticationScopes.WriteScope, "write access" },
+				}
+			}
+		};
 		return openApiOAuthFlows;
 	}
 }
