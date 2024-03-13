@@ -7,15 +7,15 @@ using Microsoft.EntityFrameworkCore;
 namespace CertManagerTest.Features.Certificates;
 
 [TestClass]
-public class CertificateControllerTests
+public class CertificateServiceTests
 {
 	private readonly CertManagerContext context;
-	private readonly CertificateController controller;
+	private readonly CertificateService controller;
 
-	public CertificateControllerTests()
+	public CertificateServiceTests()
 	{
 		context = ConfigureSqLite.ConfigureCertManagerContext();
-		controller = new CertificateController(context);
+		controller = new (context);
 	}
 
 	[TestMethod]
@@ -27,15 +27,14 @@ public class CertificateControllerTests
 			IsCertificateAuthority = false,
 			CertificateDescription = null,
 			CertificateName = "TestCertificate",
-			Tags = new List<string> { "Tag1", "Tag2" }
+			Tags = ["Tag1", "Tag2"]
 		};
 
-		var result = await controller.CreateCertificate(payload) as OkObjectResult;
+		var result = await controller.CreateCertificate(payload);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var createdCertificate = result.Value as CertificateModelWithId;
+		var createdCertificate = result;
 		Assert.IsNotNull(createdCertificate);
 		Assert.AreEqual(payload.CertificateName, createdCertificate.CertificateName);
 		Assert.AreNotEqual(Guid.Empty, createdCertificate.CertificateId);
@@ -72,10 +71,9 @@ public class CertificateControllerTests
 	[TestMethod]
 	public async Task DeleteCertificateById_ReturnsNotFound_WhenCertificateNotFound()
 	{
-		var result = await controller.DeleteCertificateById(Guid.NewGuid()) as NotFoundResult;
+		var result = await controller.DeleteCertificate(Guid.NewGuid());
 
-		Assert.IsNotNull(result);
-		Assert.AreEqual(404, result.StatusCode);
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
@@ -93,12 +91,11 @@ public class CertificateControllerTests
 		context.Certificates.Add(sampleCertificate);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetCertificateById(sampleCertificate.CertificateId) as OkObjectResult;
+		var result = await controller.GetCertificateById(sampleCertificate.CertificateId);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var certificateModel = result.Value as CertificateModelWithId;
+		var certificateModel = result;
 		Assert.IsNotNull(certificateModel);
 		Assert.AreEqual(sampleCertificate.CertificateName, certificateModel.CertificateName);
 		Assert.AreEqual(sampleCertificate.CertificateId, certificateModel.CertificateId);
@@ -107,10 +104,9 @@ public class CertificateControllerTests
 	[TestMethod]
 	public async Task GetCertificateById_ReturnsNotFound_WhenCertificateNotFound()
 	{
-		var result = await controller.GetCertificateById(Guid.NewGuid()) as NotFoundResult;
+		var result = await controller.GetCertificateById(Guid.NewGuid());
 
-		Assert.IsNotNull(result);
-		Assert.AreEqual(404, result.StatusCode);
+		Assert.IsNull(result);
 	}
 
 	[TestMethod]
@@ -137,12 +133,11 @@ public class CertificateControllerTests
 			NewTags = ["NewTag1", "NewTag2"]
 		};
 
-		var result = await controller.EditCertificateById(sampleCertificate.CertificateId, payload) as OkObjectResult;
+		var result = await controller.UpdateCertificate(sampleCertificate.CertificateId, payload);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var editedCertificate = result.Value as CertificateModelWithId;
+		var editedCertificate = result;
 		Assert.IsNotNull(editedCertificate);
 		Assert.AreEqual(payload.NewCertificateName, editedCertificate.CertificateName);
 		Assert.AreEqual(sampleCertificate.CertificateId, editedCertificate.CertificateId);
@@ -166,12 +161,10 @@ public class CertificateControllerTests
 			NewCertificateName = "NewCertificateName",
 			NewTags = ["NewTag1", "NewTag2"]
 		};
-
-		var result = await controller.EditCertificateById(Guid.NewGuid(), payload) as NotFoundResult;
-
-		// Assert
-		Assert.IsNotNull(result);
-		Assert.AreEqual(404, result.StatusCode);
+		await Assert.ThrowsExceptionAsync<KeyNotFoundException>(async () =>
+		{
+			await controller.UpdateCertificate(Guid.NewGuid(), payload);
+		});
 	}
 
 	[TestMethod]
@@ -204,12 +197,11 @@ public class CertificateControllerTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetAllCertificates(new(), CertificateSearchBehavior.MatchAll) as OkObjectResult;
+		var result = await controller.GetCertificates([], CertificateSearchBehavior.MatchAll);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var certificates = result.Value as List<CertificateModelWithId>;
+		var certificates = result;
 		Assert.IsNotNull(certificates);
 		Assert.AreEqual(2, certificates.Count);
 	}
@@ -243,12 +235,11 @@ public class CertificateControllerTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetAllCertificates(new List<string> { "Tag1" }, CertificateSearchBehavior.MatchAll) as OkObjectResult;
+		var result = await controller.GetCertificates(["Tag1"], CertificateSearchBehavior.MatchAll);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var certificates = result.Value as List<CertificateModelWithId>;
+		var certificates = result;
 		Assert.IsNotNull(certificates);
 		Assert.AreEqual(1, certificates.Count);
 	}
@@ -282,12 +273,11 @@ public class CertificateControllerTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetAllCertificates(new List<string> { "Tag1", "Tag3" }, CertificateSearchBehavior.MatchAll) as OkObjectResult;
+		var result = await controller.GetCertificates(["Tag1", "Tag3"], CertificateSearchBehavior.MatchAll);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var certificates = result.Value as List<CertificateModelWithId>;
+		var certificates = result;
 		Assert.IsNotNull(certificates);
 		Assert.AreEqual(0, certificates.Count);
 	}
@@ -321,12 +311,11 @@ public class CertificateControllerTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetAllCertificates(new List<string> { "Tag1", "Tag2" }, CertificateSearchBehavior.MatchAll) as OkObjectResult;
+		var result = await controller.GetCertificates(["Tag1", "Tag2"], CertificateSearchBehavior.MatchAll);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var certificates = result.Value as List<CertificateModelWithId>;
+		var certificates = result;
 		Assert.IsNotNull(certificates);
 		Assert.AreEqual(1, certificates.Count);
 	}
@@ -370,12 +359,11 @@ public class CertificateControllerTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetAllCertificates(new List<string> { "Tag1", "Tag2" }, CertificateSearchBehavior.MatchAny) as OkObjectResult;
+		var result = await controller.GetCertificates(["Tag1", "Tag2"], CertificateSearchBehavior.MatchAny);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var certificates = result.Value as List<CertificateModelWithId>;
+		var certificates = result;
 		Assert.IsNotNull(certificates);
 		Assert.AreEqual(2, certificates.Count);
 	}
@@ -395,12 +383,11 @@ public class CertificateControllerTests
 		context.Certificates.Add(sampleCertificate);
 		await context.SaveChangesAsync();
 
-		var result = await controller.DeleteCertificateById(sampleCertificate.CertificateId) as OkResult;
+		var result = await controller.DeleteCertificate(sampleCertificate.CertificateId);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var deletedCertificate = await context.Certificates.AsNoTracking().FirstOrDefaultAsync(x => x.CertificateId == sampleCertificate.CertificateId);
+		var deletedCertificate = await context.Certificates.FirstOrDefaultAsync(x => x.CertificateId == sampleCertificate.CertificateId);
 		Assert.IsNull(deletedCertificate);
 	}
 }

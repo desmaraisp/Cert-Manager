@@ -1,21 +1,32 @@
 using System.ComponentModel;
+using CertManager.Database;
 
 namespace CertManager.Features.Certificates;
 
 public class CertificateModel
 {
 	[DefaultValue(false)]
-	public required bool IsCertificateAuthority { get; init; } = false;
+	public bool IsCertificateAuthority { get; init; } = false;
 	public required string CertificateName { get; init; }
-	public required List<string> Tags { get; init; }
-	public required string? CertificateDescription { get; init; }
+
+	public List<string> Tags { get; init; } = [];
+	public string? CertificateDescription { get; init; }
 
 	[DefaultValue(false)]
-	public required bool RequirePrivateKey { get; init; } = false;
+	public bool RequirePrivateKey { get; init; } = false;
 }
 
 public class CertificateModelWithId : CertificateModel
 {
+	public static CertificateModelWithId FromCertificate(Certificate certificate) => new()
+	{
+		RequirePrivateKey = certificate.RequirePrivateKey,
+		IsCertificateAuthority = certificate.IsCertificateAuthority,
+		CertificateName = certificate.CertificateName,
+		CertificateId = certificate.CertificateId,
+		CertificateDescription = certificate.CertificateDescription,
+		Tags = certificate.CertificateTags.Select(x => x.Tag).ToList()
+	};
 	public required Guid CertificateId { get; init; }
 }
 
