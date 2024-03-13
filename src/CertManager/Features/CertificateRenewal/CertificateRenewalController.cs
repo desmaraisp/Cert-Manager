@@ -1,8 +1,10 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using CertManager.Database;
 using CertManager.Features.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CertManager.Features.CertificateRenewal;
 
@@ -13,11 +15,13 @@ public class CertificateRenewalController : ControllerBase
 {
 	private readonly CertificateRenewalService renewalService;
 	private readonly ILogger<CertificateRenewalController> logger;
+	private readonly CertManagerContext certManagerContext;
 
-	public CertificateRenewalController(CertificateRenewalService renewalService, ILogger<CertificateRenewalController> logger)
+	public CertificateRenewalController(CertificateRenewalService renewalService, ILogger<CertificateRenewalController> logger, CertManagerContext certManagerContext)
 	{
 		this.renewalService = renewalService;
 		this.logger = logger;
+		this.certManagerContext = certManagerContext;
 	}
 
 	[HttpGet("CertificateRenewalSchedules", Name = nameof(GetCertificateRenewalSchedules))]
@@ -68,7 +72,13 @@ public class CertificateRenewalController : ControllerBase
 		}
 		if (Payload.DestinationCertificateId == Payload.ParentCertificateId) return BadRequest("Parent certificate and destination certificate can't be the same");
 
+		using var trn = certManagerContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
+		var certificateData = await certManagerContext.Certificates.FindAsync(Payload.ParentCertificateId);
+		if (certificateData == null) return BadRequest("Parent certificate doesn't exist");
+		if (!certificateData.IsCertificateAuthority) return BadRequest("Parent certificate must be a CA");
+
 		var createdItem = await renewalService.CreateRenewalSubscription(Payload);
+		await trn.CommitAsync();
 
 		return Ok(createdItem);
 	}
