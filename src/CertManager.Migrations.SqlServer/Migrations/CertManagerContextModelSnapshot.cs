@@ -81,7 +81,7 @@ namespace CertManager.Migrations.SqlServer.Migrations
                     b.Property<Guid>("ParentCertificateId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("RenewalOffsetBeforeExpirationDays")
+                    b.Property<int>("RenewXDaysBeforeExpiration")
                         .HasColumnType("int");
 
                     b.HasKey("SubscriptionId");

@@ -43,7 +43,7 @@ public class CertificateRenewalService(CertManagerContext context)
 					CertificateSubject = x.CertificateSubject,
 					DestinationCertificateId = x.DestinationCertificateId,
 					ParentCertificateId = x.ParentCertificateId,
-					RenewalOffsetBeforeExpirationDays = x.RenewalOffsetBeforeExpirationDays,
+					RenewXDaysBeforeExpiration = x.RenewXDaysBeforeExpiration,
 					SubscriptionId = x.SubscriptionId
 				}).ToListAsync();
 	}
@@ -57,7 +57,7 @@ public class CertificateRenewalService(CertManagerContext context)
 			CertificateSubject = Payload.CertificateSubject,
 			DestinationCertificateId = Payload.DestinationCertificateId,
 			ParentCertificateId = Payload.ParentCertificateId,
-			RenewalOffsetBeforeExpirationDays = Payload.RenewalOffsetBeforeExpirationDays,
+			RenewXDaysBeforeExpiration = Payload.RenewXDaysBeforeExpiration,
 		};
 		certManagerContext.CertificateRenewalSubscriptions
 				.Add(newItem);
@@ -70,7 +70,7 @@ public class CertificateRenewalService(CertManagerContext context)
 			CertificateSubject = newItem.CertificateSubject,
 			DestinationCertificateId = newItem.DestinationCertificateId,
 			ParentCertificateId = newItem.ParentCertificateId,
-			RenewalOffsetBeforeExpirationDays = newItem.RenewalOffsetBeforeExpirationDays,
+			RenewXDaysBeforeExpiration = newItem.RenewXDaysBeforeExpiration,
 			SubscriptionId = newItem.SubscriptionId
 		};
 	}

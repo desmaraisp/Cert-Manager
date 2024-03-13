@@ -1010,7 +1010,7 @@
             "type": "string",
             "nullable": true
           },
-          "renewalOffsetBeforeExpirationDays": {
+          "renewXDaysBeforeExpiration": {
             "maximum": 365,
             "minimum": 1,
             "type": "integer",
@@ -1038,7 +1038,7 @@
             "type": "string",
             "nullable": true
           },
-          "renewalOffsetBeforeExpirationDays": {
+          "renewXDaysBeforeExpiration": {
             "maximum": 365,
             "minimum": 1,
             "type": "integer",

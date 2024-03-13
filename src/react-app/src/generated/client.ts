@@ -51,7 +51,7 @@ const CertificateRenewalSubscriptionModelWithId = z
   .object({
     certificateDuration: z.string(),
     certificateSubject: z.string().nullable(),
-    renewalOffsetBeforeExpirationDays: z.number().int().gte(1).lte(365),
+    renewXDaysBeforeExpiration: z.number().int().gte(1).lte(365),
     destinationCertificateId: z.string().uuid(),
     parentCertificateId: z.string().uuid(),
     subscriptionId: z.string().uuid(),
@@ -61,7 +61,7 @@ const CertificateRenewalSubscriptionModel = z
   .object({
     certificateDuration: z.string(),
     certificateSubject: z.string().nullable(),
-    renewalOffsetBeforeExpirationDays: z.number().int().gte(1).lte(365),
+    renewXDaysBeforeExpiration: z.number().int().gte(1).lte(365),
     destinationCertificateId: z.string().uuid(),
     parentCertificateId: z.string().uuid(),
   })
