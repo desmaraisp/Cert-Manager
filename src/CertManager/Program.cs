@@ -7,6 +7,7 @@ using CertManager.Features.Certificates;
 using CertManager.Features.CertificateVersions;
 using CertManager.Features.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -66,7 +67,18 @@ internal class Program
 		}
 
 		app.MapHealthChecks("/health");
-		app.UseExceptionHandler("/error");
+		app.UseExceptionHandler(exceptionHandlerApp =>
+		{
+			exceptionHandlerApp.Run(context =>
+			{
+				var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>()!;
+
+				if (exceptionHandlerFeature.Error is KeyNotFoundException){
+					context.Response.StatusCode = 404;
+				}
+				return Task.CompletedTask;
+			});
+		});
 
 		app.UseSerilogRequestLogging();
 		app.UseCors();
