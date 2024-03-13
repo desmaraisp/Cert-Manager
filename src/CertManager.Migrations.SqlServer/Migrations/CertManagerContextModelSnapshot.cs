@@ -62,8 +62,8 @@ namespace CertManager.Migrations.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<TimeSpan>("CertificateDuration")
-                        .HasColumnType("time");
+                    b.Property<long>("CertificateDuration")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("CertificateSubject")
                         .IsRequired()

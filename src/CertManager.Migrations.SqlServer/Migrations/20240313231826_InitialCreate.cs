@@ -18,7 +18,9 @@ namespace CertManager.Migrations.SqlServer.Migrations
                     CertificateId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CertificateName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CertificateDescription = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    IsCertificateAuthority = table.Column<bool>(type: "bit", nullable: false)
+                    IsCertificateAuthority = table.Column<bool>(type: "bit", nullable: false),
+                    OrganizationId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    RequirePrivateKey = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -30,9 +32,10 @@ namespace CertManager.Migrations.SqlServer.Migrations
                 columns: table => new
                 {
                     SubscriptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CertificateDuration = table.Column<TimeSpan>(type: "time", nullable: false),
+                    CertificateDuration = table.Column<long>(type: "bigint", nullable: false),
                     CertificateSubject = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    RenewalOffsetBeforeExpiration = table.Column<TimeSpan>(type: "time", nullable: false),
+                    RenewXDaysBeforeExpiration = table.Column<int>(type: "int", nullable: false),
+                    OrganizationId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     DestinationCertificateId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ParentCertificateId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -81,6 +84,7 @@ namespace CertManager.Migrations.SqlServer.Migrations
                     Thumbprint = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
                     IssuerName = table.Column<string>(type: "nvarchar(442)", maxLength: 442, nullable: false),
                     CN = table.Column<string>(type: "nvarchar(442)", maxLength: 442, nullable: false),
+                    OrganizationId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     CertificateId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -106,9 +110,9 @@ namespace CertManager.Migrations.SqlServer.Migrations
                 column: "ParentCertificateId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Certificates_CertificateName",
+                name: "IX_Certificates_CertificateName_OrganizationId",
                 table: "Certificates",
-                column: "CertificateName",
+                columns: new[] { "CertificateName", "OrganizationId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(

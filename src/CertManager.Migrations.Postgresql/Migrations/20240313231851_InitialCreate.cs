@@ -18,7 +18,9 @@ namespace CertManager.Migrations.Postgresql.Migrations
                     CertificateId = table.Column<Guid>(type: "uuid", nullable: false),
                     CertificateName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     CertificateDescription = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    IsCertificateAuthority = table.Column<bool>(type: "boolean", nullable: false)
+                    IsCertificateAuthority = table.Column<bool>(type: "boolean", nullable: false),
+                    OrganizationId = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    RequirePrivateKey = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -30,9 +32,10 @@ namespace CertManager.Migrations.Postgresql.Migrations
                 columns: table => new
                 {
                     SubscriptionId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CertificateDuration = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    CertificateDuration = table.Column<long>(type: "bigint", nullable: false),
                     CertificateSubject = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    RenewalOffsetBeforeExpiration = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    RenewXDaysBeforeExpiration = table.Column<int>(type: "integer", nullable: false),
+                    OrganizationId = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     DestinationCertificateId = table.Column<Guid>(type: "uuid", nullable: false),
                     ParentCertificateId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
@@ -81,6 +84,7 @@ namespace CertManager.Migrations.Postgresql.Migrations
                     Thumbprint = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
                     IssuerName = table.Column<string>(type: "character varying(442)", maxLength: 442, nullable: false),
                     CN = table.Column<string>(type: "character varying(442)", maxLength: 442, nullable: false),
+                    OrganizationId = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     CertificateId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -106,9 +110,9 @@ namespace CertManager.Migrations.Postgresql.Migrations
                 column: "ParentCertificateId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Certificates_CertificateName",
+                name: "IX_Certificates_CertificateName_OrganizationId",
                 table: "Certificates",
-                column: "CertificateName",
+                columns: new[] { "CertificateName", "OrganizationId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CertManager.Database;
 
@@ -33,6 +34,10 @@ public class CertManagerContext(DbContextOptions<CertManagerContext> options) : 
 			.WithMany(e => e.DependentRenewalSubscriptions)
 			.HasForeignKey(e => e.ParentCertificateId)
 			.OnDelete(DeleteBehavior.NoAction);
+		
+		modelBuilder.Entity<CertificateRenewalSubscription>()
+			.Property(s => s.CertificateDuration)
+    		.HasConversion(new TimeSpanToTicksConverter());
 
 		modelBuilder.Entity<CertificateTag>()
 			.HasQueryFilter(x => x.Certificate.OrganizationId == OrganizationId);

@@ -62,8 +62,8 @@ namespace CertManager.Migrations.Postgresql.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<TimeSpan>("CertificateDuration")
-                        .HasColumnType("interval");
+                    b.Property<long>("CertificateDuration")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("CertificateSubject")
                         .IsRequired()
