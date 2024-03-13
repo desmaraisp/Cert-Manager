@@ -23,6 +23,7 @@ public class CertificateControllerTests
 	{
 		var payload = new CertificateModel
 		{
+			RequirePrivateKey = true,
 			IsCertificateAuthority = false,
 			CertificateDescription = null,
 			CertificateName = "TestCertificate",
@@ -46,6 +47,7 @@ public class CertificateControllerTests
 	{
 		context.Certificates.Add(new()
 		{
+			RequirePrivateKey = true,
 			OrganizationId = "",
 			IsCertificateAuthority = false,
 			CertificateDescription = null,
@@ -58,6 +60,7 @@ public class CertificateControllerTests
 		{
 			await controller.CreateCertificate(new CertificateModel
 			{
+				RequirePrivateKey = true,
 				IsCertificateAuthority = false,
 				CertificateDescription = null,
 				CertificateName = "TestCertificate",
@@ -80,6 +83,7 @@ public class CertificateControllerTests
 	{
 		var sampleCertificate = new Certificate
 		{
+			RequirePrivateKey = true,
 			OrganizationId = "",
 			IsCertificateAuthority = false,
 			CertificateDescription = null,
@@ -114,6 +118,7 @@ public class CertificateControllerTests
 	{
 		var sampleCertificate = new Certificate
 		{
+			RequirePrivateKey = true,
 			OrganizationId = "",
 			IsCertificateAuthority = false,
 			CertificateDescription = null,
@@ -176,6 +181,7 @@ public class CertificateControllerTests
 		{
 			new Certificate
 			{
+				RequirePrivateKey = true,
 				OrganizationId = "",
 				IsCertificateAuthority = false,
 				CertificateDescription = null,
@@ -185,6 +191,7 @@ public class CertificateControllerTests
 			},
 			new Certificate
 			{
+				RequirePrivateKey = true,
 				OrganizationId = "",
 				IsCertificateAuthority = false,
 				CertificateDescription = null,
@@ -214,6 +221,7 @@ public class CertificateControllerTests
 			{
 				new Certificate
 				{
+					RequirePrivateKey = true,
 					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
@@ -223,6 +231,7 @@ public class CertificateControllerTests
 				},
 				new Certificate
 				{
+					RequirePrivateKey = true,
 					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
@@ -251,6 +260,7 @@ public class CertificateControllerTests
 			{
 				new Certificate
 				{
+					RequirePrivateKey = true,
 					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
@@ -260,6 +270,7 @@ public class CertificateControllerTests
 				},
 				new Certificate
 				{
+					RequirePrivateKey = true,
 					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
@@ -288,6 +299,7 @@ public class CertificateControllerTests
 			{
 				new Certificate
 				{
+					RequirePrivateKey = true,
 					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
@@ -297,6 +309,7 @@ public class CertificateControllerTests
 				},
 				new Certificate
 				{
+					RequirePrivateKey = true,
 					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
@@ -325,6 +338,7 @@ public class CertificateControllerTests
 			{
 				new Certificate
 				{
+					RequirePrivateKey = true,
 					IsCertificateAuthority = false,
 					OrganizationId = "",
 					CertificateDescription = null,
@@ -334,6 +348,7 @@ public class CertificateControllerTests
 				},
 				new Certificate
 				{
+					RequirePrivateKey = true,
 					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
@@ -347,6 +362,7 @@ public class CertificateControllerTests
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
+					RequirePrivateKey = true,
 					CertificateName = "Certificate2",
 					CertificateTags = new List<CertificateTag> { new() { Tag = "Tag2" },  new() { Tag = "Tag3" } }
 				}
@@ -372,6 +388,7 @@ public class CertificateControllerTests
 			OrganizationId = "",
 			IsCertificateAuthority = false,
 			CertificateDescription = null,
+			RequirePrivateKey = true,
 			CertificateId = Guid.NewGuid(),
 			CertificateName = ""
 		};

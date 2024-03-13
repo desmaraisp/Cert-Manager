@@ -911,7 +911,8 @@
         "type": "object",
         "properties": {
           "isCertificateAuthority": {
-            "type": "boolean"
+            "type": "boolean",
+            "default": false
           },
           "certificateName": {
             "type": "string",
@@ -927,6 +928,10 @@
           "certificateDescription": {
             "type": "string",
             "nullable": true
+          },
+          "requirePrivateKey": {
+            "type": "boolean",
+            "default": false
           }
         },
         "additionalProperties": false
@@ -935,7 +940,8 @@
         "type": "object",
         "properties": {
           "isCertificateAuthority": {
-            "type": "boolean"
+            "type": "boolean",
+            "default": false
           },
           "certificateName": {
             "type": "string",
@@ -951,6 +957,10 @@
           "certificateDescription": {
             "type": "string",
             "nullable": true
+          },
+          "requirePrivateKey": {
+            "type": "boolean",
+            "default": false
           },
           "certificateId": {
             "type": "string",

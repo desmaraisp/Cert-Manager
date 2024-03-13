@@ -3,6 +3,7 @@ using CertManager.Database;
 using CertManager.Features.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CertManager.Features.CertificateVersions;
 
@@ -29,15 +30,21 @@ public class CertificateVersionController : ControllerBase
 		using X509Certificate2 cert = await Certificate.ReadCertificateAsync(Password);
 		var allowCA = cert.Extensions.OfType<X509BasicConstraintsExtension>().FirstOrDefault()?.CertificateAuthority;
 		var hasCAKeyUsageFlag = cert.Extensions.OfType<X509KeyUsageExtension>().FirstOrDefault()?.KeyUsages.HasFlag(X509KeyUsageFlags.KeyCertSign);
+		var hasPrivateKey = cert.GetRSAPrivateKey() != null;
 
-		// Since we don't allow editing IsCertificateAuthority, no need to do any concurrency handling here
+		using var trn = certManagerContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
 		var certificateData = await certManagerContext.Certificates.FindAsync(CertificateId);
 		if ((certificateData?.IsCertificateAuthority ?? true) && !(allowCA ?? false) && !(hasCAKeyUsageFlag ?? false))
 		{
 			return BadRequest("Certificate is missing basic constraint or KeyUsage certificate properties required for it to be used as CA");
 		}
+		if ((certificateData?.RequirePrivateKey ?? true) && !hasPrivateKey)
+		{
+			return BadRequest("Certificate is missing private key");
+		}
 
 		var newCertVersion = await certificateVersionService.AddCertificateVersion(CertificateId, cert);
+		await trn.CommitAsync();
 
 		return Ok(newCertVersion);
 	}

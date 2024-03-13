@@ -20,6 +20,7 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 	{
 		Certificate newCertificate = new()
 		{
+			RequirePrivateKey = payload.RequirePrivateKey,
 			OrganizationId = certManagerContext.OrganizationId,
 			IsCertificateAuthority = payload.IsCertificateAuthority,
 			CertificateName = payload.CertificateName,
@@ -31,6 +32,7 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 
 		return Ok(new CertificateModelWithId
 		{
+			RequirePrivateKey = payload.RequirePrivateKey,
 			IsCertificateAuthority = payload.IsCertificateAuthority,
 			CertificateName = newCertificate.CertificateName,
 			CertificateId = newCertificate.CertificateId,
@@ -48,6 +50,7 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 		var foundCertificate = await certManagerContext.Certificates
 					.Select(x => new CertificateModelWithId
 					{
+						RequirePrivateKey = x.RequirePrivateKey,
 						IsCertificateAuthority = x.IsCertificateAuthority,
 						CertificateName = x.CertificateName,
 						CertificateDescription = x.CertificateDescription,
@@ -82,6 +85,7 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 		var certificates = await query
 			.Select(x => new CertificateModelWithId
 			{
+				RequirePrivateKey = x.RequirePrivateKey,
 				IsCertificateAuthority = x.IsCertificateAuthority,
 				CertificateDescription = x.CertificateDescription,
 				Tags = x.CertificateTags.Select(x => x.Tag).ToList(),
@@ -140,6 +144,7 @@ public class CertificateController(CertManagerContext certManagerContext) : Cont
 
 		return Ok(new CertificateModelWithId
 		{
+			RequirePrivateKey = cert.RequirePrivateKey,
 			IsCertificateAuthority = cert.IsCertificateAuthority,
 			CertificateDescription = cert.CertificateDescription,
 			Tags = cert.CertificateTags.Select(x => x.Tag).ToList(),

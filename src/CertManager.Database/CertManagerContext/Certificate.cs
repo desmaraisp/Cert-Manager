@@ -14,6 +14,7 @@ public partial class Certificate
 
 	public required bool IsCertificateAuthority { get; set; }
 	[MaxLength(50)] public required string OrganizationId { get; set; }
+	public required bool RequirePrivateKey { get; set; }
 
 	public ICollection<CertificateVersion> CertificateVersions { get; set; } = [];
 	public ICollection<CertificateTag> CertificateTags { get; set; } = [];
