@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using CertManager.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,24 +10,24 @@ public class CertificateRenewalService(CertManagerContext context)
 
 	public async Task<List<CertificateRenewalScheduleModel>> GetRenewalSchedules(DateTime MinimumUtcScheduledTime, DateTime MaximumUtcScheduledTime)
 	{
-		var innerQuery = from subs in certManagerContext.CertificateRenewalSubscriptions
-						 join version in certManagerContext.CertificateVersions on subs.DestinationCertificateId equals version.CertificateId
-						 where version.ExpiryDate.AddDays(-subs.RenewalOffsetBeforeExpirationDays) > MinimumUtcScheduledTime
-						 select new { subs, ScheduledDate = version.ExpiryDate.AddDays(-subs.RenewalOffsetBeforeExpirationDays), version.CertificateVersionId };
+		var res = await certManagerContext.CertificateRenewalSubscriptions
+				.Where(x =>
+					x.DestinationCertificate.CertificateVersions.Count() == 0 ||
+					(
+						x.DestinationCertificate.CertificateVersions.Any(y => y.ExpiryDate > MinimumUtcScheduledTime) &&
+						!x.DestinationCertificate.CertificateVersions.Any(y => y.ExpiryDate.AddDays(-x.RenewXDaysBeforeExpiration) > MaximumUtcScheduledTime)
+					)
+				).ToListAsync();
 
-
-		var query = innerQuery.GroupBy(x => x.subs.DestinationCertificateId)
-				.Where(x => x.Count(y => y.ScheduledDate > MaximumUtcScheduledTime) == 0)
-				.Select(a => new CertificateRenewalScheduleModel
-				{
-					CertificateDuration = a.First().subs.CertificateDuration,
-					CertificateSubject = a.First().subs.CertificateSubject,
-					DestinationCertificateId = a.First().subs.DestinationCertificateId,
-					ParentCertificateId = a.First().subs.ParentCertificateId,
-					ScheduledRenewalTime = a.First().ScheduledDate,
-					SubscriptionId = a.First().subs.SubscriptionId
-				});
-		return await query.ToListAsync();
+		return res.Select(a => new CertificateRenewalScheduleModel
+		{
+			CertificateDuration = a.CertificateDuration,
+			CertificateSubject = a.CertificateSubject,
+			DestinationCertificateId = a.DestinationCertificateId,
+			ParentCertificateId = a.ParentCertificateId,
+			ScheduledRenewalTime = a.DestinationCertificate.CertificateVersions.OrderBy(x => x.ExpiryDate).FirstOrDefault()?.ExpiryDate ?? DateTime.UtcNow,
+			SubscriptionId = a.SubscriptionId
+		}).ToList();
 	}
 
 	public async Task<List<CertificateRenewalSubscriptionModelWithId>> GetRenewalSubscriptions(List<Guid> CertificateIds)
