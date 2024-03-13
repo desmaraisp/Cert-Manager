@@ -10,12 +10,12 @@ namespace CertManagerTest.Features.Certificates;
 public class CertificateServiceTests
 {
 	private readonly CertManagerContext context;
-	private readonly CertificateService controller;
+	private readonly CertificateService service;
 
 	public CertificateServiceTests()
 	{
 		context = ConfigureSqLite.ConfigureCertManagerContext();
-		controller = new (context);
+		service = new (context);
 	}
 
 	[TestMethod]
@@ -30,7 +30,7 @@ public class CertificateServiceTests
 			Tags = ["Tag1", "Tag2"]
 		};
 
-		var result = await controller.CreateCertificate(payload);
+		var result = await service.CreateCertificate(payload);
 
 		Assert.IsNotNull(result);
 
@@ -57,7 +57,7 @@ public class CertificateServiceTests
 
 		await Assert.ThrowsExceptionAsync<DbUpdateException>(async () =>
 		{
-			await controller.CreateCertificate(new CertificateModel
+			await service.CreateCertificate(new CertificateModel
 			{
 				RequirePrivateKey = true,
 				IsCertificateAuthority = false,
@@ -71,7 +71,7 @@ public class CertificateServiceTests
 	[TestMethod]
 	public async Task DeleteCertificateById_ReturnsNotFound_WhenCertificateNotFound()
 	{
-		var result = await controller.DeleteCertificate(Guid.NewGuid());
+		var result = await service.DeleteCertificate(Guid.NewGuid());
 
 		Assert.IsFalse(result);
 	}
@@ -91,7 +91,7 @@ public class CertificateServiceTests
 		context.Certificates.Add(sampleCertificate);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetCertificateById(sampleCertificate.CertificateId);
+		var result = await service.GetCertificateById(sampleCertificate.CertificateId);
 
 		Assert.IsNotNull(result);
 
@@ -104,7 +104,7 @@ public class CertificateServiceTests
 	[TestMethod]
 	public async Task GetCertificateById_ReturnsNotFound_WhenCertificateNotFound()
 	{
-		var result = await controller.GetCertificateById(Guid.NewGuid());
+		var result = await service.GetCertificateById(Guid.NewGuid());
 
 		Assert.IsNull(result);
 	}
@@ -133,7 +133,7 @@ public class CertificateServiceTests
 			NewTags = ["NewTag1", "NewTag2"]
 		};
 
-		var result = await controller.UpdateCertificate(sampleCertificate.CertificateId, payload);
+		var result = await service.UpdateCertificate(sampleCertificate.CertificateId, payload);
 
 		Assert.IsNotNull(result);
 
@@ -163,7 +163,7 @@ public class CertificateServiceTests
 		};
 		await Assert.ThrowsExceptionAsync<KeyNotFoundException>(async () =>
 		{
-			await controller.UpdateCertificate(Guid.NewGuid(), payload);
+			await service.UpdateCertificate(Guid.NewGuid(), payload);
 		});
 	}
 
@@ -197,7 +197,7 @@ public class CertificateServiceTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetCertificates([], CertificateSearchBehavior.MatchAll);
+		var result = await service.GetCertificates([], CertificateSearchBehavior.MatchAll);
 
 		Assert.IsNotNull(result);
 
@@ -235,7 +235,7 @@ public class CertificateServiceTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetCertificates(["Tag1"], CertificateSearchBehavior.MatchAll);
+		var result = await service.GetCertificates(["Tag1"], CertificateSearchBehavior.MatchAll);
 
 		Assert.IsNotNull(result);
 
@@ -273,7 +273,7 @@ public class CertificateServiceTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetCertificates(["Tag1", "Tag3"], CertificateSearchBehavior.MatchAll);
+		var result = await service.GetCertificates(["Tag1", "Tag3"], CertificateSearchBehavior.MatchAll);
 
 		Assert.IsNotNull(result);
 
@@ -311,7 +311,7 @@ public class CertificateServiceTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetCertificates(["Tag1", "Tag2"], CertificateSearchBehavior.MatchAll);
+		var result = await service.GetCertificates(["Tag1", "Tag2"], CertificateSearchBehavior.MatchAll);
 
 		Assert.IsNotNull(result);
 
@@ -359,7 +359,7 @@ public class CertificateServiceTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetCertificates(["Tag1", "Tag2"], CertificateSearchBehavior.MatchAny);
+		var result = await service.GetCertificates(["Tag1", "Tag2"], CertificateSearchBehavior.MatchAny);
 
 		Assert.IsNotNull(result);
 
@@ -383,7 +383,7 @@ public class CertificateServiceTests
 		context.Certificates.Add(sampleCertificate);
 		await context.SaveChangesAsync();
 
-		var result = await controller.DeleteCertificate(sampleCertificate.CertificateId);
+		var result = await service.DeleteCertificate(sampleCertificate.CertificateId);
 
 		Assert.IsNotNull(result);
 

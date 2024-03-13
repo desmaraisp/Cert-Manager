@@ -3,6 +3,7 @@ using CertManager;
 using CertManager.Database;
 using CertManager.Features.Authentication;
 using CertManager.Features.CertificateRenewal;
+using CertManager.Features.Certificates;
 using CertManager.Features.CertificateVersions;
 using CertManager.Features.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -46,6 +47,7 @@ internal class Program
 			};
 		});
 		builder.Services.AddScoped<CertificateVersionService>()
+					.AddScoped<CertificateService>()
 					.AddScoped<CertificateRenewalService>();
 		builder.Services.RegisterAuthentication(builder.Configuration);
 		builder.Services.AddCors(x =>
