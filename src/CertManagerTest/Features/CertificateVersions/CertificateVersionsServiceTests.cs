@@ -54,6 +54,7 @@ public class CertificateVersionServiceTests
 	{
 		Certificate entity = new()
 		{
+			RequirePrivateKey = true,
 			OrganizationId = "",
 			IsCertificateAuthority = false,
 			CertificateDescription = null,

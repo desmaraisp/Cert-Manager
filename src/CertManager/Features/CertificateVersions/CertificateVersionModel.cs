@@ -1,3 +1,5 @@
+using CertManager.Database;
+
 namespace CertManager.Features.CertificateVersions;
 
 
@@ -11,4 +13,16 @@ public class CertificateVersionModel
 	public required byte[] RawCertificate { get; init; }
 	public required Guid CertificateId { get; init; }
 	public required Guid CertificateVersionId { get; init; }
+
+	public static CertificateVersionModel FromCertificateVersion(CertificateVersion newCertVersion) => new()
+	{
+		ActivationDate = newCertVersion.ActivationDate,
+		Cn = newCertVersion.Cn,
+		ExpiryDate = newCertVersion.ExpiryDate,
+		IssuerName = newCertVersion.IssuerName,
+		Thumbprint = newCertVersion.Thumbprint,
+		RawCertificate = newCertVersion.RawCertificate,
+		CertificateId = newCertVersion.CertificateId,
+		CertificateVersionId = newCertVersion.CertificateVersionId
+	};
 }

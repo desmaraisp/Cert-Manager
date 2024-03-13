@@ -26,17 +26,7 @@ public class CertificateVersionService(CertManagerContext certManagerContext)
 
 		certManagerContext.CertificateVersions.Add(newCertVersion);
 		await certManagerContext.SaveChangesAsync();
-		return new CertificateVersionModel
-		{
-			ActivationDate = newCertVersion.ActivationDate,
-			Cn = newCertVersion.Cn,
-			ExpiryDate = newCertVersion.ExpiryDate,
-			IssuerName = newCertVersion.IssuerName,
-			Thumbprint = newCertVersion.Thumbprint,
-			RawCertificate = newCertVersion.RawCertificate,
-			CertificateId = newCertVersion.CertificateId,
-			CertificateVersionId = newCertVersion.CertificateVersionId
-		};
+		return CertificateVersionModel.FromCertificateVersion(newCertVersion);
 	}
 
 	public async Task<int> DeleteCertificateVersion(Guid id)
@@ -82,17 +72,7 @@ public class CertificateVersionService(CertManagerContext certManagerContext)
 		}
 
 		return await query
-				.Select(x => new CertificateVersionModel
-				{
-					ActivationDate = x.ActivationDate,
-					Cn = x.Cn,
-					ExpiryDate = x.ExpiryDate,
-					IssuerName = x.IssuerName,
-					Thumbprint = x.Thumbprint,
-					RawCertificate = x.RawCertificate,
-					CertificateId = x.CertificateId,
-					CertificateVersionId = x.CertificateVersionId
-				})
+				.Select(x => CertificateVersionModel.FromCertificateVersion(x))
 				.ToListAsync();
 	}
 }

@@ -3,6 +3,7 @@ using CertManager;
 using CertManager.Database;
 using CertManager.Features.Authentication;
 using CertManager.Features.CertificateRenewal;
+using CertManager.Features.Certificates;
 using CertManager.Features.CertificateVersions;
 using CertManager.Features.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -21,9 +22,11 @@ internal class Program
 			config.ReadFrom.Configuration(context.Configuration);
 		});
 		builder.Services.AddHealthChecks();
-		builder.Services.AddControllers(c => {
+		builder.Services.AddControllers(c =>
+		{
 			c.Filters.Add(new OrganizationIdActionFilterAttribute());
-		}).AddJsonOptions(options => {
+		}).AddJsonOptions(options =>
+		{
 			options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 			options.JsonSerializerOptions.Converters.Add(new DatetimeUtcSerializationConverter());
 		});
@@ -44,6 +47,7 @@ internal class Program
 			};
 		});
 		builder.Services.AddScoped<CertificateVersionService>()
+					.AddScoped<CertificateService>()
 					.AddScoped<CertificateRenewalService>();
 		builder.Services.RegisterAuthentication(builder.Configuration);
 		builder.Services.AddCors(x =>
@@ -62,6 +66,7 @@ internal class Program
 		}
 
 		app.MapHealthChecks("/health");
+		app.UseExceptionHandler("/error");
 
 		app.UseSerilogRequestLogging();
 		app.UseCors();

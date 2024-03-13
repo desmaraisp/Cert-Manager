@@ -39,6 +39,10 @@ export function CertificatesAddForm({ organizationId }: { organizationId: string
 						label="CertificateAuthority"
 						{...form.getInputProps('isCertificateAuthority', { type: "checkbox" })}
 					/>
+					<Checkbox
+						label="Requires private key"
+						{...form.getInputProps('requirePrivateKey', { type: "checkbox" })}
+					/>
 
 					<TagsInput label="Certificate tags" placeholder="Enter tag" {...form.getInputProps('tags')} />
 

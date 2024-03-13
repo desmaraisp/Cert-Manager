@@ -7,15 +7,15 @@ using Microsoft.EntityFrameworkCore;
 namespace CertManagerTest.Features.Certificates;
 
 [TestClass]
-public class CertificateControllerTests
+public class CertificateServiceTests
 {
 	private readonly CertManagerContext context;
-	private readonly CertificateController controller;
+	private readonly CertificateService service;
 
-	public CertificateControllerTests()
+	public CertificateServiceTests()
 	{
 		context = ConfigureSqLite.ConfigureCertManagerContext();
-		controller = new CertificateController(context);
+		service = new (context);
 	}
 
 	[TestMethod]
@@ -23,18 +23,18 @@ public class CertificateControllerTests
 	{
 		var payload = new CertificateModel
 		{
+			RequirePrivateKey = true,
 			IsCertificateAuthority = false,
 			CertificateDescription = null,
 			CertificateName = "TestCertificate",
-			Tags = new List<string> { "Tag1", "Tag2" }
+			Tags = ["Tag1", "Tag2"]
 		};
 
-		var result = await controller.CreateCertificate(payload) as OkObjectResult;
+		var result = await service.CreateCertificate(payload);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var createdCertificate = result.Value as CertificateModelWithId;
+		var createdCertificate = result;
 		Assert.IsNotNull(createdCertificate);
 		Assert.AreEqual(payload.CertificateName, createdCertificate.CertificateName);
 		Assert.AreNotEqual(Guid.Empty, createdCertificate.CertificateId);
@@ -46,6 +46,7 @@ public class CertificateControllerTests
 	{
 		context.Certificates.Add(new()
 		{
+			RequirePrivateKey = true,
 			OrganizationId = "",
 			IsCertificateAuthority = false,
 			CertificateDescription = null,
@@ -56,8 +57,9 @@ public class CertificateControllerTests
 
 		await Assert.ThrowsExceptionAsync<DbUpdateException>(async () =>
 		{
-			await controller.CreateCertificate(new CertificateModel
+			await service.CreateCertificate(new CertificateModel
 			{
+				RequirePrivateKey = true,
 				IsCertificateAuthority = false,
 				CertificateDescription = null,
 				CertificateName = "TestCertificate",
@@ -69,10 +71,9 @@ public class CertificateControllerTests
 	[TestMethod]
 	public async Task DeleteCertificateById_ReturnsNotFound_WhenCertificateNotFound()
 	{
-		var result = await controller.DeleteCertificateById(Guid.NewGuid()) as NotFoundResult;
+		var result = await service.DeleteCertificate(Guid.NewGuid());
 
-		Assert.IsNotNull(result);
-		Assert.AreEqual(404, result.StatusCode);
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
@@ -80,6 +81,7 @@ public class CertificateControllerTests
 	{
 		var sampleCertificate = new Certificate
 		{
+			RequirePrivateKey = true,
 			OrganizationId = "",
 			IsCertificateAuthority = false,
 			CertificateDescription = null,
@@ -89,12 +91,11 @@ public class CertificateControllerTests
 		context.Certificates.Add(sampleCertificate);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetCertificateById(sampleCertificate.CertificateId) as OkObjectResult;
+		var result = await service.GetCertificateById(sampleCertificate.CertificateId);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var certificateModel = result.Value as CertificateModelWithId;
+		var certificateModel = result;
 		Assert.IsNotNull(certificateModel);
 		Assert.AreEqual(sampleCertificate.CertificateName, certificateModel.CertificateName);
 		Assert.AreEqual(sampleCertificate.CertificateId, certificateModel.CertificateId);
@@ -103,10 +104,9 @@ public class CertificateControllerTests
 	[TestMethod]
 	public async Task GetCertificateById_ReturnsNotFound_WhenCertificateNotFound()
 	{
-		var result = await controller.GetCertificateById(Guid.NewGuid()) as NotFoundResult;
+		var result = await service.GetCertificateById(Guid.NewGuid());
 
-		Assert.IsNotNull(result);
-		Assert.AreEqual(404, result.StatusCode);
+		Assert.IsNull(result);
 	}
 
 	[TestMethod]
@@ -114,6 +114,7 @@ public class CertificateControllerTests
 	{
 		var sampleCertificate = new Certificate
 		{
+			RequirePrivateKey = true,
 			OrganizationId = "",
 			IsCertificateAuthority = false,
 			CertificateDescription = null,
@@ -132,12 +133,11 @@ public class CertificateControllerTests
 			NewTags = ["NewTag1", "NewTag2"]
 		};
 
-		var result = await controller.EditCertificateById(sampleCertificate.CertificateId, payload) as OkObjectResult;
+		var result = await service.UpdateCertificate(sampleCertificate.CertificateId, payload);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var editedCertificate = result.Value as CertificateModelWithId;
+		var editedCertificate = result;
 		Assert.IsNotNull(editedCertificate);
 		Assert.AreEqual(payload.NewCertificateName, editedCertificate.CertificateName);
 		Assert.AreEqual(sampleCertificate.CertificateId, editedCertificate.CertificateId);
@@ -161,12 +161,10 @@ public class CertificateControllerTests
 			NewCertificateName = "NewCertificateName",
 			NewTags = ["NewTag1", "NewTag2"]
 		};
-
-		var result = await controller.EditCertificateById(Guid.NewGuid(), payload) as NotFoundResult;
-
-		// Assert
-		Assert.IsNotNull(result);
-		Assert.AreEqual(404, result.StatusCode);
+		await Assert.ThrowsExceptionAsync<KeyNotFoundException>(async () =>
+		{
+			await service.UpdateCertificate(Guid.NewGuid(), payload);
+		});
 	}
 
 	[TestMethod]
@@ -176,6 +174,7 @@ public class CertificateControllerTests
 		{
 			new Certificate
 			{
+				RequirePrivateKey = true,
 				OrganizationId = "",
 				IsCertificateAuthority = false,
 				CertificateDescription = null,
@@ -185,6 +184,7 @@ public class CertificateControllerTests
 			},
 			new Certificate
 			{
+				RequirePrivateKey = true,
 				OrganizationId = "",
 				IsCertificateAuthority = false,
 				CertificateDescription = null,
@@ -197,12 +197,11 @@ public class CertificateControllerTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetAllCertificates(new(), CertificateSearchBehavior.MatchAll) as OkObjectResult;
+		var result = await service.GetCertificates([], CertificateSearchBehavior.MatchAll);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var certificates = result.Value as List<CertificateModelWithId>;
+		var certificates = result;
 		Assert.IsNotNull(certificates);
 		Assert.AreEqual(2, certificates.Count);
 	}
@@ -214,6 +213,7 @@ public class CertificateControllerTests
 			{
 				new Certificate
 				{
+					RequirePrivateKey = true,
 					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
@@ -223,6 +223,7 @@ public class CertificateControllerTests
 				},
 				new Certificate
 				{
+					RequirePrivateKey = true,
 					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
@@ -234,12 +235,11 @@ public class CertificateControllerTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetAllCertificates(new List<string> { "Tag1" }, CertificateSearchBehavior.MatchAll) as OkObjectResult;
+		var result = await service.GetCertificates(["Tag1"], CertificateSearchBehavior.MatchAll);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var certificates = result.Value as List<CertificateModelWithId>;
+		var certificates = result;
 		Assert.IsNotNull(certificates);
 		Assert.AreEqual(1, certificates.Count);
 	}
@@ -251,6 +251,7 @@ public class CertificateControllerTests
 			{
 				new Certificate
 				{
+					RequirePrivateKey = true,
 					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
@@ -260,6 +261,7 @@ public class CertificateControllerTests
 				},
 				new Certificate
 				{
+					RequirePrivateKey = true,
 					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
@@ -271,12 +273,11 @@ public class CertificateControllerTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetAllCertificates(new List<string> { "Tag1", "Tag3" }, CertificateSearchBehavior.MatchAll) as OkObjectResult;
+		var result = await service.GetCertificates(["Tag1", "Tag3"], CertificateSearchBehavior.MatchAll);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var certificates = result.Value as List<CertificateModelWithId>;
+		var certificates = result;
 		Assert.IsNotNull(certificates);
 		Assert.AreEqual(0, certificates.Count);
 	}
@@ -288,6 +289,7 @@ public class CertificateControllerTests
 			{
 				new Certificate
 				{
+					RequirePrivateKey = true,
 					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
@@ -297,6 +299,7 @@ public class CertificateControllerTests
 				},
 				new Certificate
 				{
+					RequirePrivateKey = true,
 					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
@@ -308,12 +311,11 @@ public class CertificateControllerTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetAllCertificates(new List<string> { "Tag1", "Tag2" }, CertificateSearchBehavior.MatchAll) as OkObjectResult;
+		var result = await service.GetCertificates(["Tag1", "Tag2"], CertificateSearchBehavior.MatchAll);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var certificates = result.Value as List<CertificateModelWithId>;
+		var certificates = result;
 		Assert.IsNotNull(certificates);
 		Assert.AreEqual(1, certificates.Count);
 	}
@@ -325,6 +327,7 @@ public class CertificateControllerTests
 			{
 				new Certificate
 				{
+					RequirePrivateKey = true,
 					IsCertificateAuthority = false,
 					OrganizationId = "",
 					CertificateDescription = null,
@@ -334,6 +337,7 @@ public class CertificateControllerTests
 				},
 				new Certificate
 				{
+					RequirePrivateKey = true,
 					OrganizationId = "",
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
@@ -347,6 +351,7 @@ public class CertificateControllerTests
 					IsCertificateAuthority = false,
 					CertificateDescription = null,
 					CertificateId = Guid.NewGuid(),
+					RequirePrivateKey = true,
 					CertificateName = "Certificate2",
 					CertificateTags = new List<CertificateTag> { new() { Tag = "Tag2" },  new() { Tag = "Tag3" } }
 				}
@@ -354,12 +359,11 @@ public class CertificateControllerTests
 		context.Certificates.AddRange(sampleCertificates);
 		await context.SaveChangesAsync();
 
-		var result = await controller.GetAllCertificates(new List<string> { "Tag1", "Tag2" }, CertificateSearchBehavior.MatchAny) as OkObjectResult;
+		var result = await service.GetCertificates(["Tag1", "Tag2"], CertificateSearchBehavior.MatchAny);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var certificates = result.Value as List<CertificateModelWithId>;
+		var certificates = result;
 		Assert.IsNotNull(certificates);
 		Assert.AreEqual(2, certificates.Count);
 	}
@@ -372,18 +376,18 @@ public class CertificateControllerTests
 			OrganizationId = "",
 			IsCertificateAuthority = false,
 			CertificateDescription = null,
+			RequirePrivateKey = true,
 			CertificateId = Guid.NewGuid(),
 			CertificateName = ""
 		};
 		context.Certificates.Add(sampleCertificate);
 		await context.SaveChangesAsync();
 
-		var result = await controller.DeleteCertificateById(sampleCertificate.CertificateId) as OkResult;
+		var result = await service.DeleteCertificate(sampleCertificate.CertificateId);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
 
-		var deletedCertificate = await context.Certificates.AsNoTracking().FirstOrDefaultAsync(x => x.CertificateId == sampleCertificate.CertificateId);
+		var deletedCertificate = await context.Certificates.FirstOrDefaultAsync(x => x.CertificateId == sampleCertificate.CertificateId);
 		Assert.IsNull(deletedCertificate);
 	}
 }

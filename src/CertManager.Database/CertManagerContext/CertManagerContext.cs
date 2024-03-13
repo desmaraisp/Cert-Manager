@@ -15,7 +15,7 @@ public class CertManagerContext(DbContextOptions<CertManagerContext> options) : 
 	{
 		modelBuilder.Entity<Certificate>(entity =>
 		{
-			entity.HasIndex(m => m.CertificateName).IsUnique();
+			entity.HasIndex(m => new { m.CertificateName, m.OrganizationId }).IsUnique();
 			entity.HasQueryFilter(x => x.OrganizationId == OrganizationId);
 		});
 		modelBuilder.Entity<CertificateVersion>()
@@ -33,5 +33,8 @@ public class CertManagerContext(DbContextOptions<CertManagerContext> options) : 
 			.WithMany(e => e.DependentRenewalSubscriptions)
 			.HasForeignKey(e => e.ParentCertificateId)
 			.OnDelete(DeleteBehavior.NoAction);
+
+		modelBuilder.Entity<CertificateTag>()
+			.HasQueryFilter(x => x.Certificate.OrganizationId == OrganizationId);
 	}
 }

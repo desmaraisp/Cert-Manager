@@ -66,6 +66,8 @@ public class CertificateRenewalController : ControllerBase
 			logger.LogDebug(e, "{x} isn't a valid certificate subject", Payload.CertificateSubject);
 			return BadRequest("Certificate subject isn't valid");
 		}
+		if (Payload.DestinationCertificateId == Payload.ParentCertificateId) return BadRequest("Parent certificate and destination certificate can't be the same");
+
 		var createdItem = await renewalService.CreateRenewalSubscription(Payload);
 
 		return Ok(createdItem);

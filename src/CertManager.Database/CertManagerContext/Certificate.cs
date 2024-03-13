@@ -10,10 +10,11 @@ public partial class Certificate
 	public required string CertificateName { get; set; }
 
 	[MaxLength(1000)]
-	public required string? CertificateDescription { get; set; }
+	public string? CertificateDescription { get; set; }
 
 	public required bool IsCertificateAuthority { get; set; }
 	[MaxLength(50)] public required string OrganizationId { get; set; }
+	public required bool RequirePrivateKey { get; set; }
 
 	public ICollection<CertificateVersion> CertificateVersions { get; set; } = [];
 	public ICollection<CertificateTag> CertificateTags { get; set; } = [];

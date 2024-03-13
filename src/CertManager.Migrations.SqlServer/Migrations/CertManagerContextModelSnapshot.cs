@@ -45,9 +45,12 @@ namespace CertManager.Migrations.SqlServer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<bool>("RequirePrivateKey")
+                        .HasColumnType("bit");
+
                     b.HasKey("CertificateId");
 
-                    b.HasIndex("CertificateName")
+                    b.HasIndex("CertificateName", "OrganizationId")
                         .IsUnique();
 
                     b.ToTable("Certificates");
@@ -78,7 +81,7 @@ namespace CertManager.Migrations.SqlServer.Migrations
                     b.Property<Guid>("ParentCertificateId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("RenewalOffsetBeforeExpirationDays")
+                    b.Property<int>("RenewXDaysBeforeExpiration")
                         .HasColumnType("int");
 
                     b.HasKey("SubscriptionId");
