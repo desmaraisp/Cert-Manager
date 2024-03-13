@@ -7,6 +7,7 @@ const CertificateModel = z
     certificateName: z.string().nullable(),
     tags: z.array(z.string()).nullable(),
     certificateDescription: z.string().nullable(),
+    requirePrivateKey: z.boolean(),
   })
   .partial();
 const CertificateModelWithId = z
@@ -15,6 +16,7 @@ const CertificateModelWithId = z
     certificateName: z.string().nullable(),
     tags: z.array(z.string()).nullable(),
     certificateDescription: z.string().nullable(),
+    requirePrivateKey: z.boolean(),
     certificateId: z.string().uuid(),
   })
   .partial();
