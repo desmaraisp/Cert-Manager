@@ -7,7 +7,15 @@ import { useAuthHelperForceAuthenticated } from "../authentication/use-auth-help
 
 export function CertificatesAddForm({ organizationId }: { organizationId: string }) {
 	const form = useForm<z.infer<typeof schemas.CertificateModel>>({
-		validate: zodResolver(schemas.CertificateModel),
+		validate: zodResolver(
+			schemas.CertificateModel.refine((val) => val.isCertificateAuthority ? val.requirePrivateKey : true, {
+				message: "Certificate authorities need to have a private key",
+				path: ['isCertificateAuthority']
+			}).refine((val) => val.tags?.every(x => x.length >= 2), {
+				message: "All tags should have more than 2 characters",
+				path: ['tags']
+			})
+		),
 		initialValues: { certificateDescription: '', certificateName: '', isCertificateAuthority: false, tags: [] }
 	})
 
