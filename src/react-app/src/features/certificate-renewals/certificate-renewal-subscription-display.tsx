@@ -1,6 +1,7 @@
-import { Stack, Box, LoadingOverlay, Text, Anchor } from "@mantine/core";
+import { Stack, Box, LoadingOverlay, Text, Anchor, Group } from "@mantine/core";
 import { useAuthHelperForceAuthenticated } from "../authentication/use-auth-helper";
 import { hooks } from "../zodios/client-hooks";
+import { CertificateRenewalSubscriptionDelete } from "./certificate-renewal-subscription-delete";
 
 export function CertificateRenewalSubscriptionDisplay({ organizationId, certificateId }: { organizationId: string, certificateId: string }) {
 	const { bearerToken } = useAuthHelperForceAuthenticated()
@@ -20,12 +21,17 @@ export function CertificateRenewalSubscriptionDisplay({ organizationId, certific
 	return (
 		<Box pos="relative">
 			<LoadingOverlay visible={isLoading || certLoading} />
-			<Stack>
-				<Anchor href={`/certificates/${data?.at(0)?.parentCertificateId}`}>{parentCert?.certificateName}</Anchor>
-				<Text>Valid for {data?.at(0)?.certificateDuration} days</Text>
-				<Text>Will be renewed {data?.at(0)?.renewXDaysBeforeExpiration} days before expiration</Text>
-				<Text>{data?.at(0)?.certificateSubject}</Text>
-			</Stack>
+			<Group className="items-stretch">
+				<Stack className="flex-1">
+					<Text>Associated certificate: <Anchor href={`/certificates/${data?.at(0)?.parentCertificateId}`}>{parentCert?.certificateName}</Anchor></Text>
+					<Text>Valid for {data?.at(0)?.certificateDuration} days</Text>
+					<Text>Will be renewed {data?.at(0)?.renewXDaysBeforeExpiration} days before expiration</Text>
+					<Text>{data?.at(0)?.certificateSubject}</Text>
+				</Stack>
+				<Stack className="align-top">
+					<CertificateRenewalSubscriptionDelete organizationId={organizationId} certificateId={certificateId} certRenewalId={data?.[0]?.subscriptionId ?? ""} />
+				</Stack>
+			</Group>
 		</Box>
 	)
 }
