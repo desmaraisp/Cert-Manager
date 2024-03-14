@@ -37,6 +37,6 @@ function InternalCertificateDisplay({ data }: { data: z.infer<typeof schemas.Cer
 		</Group>
 		<Text>{`Certificate type: ${data.isCertificateAuthority ? 'CA' : 'Normal'}`}</Text>
 		<Text>Description:</Text>
-		<Text style={{ whiteSpace: 'pre-line', wordBreak: 'break-word' }}>{!!data.certificateDescription ?? "No description was provided"}</Text>
+		<Text style={{ whiteSpace: 'pre-line', wordBreak: 'break-word' }}>{data.certificateDescription || "No description was provided"}</Text>
 	</Stack>
 }

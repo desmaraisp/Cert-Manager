@@ -11,6 +11,8 @@ export function CertificateRenewalSubscriptionAdd({ organizationId, certificateI
 	const { bearerToken } = useAuthHelperForceAuthenticated()
 	const form = useForm<formType>({
 		initialValues: {
+			certificateSubject: "",
+			parentCertificateId: "",
 			certificateDurationDays: 90,
 			renewXDaysBeforeExpiration: 15,
 			destinationCertificateId: certificateId
