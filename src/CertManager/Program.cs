@@ -24,10 +24,7 @@ internal class Program
 			config.ReadFrom.Configuration(context.Configuration);
 		});
 		builder.Services.AddHealthChecks();
-		builder.Services.AddFluentValidationAutoValidation(c =>
-		{
-			c.DisableDataAnnotationsValidation = true;
-		});
+		builder.Services.AddFluentValidationAutoValidation();
 		builder.Services.AddProblemDetails((options) =>
 		{
 			options.MapToStatusCode<ItemNotFoundException>(404);

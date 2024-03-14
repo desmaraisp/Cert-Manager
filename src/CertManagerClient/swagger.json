@@ -61,6 +61,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       },
@@ -908,6 +928,9 @@
   "components": {
     "schemas": {
       "CertificateModel": {
+        "required": [
+          "certificateName"
+        ],
         "type": "object",
         "properties": {
           "isCertificateAuthority": {
@@ -915,8 +938,9 @@
             "default": false
           },
           "certificateName": {
-            "type": "string",
-            "nullable": true
+            "maxLength": 100,
+            "minLength": 2,
+            "type": "string"
           },
           "tags": {
             "type": "array",
@@ -937,6 +961,9 @@
         "additionalProperties": false
       },
       "CertificateModelWithId": {
+        "required": [
+          "certificateName"
+        ],
         "type": "object",
         "properties": {
           "isCertificateAuthority": {
@@ -944,8 +971,9 @@
             "default": false
           },
           "certificateName": {
-            "type": "string",
-            "nullable": true
+            "maxLength": 100,
+            "minLength": 2,
+            "type": "string"
           },
           "tags": {
             "type": "array",
@@ -1000,6 +1028,11 @@
         "additionalProperties": false
       },
       "CertificateRenewalSubscriptionModel": {
+        "required": [
+          "certificateSubject",
+          "destinationCertificateId",
+          "parentCertificateId"
+        ],
         "type": "object",
         "properties": {
           "certificateDuration": {
@@ -1007,11 +1040,12 @@
             "format": "time-span"
           },
           "certificateSubject": {
-            "type": "string",
-            "nullable": true
+            "maxLength": 200,
+            "minLength": 2,
+            "type": "string"
           },
           "renewXDaysBeforeExpiration": {
-            "maximum": 365,
+            "maximum": 89,
             "minimum": 1,
             "type": "integer",
             "format": "int32"
@@ -1028,6 +1062,11 @@
         "additionalProperties": false
       },
       "CertificateRenewalSubscriptionModelWithId": {
+        "required": [
+          "certificateSubject",
+          "destinationCertificateId",
+          "parentCertificateId"
+        ],
         "type": "object",
         "properties": {
           "certificateDuration": {
@@ -1035,11 +1074,12 @@
             "format": "time-span"
           },
           "certificateSubject": {
-            "type": "string",
-            "nullable": true
+            "maxLength": 200,
+            "minLength": 2,
+            "type": "string"
           },
           "renewXDaysBeforeExpiration": {
-            "maximum": 365,
+            "maximum": 89,
             "minimum": 1,
             "type": "integer",
             "format": "int32"

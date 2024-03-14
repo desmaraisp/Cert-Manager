@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using CertManager.Database;
 using FluentValidation;
 
@@ -8,6 +9,8 @@ public class CertificateModel
 {
 	[DefaultValue(false)]
 	public bool IsCertificateAuthority { get; init; } = false;
+
+	[Required(AllowEmptyStrings =false)] [StringLength(100, MinimumLength = 2)]
 	public required string CertificateName { get; init; }
 
 	public List<string> Tags { get; init; } = [];
@@ -33,7 +36,6 @@ public class CertificateModelWithId : CertificateModel
 
 public class CertificateModelValidator: AbstractValidator<CertificateModel> {
 	public CertificateModelValidator() {
-		RuleFor(x => x.CertificateName).MinimumLength(2);
 		RuleForEach(x => x.Tags).NotEmpty().MinimumLength(2);
 	}
 }

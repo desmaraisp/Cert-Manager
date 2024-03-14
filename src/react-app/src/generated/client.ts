@@ -1,25 +1,21 @@
 import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
 import { z } from "zod";
 
-const CertificateModel = z
-  .object({
-    isCertificateAuthority: z.boolean(),
-    certificateName: z.string().nullable(),
-    tags: z.array(z.string()).nullable(),
-    certificateDescription: z.string().nullable(),
-    requirePrivateKey: z.boolean(),
-  })
-  .partial();
-const CertificateModelWithId = z
-  .object({
-    isCertificateAuthority: z.boolean(),
-    certificateName: z.string().nullable(),
-    tags: z.array(z.string()).nullable(),
-    certificateDescription: z.string().nullable(),
-    requirePrivateKey: z.boolean(),
-    certificateId: z.string().uuid(),
-  })
-  .partial();
+const CertificateModel = z.object({
+  isCertificateAuthority: z.boolean().optional(),
+  certificateName: z.string().min(2).max(100),
+  tags: z.array(z.string()).nullish(),
+  certificateDescription: z.string().nullish(),
+  requirePrivateKey: z.boolean().optional(),
+});
+const CertificateModelWithId = z.object({
+  isCertificateAuthority: z.boolean().optional(),
+  certificateName: z.string().min(2).max(100),
+  tags: z.array(z.string()).nullish(),
+  certificateDescription: z.string().nullish(),
+  requirePrivateKey: z.boolean().optional(),
+  certificateId: z.string().uuid().optional(),
+});
 const ProblemDetails = z
   .object({
     type: z.string().nullable(),
@@ -47,25 +43,21 @@ const CertificateRenewalScheduleModel = z
     parentCertificateId: z.string().uuid(),
   })
   .partial();
-const CertificateRenewalSubscriptionModelWithId = z
-  .object({
-    certificateDuration: z.string(),
-    certificateSubject: z.string().nullable(),
-    renewXDaysBeforeExpiration: z.number().int().gte(1).lte(365),
-    destinationCertificateId: z.string().uuid(),
-    parentCertificateId: z.string().uuid(),
-    subscriptionId: z.string().uuid(),
-  })
-  .partial();
-const CertificateRenewalSubscriptionModel = z
-  .object({
-    certificateDuration: z.string(),
-    certificateSubject: z.string().nullable(),
-    renewXDaysBeforeExpiration: z.number().int().gte(1).lte(365),
-    destinationCertificateId: z.string().uuid(),
-    parentCertificateId: z.string().uuid(),
-  })
-  .partial();
+const CertificateRenewalSubscriptionModelWithId = z.object({
+  certificateDuration: z.string().optional(),
+  certificateSubject: z.string().min(2).max(200),
+  renewXDaysBeforeExpiration: z.number().int().gte(1).lte(89).optional(),
+  destinationCertificateId: z.string().uuid(),
+  parentCertificateId: z.string().uuid(),
+  subscriptionId: z.string().uuid().optional(),
+});
+const CertificateRenewalSubscriptionModel = z.object({
+  certificateDuration: z.string().optional(),
+  certificateSubject: z.string().min(2).max(200),
+  renewXDaysBeforeExpiration: z.number().int().gte(1).lte(89).optional(),
+  destinationCertificateId: z.string().uuid(),
+  parentCertificateId: z.string().uuid(),
+});
 const CertificateVersionModel = z
   .object({
     activationDate: z.string().datetime({ offset: true }),
@@ -206,6 +198,22 @@ const endpoints = makeApi([
       },
     ],
     response: CertificateModelWithId,
+    errors: [
+      {
+        status: 400,
+        description: `Bad Request`,
+        schema: z
+          .object({
+            type: z.string().nullable(),
+            title: z.string().nullable(),
+            status: z.number().int().nullable(),
+            detail: z.string().nullable(),
+            instance: z.string().nullable(),
+          })
+          .partial()
+          .passthrough(),
+      },
+    ],
   },
   {
     method: "get",
