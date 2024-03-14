@@ -1,4 +1,4 @@
-import { useForm } from "@mantine/form";
+import { useForm, zodResolver } from "@mantine/form";
 import { Stack, Button, Select, ComboboxItem, Box, LoadingOverlay, NumberInput, TextInput } from "@mantine/core";
 import { useAuthHelperForceAuthenticated } from "../authentication/use-auth-helper";
 import { hooks } from "../zodios/client-hooks";
@@ -14,7 +14,17 @@ export function CertificateRenewalSubscriptionAdd({ organizationId, certificateI
 			certificateDurationDays: 90,
 			renewXDaysBeforeExpiration: 15,
 			destinationCertificateId: certificateId
-		}
+		},
+		validate: zodResolver(
+			schemas.CertificateRenewalSubscriptionModel.omit({
+				certificateDuration: true
+			}).extend({
+				certificateDurationDays: z.number().positive()
+			}).refine((val) => val.destinationCertificateId !== val.parentCertificateId, {
+				message: "Destination certificate and parent certificate can't be the same",
+				path: ['parentCertificateId']
+			})
+		)
 	})
 	const { data: certificates, isLoading } = hooks.useGetAllCertificates({
 		params: { organizationId: organizationId },
@@ -35,7 +45,7 @@ export function CertificateRenewalSubscriptionAdd({ organizationId, certificateI
 	});
 
 	const handler = form.onSubmit(async (data) => {
-		await mutateAsync({...data, certificateDuration: `${data.certificateDurationDays}.00:00:00`})
+		await mutateAsync({ ...data, certificateDuration: `${data.certificateDurationDays}.00:00:00` })
 		form.reset()
 	});
 	return (
@@ -49,8 +59,8 @@ export function CertificateRenewalSubscriptionAdd({ organizationId, certificateI
 						{...form.getInputProps('parentCertificateId')}
 						data={certificates?.map<ComboboxItem>(x => ({ value: x.certificateId ?? "", label: x.certificateName ?? "" })) ?? undefined}
 					/>
-					<NumberInput label="Generated certificate duration in days" {...form.getInputProps('certificateDurationDays')} />
-					<NumberInput label="Renew x days before expiration" {...form.getInputProps('renewXDaysBeforeExpiration')} />
+					<NumberInput allowNegative={false} label="Generated certificate duration in days" {...form.getInputProps('certificateDurationDays')} />
+					<NumberInput allowNegative={false} label="Renew x days before expiration" {...form.getInputProps('renewXDaysBeforeExpiration')} />
 					<TextInput label="Cert subject" {...form.getInputProps("certificateSubject")} />
 					<Button loading={isSending} type='submit'>Create</Button>
 				</Stack>
