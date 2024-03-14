@@ -10,5 +10,5 @@ export function AuthHeader() {
 		})
 	}}>Login</Button>
 
-	return <Button onClick={async () => { await auth.removeUser() }}>Logout</Button>
+	return <Button onClick={async () => { await auth.signoutRedirect() }}>Logout</Button>
 }
