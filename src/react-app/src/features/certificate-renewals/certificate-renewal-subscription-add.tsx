@@ -5,10 +5,14 @@ import { hooks } from "../zodios/client-hooks";
 import { schemas } from "../../generated/client"
 import { z } from "zod";
 
+type formType = Omit<z.infer<typeof schemas.CertificateRenewalSubscriptionModel>, 'certificateDuration'> & { certificateDurationDays: number }
+
 export function CertificateRenewalSubscriptionAdd({ organizationId, certificateId }: { organizationId: string, certificateId: string }) {
 	const { bearerToken } = useAuthHelperForceAuthenticated()
-	const form = useForm<z.infer<typeof schemas.CertificateRenewalSubscriptionModel>>({
+	const form = useForm<formType>({
 		initialValues: {
+			certificateDurationDays: 90,
+			renewXDaysBeforeExpiration: 15,
 			destinationCertificateId: certificateId
 		}
 	})
@@ -31,7 +35,7 @@ export function CertificateRenewalSubscriptionAdd({ organizationId, certificateI
 	});
 
 	const handler = form.onSubmit(async (data) => {
-		await mutateAsync(data)
+		await mutateAsync({...data, certificateDuration: `${data.certificateDurationDays}.00:00:00`})
 		form.reset()
 	});
 	return (
@@ -45,7 +49,7 @@ export function CertificateRenewalSubscriptionAdd({ organizationId, certificateI
 						{...form.getInputProps('parentCertificateId')}
 						data={certificates?.map<ComboboxItem>(x => ({ value: x.certificateId ?? "", label: x.certificateName ?? "" })) ?? undefined}
 					/>
-					<TextInput label="Generated certificate duration (span format)" {...form.getInputProps('certificateDuration')} />
+					<NumberInput label="Generated certificate duration in days" {...form.getInputProps('certificateDurationDays')} />
 					<NumberInput label="Renew x days before expiration" {...form.getInputProps('renewXDaysBeforeExpiration')} />
 					<TextInput label="Cert subject" {...form.getInputProps("certificateSubject")} />
 					<Button loading={isSending} type='submit'>Create</Button>
