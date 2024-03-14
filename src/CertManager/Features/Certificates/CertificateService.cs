@@ -1,4 +1,5 @@
 using CertManager.Database;
+using CertManager.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 
@@ -27,7 +28,7 @@ public class CertificateService(CertManagerContext certManagerContext)
 	{
 		using var trn = certManagerContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
 
-		var cert = await certManagerContext.Certificates.FindAsync(id) ?? throw new KeyNotFoundException("No certificate found for this Id");
+		var cert = await certManagerContext.Certificates.FindAsync(id) ?? throw new ItemNotFoundException("No certificate found for this Id");
 
 		cert.CertificateDescription = payload.NewCertificateDescription;
 		if (!string.IsNullOrWhiteSpace(payload.NewCertificateName))

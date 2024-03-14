@@ -1,15 +1,16 @@
 using System.Text.Json.Serialization;
-using CertManager;
 using CertManager.Database;
 using CertManager.Features.Authentication;
 using CertManager.Features.CertificateRenewal;
 using CertManager.Features.Certificates;
 using CertManager.Features.CertificateVersions;
 using CertManager.Features.Swagger;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using CertManager.Lib;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using Serilog;
 
 internal class Program
@@ -23,6 +24,16 @@ internal class Program
 			config.ReadFrom.Configuration(context.Configuration);
 		});
 		builder.Services.AddHealthChecks();
+		builder.Services.AddFluentValidationAutoValidation(c =>
+		{
+			c.DisableDataAnnotationsValidation = true;
+		});
+		builder.Services.AddProblemDetails((options) =>
+		{
+			options.MapToStatusCode<ItemNotFoundException>(404);
+			options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
+		});
+
 		builder.Services.AddControllers(c =>
 		{
 			c.Filters.Add(new OrganizationIdActionFilterAttribute());
@@ -49,6 +60,9 @@ internal class Program
 		});
 		builder.Services.AddScoped<CertificateVersionService>()
 					.AddScoped<CertificateService>()
+					.AddSingleton<IValidator<CertificateModel>, CertificateModelValidator>()
+					.AddSingleton<IValidator<CertificateUpdateModel>, CertificateUpdateModelValidator>()
+					.AddSingleton<IValidator<CertificateRenewalSubscriptionModel>, CertificateRenewalSubscriptionModelValidator>()
 					.AddScoped<CertificateRenewalService>();
 		builder.Services.RegisterAuthentication(builder.Configuration);
 		builder.Services.AddCors(x =>
@@ -67,18 +81,7 @@ internal class Program
 		}
 
 		app.MapHealthChecks("/health");
-		app.UseExceptionHandler(exceptionHandlerApp =>
-		{
-			exceptionHandlerApp.Run(context =>
-			{
-				var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>()!;
-
-				if (exceptionHandlerFeature.Error is KeyNotFoundException){
-					context.Response.StatusCode = 404;
-				}
-				return Task.CompletedTask;
-			});
-		});
+		app.UseProblemDetails();
 
 		app.UseSerilogRequestLogging();
 		app.UseCors();

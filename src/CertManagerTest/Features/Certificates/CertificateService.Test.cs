@@ -1,6 +1,7 @@
 using AuthenticationProxy.Test;
 using CertManager.Database;
 using CertManager.Features.Certificates;
+using CertManager.Lib;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -161,7 +162,7 @@ public class CertificateServiceTests
 			NewCertificateName = "NewCertificateName",
 			NewTags = ["NewTag1", "NewTag2"]
 		};
-		await Assert.ThrowsExceptionAsync<KeyNotFoundException>(async () =>
+		await Assert.ThrowsExceptionAsync<ItemNotFoundException>(async () =>
 		{
 			await service.UpdateCertificate(Guid.NewGuid(), payload);
 		});

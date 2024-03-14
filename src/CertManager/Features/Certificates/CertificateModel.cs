@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using CertManager.Database;
+using FluentValidation;
 
 namespace CertManager.Features.Certificates;
 
@@ -30,9 +31,9 @@ public class CertificateModelWithId : CertificateModel
 	public required Guid CertificateId { get; init; }
 }
 
-public class CertificateUpdateModel
-{
-	public string? NewCertificateName { get; init; }
-	public List<string>? NewTags { get; init; }
-	public string? NewCertificateDescription { get; init; }
+public class CertificateModelValidator: AbstractValidator<CertificateModel> {
+	public CertificateModelValidator() {
+		RuleFor(x => x.CertificateName).MinimumLength(2);
+		RuleForEach(x => x.Tags).NotEmpty().MinimumLength(2);
+	}
 }

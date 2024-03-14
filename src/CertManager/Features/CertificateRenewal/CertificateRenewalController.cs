@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using CertManager.Database;
 using CertManager.Features.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -61,21 +59,10 @@ public class CertificateRenewalController : ControllerBase
 	[RequiredScope(AuthenticationScopes.WriteScope)]
 	public async Task<IActionResult> CreateCertificateRenewalSubscriptions(CertificateRenewalSubscriptionModel Payload)
 	{
-		try
-		{
-			_ = new X500DistinguishedName(Payload.CertificateSubject);
-		}
-		catch (CryptographicException e)
-		{
-			logger.LogDebug(e, "{x} isn't a valid certificate subject", Payload.CertificateSubject);
-			return BadRequest("Certificate subject isn't valid");
-		}
-		if (Payload.DestinationCertificateId == Payload.ParentCertificateId) return BadRequest("Parent certificate and destination certificate can't be the same");
-
 		using var trn = certManagerContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
 		var certificateData = await certManagerContext.Certificates.FindAsync(Payload.ParentCertificateId);
-		if (certificateData == null) return BadRequest("Parent certificate doesn't exist");
-		if (!certificateData.IsCertificateAuthority) return BadRequest("Parent certificate must be a CA");
+		if (certificateData == null) return Problem("Parent certificate doesn't exist", statusCode: 422);
+		if (!certificateData.IsCertificateAuthority) return Problem("Parent certificate must be a CA", statusCode: 422);
 
 		var createdItem = await renewalService.CreateRenewalSubscription(Payload);
 		await trn.CommitAsync();

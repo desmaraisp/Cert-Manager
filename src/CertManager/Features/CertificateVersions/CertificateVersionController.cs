@@ -36,11 +36,11 @@ public class CertificateVersionController : ControllerBase
 		var certificateData = await certManagerContext.Certificates.FindAsync(CertificateId);
 		if ((certificateData?.IsCertificateAuthority ?? true) && !(allowCA ?? false) && !(hasCAKeyUsageFlag ?? false))
 		{
-			return BadRequest("Certificate is missing basic constraint or KeyUsage certificate properties required for it to be used as CA");
+			return Problem("Certificate is missing basic constraint or KeyUsage certificate properties required for it to be used as CA", statusCode: 422);
 		}
 		if ((certificateData?.RequirePrivateKey ?? true) && !hasPrivateKey)
 		{
-			return BadRequest("Certificate is missing private key");
+			return Problem("Certificate is missing private key", statusCode: 422);
 		}
 
 		var newCertVersion = await certificateVersionService.AddCertificateVersion(CertificateId, cert);

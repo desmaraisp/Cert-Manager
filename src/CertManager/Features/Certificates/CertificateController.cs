@@ -14,6 +14,7 @@ public class CertificateController(CertificateService certService) : ControllerB
 
 	[HttpPost("Certificates", Name = nameof(CreateCertificate))]
 	[ProducesResponseType(typeof(CertificateModelWithId), 200)]
+	[ProducesResponseType(400)]
 	[RequiredScope(AuthenticationScopes.WriteScope)]
 	public async Task<IActionResult> CreateCertificate(CertificateModel payload)
 	{
@@ -49,7 +50,7 @@ public class CertificateController(CertificateService certService) : ControllerB
 	[RequiredScope(AuthenticationScopes.WriteScope)]
 	public async Task<IActionResult> DeleteCertificateById(Guid id)
 	{
-		if(await certService.DeleteCertificate(id)) return Ok();
+		if (await certService.DeleteCertificate(id)) return Ok();
 
 		return NotFound();
 	}

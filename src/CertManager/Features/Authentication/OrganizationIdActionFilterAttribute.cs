@@ -2,6 +2,7 @@ using System.Text.Json;
 using CertManager.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Options;
 
 namespace CertManager.Features.Authentication;
@@ -19,9 +20,13 @@ public class OrganizationIdActionFilterAttribute : IAsyncActionFilter
 
 		if (string.IsNullOrWhiteSpace(organizationId))
 		{
-			context.Result = new ObjectResult("No Organization Id provided")
+			context.Result = new ObjectResult(httpContext.RequestServices.GetRequiredService<ProblemDetailsFactory>().CreateProblemDetails(
+				httpContext,
+				statusCode: 403,
+				title: "No Organization Id provided"
+			))
 			{
-				StatusCode = 400
+				StatusCode = 403
 			};
 			return;
 		}
@@ -34,7 +39,11 @@ public class OrganizationIdActionFilterAttribute : IAsyncActionFilter
 			return;
 		}
 
-		context.Result = new ObjectResult("You're not authorized to access this organization")
+		context.Result = new ObjectResult(httpContext.RequestServices.GetRequiredService<ProblemDetailsFactory>().CreateProblemDetails(
+			httpContext,
+			statusCode: 403,
+			title: "You're not authorized to access this organization"
+		))
 		{
 			StatusCode = 403
 		};
