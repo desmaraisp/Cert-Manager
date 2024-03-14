@@ -4,13 +4,29 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import { AuthProvider } from 'react-oidc-context';
 import { AppHeader } from './features/header/app-header';
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppShell, createTheme, MantineProvider } from '@mantine/core';
 import { AuthProviderHelper } from './features/authentication/auth-provider-helper-context';
 import { oidcConfig } from './features/authentication/oidc-config';
+import { notifications, Notifications } from '@mantine/notifications';
 
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+	queryCache: new QueryCache({
+		onError: (error) =>
+			notifications.show({
+				message: (error as { message: string }).message,
+				title: "An unhandled error occurred"
+			})
+	}),
+	mutationCache: new MutationCache({
+		onError: (error) =>
+			notifications.show({
+				message: (error as { message: string }).message,
+				title: "An unhandled error occurred"
+			})
+	}),
+})
 const pages = import.meta.glob('/src/pages/**/*.tsx', { eager: true })
 const routes = Object.entries(pages).map(([route, page]) => {
 	const path = route
@@ -30,8 +46,9 @@ const theme = createTheme({
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	<React.StrictMode>
-		<QueryClientProvider client={queryClient}>
-			<MantineProvider defaultColorScheme="dark" theme={theme}>
+		<MantineProvider defaultColorScheme="dark" theme={theme}>
+			<Notifications />
+			<QueryClientProvider client={queryClient}>
 				<AuthProvider {...oidcConfig}>
 					<AuthProviderHelper>
 						<AppShell header={{ height: 40 }} padding='xl'>
@@ -42,7 +59,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 						</AppShell>
 					</AuthProviderHelper>
 				</AuthProvider>
-			</MantineProvider>
-		</QueryClientProvider>
+			</QueryClientProvider>
+		</MantineProvider>
 	</React.StrictMode>
 )
