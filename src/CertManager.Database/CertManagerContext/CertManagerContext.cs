@@ -22,24 +22,24 @@ public class CertManagerContext(DbContextOptions<CertManagerContext> options) : 
 		modelBuilder.Entity<CertificateVersion>()
 			.HasQueryFilter(x => x.OrganizationId == OrganizationId);
 
-		modelBuilder.Entity<CertificateRenewalSubscription>()
-			.HasQueryFilter(x => x.OrganizationId == OrganizationId)
-			.HasOne(x => x.DestinationCertificate)
-			.WithOne(x => x.RenewedBySubscription)
-			.HasForeignKey<CertificateRenewalSubscription>(x => x.DestinationCertificateId)
-			.OnDelete(DeleteBehavior.NoAction);
+		modelBuilder.Entity<CertificateRenewalSubscription>(entity =>
+		{
+			entity.HasQueryFilter(x => x.OrganizationId == OrganizationId);
+			entity.Property(s => s.CertificateDuration).HasConversion(new TimeSpanToTicksConverter());
 
-		modelBuilder.Entity<CertificateRenewalSubscription>()
-			.HasOne(x => x.ParentCertificate)
-			.WithMany(e => e.DependentRenewalSubscriptions)
-			.HasForeignKey(e => e.ParentCertificateId)
-			.OnDelete(DeleteBehavior.NoAction);
-		
-		modelBuilder.Entity<CertificateRenewalSubscription>()
-			.Property(s => s.CertificateDuration)
-    		.HasConversion(new TimeSpanToTicksConverter());
+			entity.HasOne(x => x.DestinationCertificate)
+				.WithOne(x => x.RenewedBySubscription)
+				.HasForeignKey<CertificateRenewalSubscription>(x => x.DestinationCertificateId)
+				.OnDelete(DeleteBehavior.NoAction);
+
+			entity.HasOne(x => x.ParentCertificate)
+				.WithMany(e => e.DependentRenewalSubscriptions)
+				.HasForeignKey(e => e.ParentCertificateId)
+				.OnDelete(DeleteBehavior.NoAction);
+		});
 
 		modelBuilder.Entity<CertificateTag>()
-			.HasQueryFilter(x => x.Certificate.OrganizationId == OrganizationId);
+			.HasQueryFilter(x => x.Certificate.OrganizationId == OrganizationId)
+			.HasIndex(x => x.Tag);
 	}
 }

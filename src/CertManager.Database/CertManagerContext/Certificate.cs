@@ -16,8 +16,8 @@ public partial class Certificate
 	[MaxLength(50)] public required string OrganizationId { get; set; }
 	public required bool RequirePrivateKey { get; set; }
 
-	public ICollection<CertificateVersion> CertificateVersions { get; set; } = [];
-	public ICollection<CertificateTag> CertificateTags { get; set; } = [];
-	public virtual CertificateRenewalSubscription? RenewedBySubscription { get; set; }
-	public virtual ICollection<CertificateRenewalSubscription> DependentRenewalSubscriptions { get; set; } = [];
+	public List<CertificateVersion> CertificateVersions { get; set; } = [];
+	public List<CertificateTag> CertificateTags { get; set; } = [];
+	public CertificateRenewalSubscription? RenewedBySubscription { get; set; }
+	public List<CertificateRenewalSubscription> DependentRenewalSubscriptions { get; set; } = [];
 }

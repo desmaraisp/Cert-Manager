@@ -112,6 +112,8 @@ namespace CertManager.Migrations.Postgresql.Migrations
 
                     b.HasIndex("CertificateId");
 
+                    b.HasIndex("Tag");
+
                     b.ToTable("CertificateTags");
                 });
 

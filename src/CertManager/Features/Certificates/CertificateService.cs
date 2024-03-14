@@ -47,7 +47,7 @@ public class CertificateService(CertManagerContext certManagerContext)
 
 	public async Task<List<CertificateModelWithId>> GetCertificates(List<string> TagsToSearch, CertificateSearchBehavior TagsSearchBehavior)
 	{
-		var query = certManagerContext.Certificates.AsQueryable();
+		var query = certManagerContext.Certificates.Include(x => x.CertificateTags).AsQueryable();
 		if (TagsSearchBehavior == CertificateSearchBehavior.MatchAny && TagsToSearch.Count != 0)
 		{
 			query = query.Where(x => x.CertificateTags.Any(tag => TagsToSearch.Contains(tag.Tag)));
@@ -66,10 +66,10 @@ public class CertificateService(CertManagerContext certManagerContext)
 	}
 	public async Task<CertificateModelWithId?> GetCertificateById(Guid Id)
 	{
-		var cert = await certManagerContext.Certificates
+		var cert = await certManagerContext.Certificates.Include(x=> x.CertificateTags)
 			.FirstOrDefaultAsync(x => x.CertificateId == Id);
 
-		return cert==null ? null : CertificateModelWithId.FromCertificate(cert);
+		return cert == null ? null : CertificateModelWithId.FromCertificate(cert);
 	}
 
 	public async Task<bool> DeleteCertificate(Guid Id)
@@ -89,7 +89,7 @@ public class CertificateService(CertManagerContext certManagerContext)
 		}
 		certManagerContext.RemoveRange(cert.CertificateVersions);
 		certManagerContext.RemoveRange(cert.DependentRenewalSubscriptions);
-		
+
 		certManagerContext.Remove(cert);
 		await certManagerContext.SaveChangesAsync();
 		await trn.CommitAsync();
