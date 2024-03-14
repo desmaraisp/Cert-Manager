@@ -8,23 +8,21 @@ import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@ta
 import { AppShell, createTheme, MantineProvider } from '@mantine/core';
 import { AuthProviderHelper } from './features/authentication/auth-provider-helper-context';
 import { oidcConfig } from './features/authentication/oidc-config';
-import { notifications, Notifications } from '@mantine/notifications';
+import { Notifications } from '@mantine/notifications';
+import { showMutationError, showQueryError } from './features/zodios/show-error';
 
 
 const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			refetchOnWindowFocus: false,
+		}
+	},
 	queryCache: new QueryCache({
-		onError: (error) =>
-			notifications.show({
-				message: (error as { message: string }).message,
-				title: "An unhandled error occurred"
-			})
+		onError: showQueryError
 	}),
 	mutationCache: new MutationCache({
-		onError: (error) =>
-			notifications.show({
-				message: (error as { message: string }).message,
-				title: "An unhandled error occurred"
-			})
+		onError: showMutationError
 	}),
 })
 const pages = import.meta.glob('/src/pages/**/*.tsx', { eager: true })
@@ -47,7 +45,7 @@ const theme = createTheme({
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	<React.StrictMode>
 		<MantineProvider defaultColorScheme="dark" theme={theme}>
-			<Notifications />
+			<Notifications limit={3} />
 			<QueryClientProvider client={queryClient}>
 				<AuthProvider {...oidcConfig}>
 					<AuthProviderHelper>
