@@ -16,7 +16,7 @@ public class CertificateServiceTests
 	public CertificateServiceTests()
 	{
 		context = ConfigureSqLite.ConfigureCertManagerContext();
-		service = new (context);
+		service = new(context);
 	}
 
 	[TestMethod]
@@ -87,7 +87,8 @@ public class CertificateServiceTests
 			IsCertificateAuthority = false,
 			CertificateDescription = null,
 			CertificateId = Guid.NewGuid(),
-			CertificateName = ""
+			CertificateName = "",
+			CertificateTags = [new() { Tag = "" }]
 		};
 		context.Certificates.Add(sampleCertificate);
 		await context.SaveChangesAsync();
@@ -100,6 +101,7 @@ public class CertificateServiceTests
 		Assert.IsNotNull(certificateModel);
 		Assert.AreEqual(sampleCertificate.CertificateName, certificateModel.CertificateName);
 		Assert.AreEqual(sampleCertificate.CertificateId, certificateModel.CertificateId);
+		Assert.AreEqual(1, result.Tags.Count);
 	}
 
 	[TestMethod]
