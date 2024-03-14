@@ -75,7 +75,11 @@ public class CertificateService(CertManagerContext certManagerContext)
 	public async Task<bool> DeleteCertificate(Guid Id)
 	{
 		using var trn = certManagerContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
-		var cert = await certManagerContext.Certificates.FindAsync(Id);
+		var cert = await certManagerContext.Certificates
+				.Include(x => x.DependentRenewalSubscriptions)
+				.Include(x => x.CertificateVersions)
+				.Include(x => x.RenewedBySubscription)
+				.Where(x => x.CertificateId == Id).FirstOrDefaultAsync();
 
 		if (cert == null) return false;
 
@@ -83,9 +87,10 @@ public class CertificateService(CertManagerContext certManagerContext)
 		{
 			certManagerContext.Remove(cert.RenewedBySubscription);
 		}
+		certManagerContext.RemoveRange(cert.CertificateVersions);
 		certManagerContext.RemoveRange(cert.DependentRenewalSubscriptions);
+		
 		certManagerContext.Remove(cert);
-
 		await certManagerContext.SaveChangesAsync();
 		await trn.CommitAsync();
 		return true;
