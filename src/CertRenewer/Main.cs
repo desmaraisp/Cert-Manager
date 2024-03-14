@@ -21,7 +21,9 @@ public class Main(IGeneratedCertManagerClient certManagerClient)
 
 		foreach (var scheduledRenewal in scheduledRenewals)
 		{
-			var certBytes = (parentCertificateVersions.FirstOrDefault(x => x.CertificateId == scheduledRenewal.ParentCertificateId)?.RawCertificate) ?? throw new NotImplementedException();
+			var certBytes = parentCertificateVersions.OrderByDescending(x => x.ExpiryDate).FirstOrDefault(x => x.CertificateId == scheduledRenewal.ParentCertificateId)?.RawCertificate;
+
+			if (certBytes == null) continue;
 
 			using var parentCert = new X509Certificate2(certBytes);
 			using var newCert = CertificateFactory.RenewCertificate(parentCert, scheduledRenewal.CertificateSubject, DateTimeOffset.UtcNow.AddSeconds(scheduledRenewal.CertificateDuration.TotalSeconds));
