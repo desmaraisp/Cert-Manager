@@ -3,7 +3,7 @@ import { Card, Stack, Box, LoadingOverlay, Text, Flex, Pill, Group, Button } fro
 import { z } from "zod"
 import { schemas } from "../../generated/client"
 import { useAuthHelperForceAuthenticated } from "../authentication/use-auth-helper"
-import { DeleteButton } from "./delete-button"
+import { CertificateDeleteButton } from "./delete-button"
 import { useState } from "react"
 import { CertificateEditForm } from "./certificate-edit"
 
@@ -55,6 +55,6 @@ function InternalCertificateDisplay({ data, organizationId }: { data: z.infer<ty
 			}
 		</Stack>
 		<Button onClick={() => setIsEditing(true)}>Edit</Button>
-		<DeleteButton certificateId={data.certificateId ?? ""} organizationId={organizationId} />
+		<CertificateDeleteButton certificateId={data.certificateId ?? ""} organizationId={organizationId} />
 	</Group>
 }

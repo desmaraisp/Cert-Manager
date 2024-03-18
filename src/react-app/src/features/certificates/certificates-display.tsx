@@ -1,6 +1,6 @@
 import { hooks } from "../zodios/client-hooks"
 import { Anchor, Box, Card, Flex, Group, LoadingOverlay, Pill, Stack, Table, TableData, Text } from "@mantine/core"
-import { DeleteButton } from "./delete-button"
+import { CertificateDeleteButton } from "./delete-button"
 import { schemas } from "../../generated/client"
 import { z } from "zod"
 import { useAuthHelperForceAuthenticated } from "../authentication/use-auth-helper"
@@ -42,7 +42,7 @@ function CertificatesTable({ data, organizationId }: { data: z.infer<typeof sche
 			</Flex>,
 			<Text style={{ whiteSpace: 'pre-line', wordBreak: 'break-word' }}>{c.certificateDescription}</Text>,
 			<Group>
-				<DeleteButton certificateId={c.certificateId!} organizationId={organizationId} />
+				<CertificateDeleteButton certificateId={c.certificateId!} organizationId={organizationId} />
 			</Group>
 		])
 	};
