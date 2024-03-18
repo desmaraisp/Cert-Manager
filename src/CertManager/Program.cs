@@ -58,6 +58,7 @@ internal class Program
 		builder.Services.AddScoped<CertificateVersionService>()
 					.AddScoped<CertificateService>()
 					.AddSingleton<IValidator<CertificateModel>, CertificateModelValidator>()
+					.AddSingleton<IValidator<CertificateVersionUploadModel>, CertificateVersionUploadModelValidator>()
 					.AddSingleton<IValidator<CertificateUpdateModel>, CertificateUpdateModelValidator>()
 					.AddSingleton<IValidator<CertificateRenewalSubscriptionModel>, CertificateRenewalSubscriptionModelValidator>()
 					.AddScoped<CertificateRenewalService>();

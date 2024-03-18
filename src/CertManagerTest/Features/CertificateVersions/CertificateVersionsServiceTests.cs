@@ -17,7 +17,7 @@ public class CertificateVersionServiceTests
 	public CertificateVersionServiceTests()
 	{
 		defaultCertificate = new X509Certificate2(
-			GetCertificatePath(
+			CertHelper.GetCertificatePath(
 				"TestCertificate_Password_Is_123.pfx"
 			), "123", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.EphemeralKeySet
 		);
@@ -25,12 +25,6 @@ public class CertificateVersionServiceTests
 		context = ConfigureSqLite.ConfigureCertManagerContext();
 		service = new CertificateVersionService(context);
 	}
-
-	private static string GetCertificatePath(string FileName) => Path.Combine(
-		AppDomain.CurrentDomain.BaseDirectory,
-		"../../../../../TestCertificates",
-		FileName
-	);
 
 	private async Task<CertificateVersion> CreateDefaultCertificateVersion(Guid id, DateTime? expirationTimeOverride = null)
 	{

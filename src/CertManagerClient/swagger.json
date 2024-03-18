@@ -613,23 +613,6 @@
         "operationId": "CreateCertificateVersion",
         "parameters": [
           {
-            "name": "Password",
-            "in": "query",
-            "style": "form",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "CertificateId",
-            "in": "query",
-            "style": "form",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
             "name": "organization-id",
             "in": "path",
             "required": true,
@@ -643,16 +626,43 @@
           "content": {
             "multipart/form-data": {
               "schema": {
+                "required": [
+                  "CertificateId",
+                  "Files",
+                  "Format"
+                ],
                 "type": "object",
                 "properties": {
-                  "Certificate": {
+                  "Files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  },
+                  "Password": {
+                    "type": "string"
+                  },
+                  "CertificateId": {
                     "type": "string",
-                    "format": "binary"
+                    "format": "uuid"
+                  },
+                  "Format": {
+                    "$ref": "#/components/schemas/UploadFormat"
                   }
                 }
               },
               "encoding": {
-                "Certificate": {
+                "Files": {
+                  "style": "form"
+                },
+                "Password": {
+                  "style": "form"
+                },
+                "CertificateId": {
+                  "style": "form"
+                },
+                "Format": {
                   "style": "form"
                 }
               }
@@ -1192,6 +1202,16 @@
           }
         },
         "additionalProperties": { }
+      },
+      "UploadFormat": {
+        "enum": [
+          "Pem",
+          "PemWithPrivateKey",
+          "PemWithEncryptedPrivateKey",
+          "PfxOrCer",
+          "PemWithInlinePrivateKey"
+        ],
+        "type": "string"
       }
     },
     "securitySchemes": {
