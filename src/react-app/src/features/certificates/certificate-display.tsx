@@ -1,9 +1,11 @@
 import { hooks } from "../zodios/client-hooks"
-import { Card, Stack, Box, LoadingOverlay, Text, Flex, Pill, Group } from "@mantine/core"
+import { Card, Stack, Box, LoadingOverlay, Text, Flex, Pill, Group, Button } from "@mantine/core"
 import { z } from "zod"
 import { schemas } from "../../generated/client"
 import { useAuthHelperForceAuthenticated } from "../authentication/use-auth-helper"
 import { DeleteButton } from "./delete-button"
+import { useState } from "react"
+import { CertificateEditForm } from "./certificate-edit"
 
 export function CertificateDisplay({ certificateId, organizationId }: { certificateId: string, organizationId: string }) {
 	const { bearerToken } = useAuthHelperForceAuthenticated()
@@ -28,6 +30,16 @@ export function CertificateDisplay({ certificateId, organizationId }: { certific
 }
 
 function InternalCertificateDisplay({ data, organizationId }: { data: z.infer<typeof schemas.CertificateModelWithId>, organizationId: string }) {
+	const [isEditing, setIsEditing] = useState(false)
+
+	if (isEditing) return <Group className="items-stretch">
+		<Stack className="flex-1">
+			<CertificateEditForm certificateId={data.certificateId ?? ""} editCancelCallback={() => setIsEditing(false)} organizationId={organizationId} />
+			<Text>{`Is certificate authority: ${data.isCertificateAuthority}`}</Text>
+			<Text>{`Requires private key: ${data.requirePrivateKey}`}</Text>
+		</Stack>
+	</Group>
+
 	return <Group className="items-stretch">
 		<Stack className="flex-1">
 			<Group justify="left">
@@ -36,11 +48,13 @@ function InternalCertificateDisplay({ data, organizationId }: { data: z.infer<ty
 					{data.tags?.map(y => <Pill key={y}>{y}</Pill>)}
 				</Flex>
 			</Group>
-			<Text>{`Certificate type: ${data.isCertificateAuthority ? 'CA' : 'Normal'}`}</Text>
+			<Text>{`Is certificate authority: ${data.isCertificateAuthority}`}</Text>
+			<Text>{`Requires private key: ${data.requirePrivateKey}`}</Text>
 			{
 				data.certificateDescription && <Text style={{ whiteSpace: 'pre-line', wordBreak: 'break-word' }}>Description: {data.certificateDescription}</Text>
 			}
 		</Stack>
+		<Button onClick={() => setIsEditing(true)}>Edit</Button>
 		<DeleteButton certificateId={data.certificateId ?? ""} organizationId={organizationId} />
 	</Group>
 }

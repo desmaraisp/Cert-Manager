@@ -5,14 +5,14 @@ const CertificateModel = z.object({
   isCertificateAuthority: z.boolean().optional(),
   certificateName: z.string().min(2).max(100),
   tags: z.array(z.string()).nullish(),
-  certificateDescription: z.string().nullish(),
+  certificateDescription: z.string().min(0).max(1000).nullish(),
   requirePrivateKey: z.boolean().optional(),
 });
 const CertificateModelWithId = z.object({
   isCertificateAuthority: z.boolean().optional(),
   certificateName: z.string().min(2).max(100),
   tags: z.array(z.string()).nullish(),
-  certificateDescription: z.string().nullish(),
+  certificateDescription: z.string().min(0).max(1000).nullish(),
   requirePrivateKey: z.boolean().optional(),
   certificateId: z.string().uuid().optional(),
 });
@@ -26,13 +26,11 @@ const ProblemDetails = z
   })
   .partial()
   .passthrough();
-const CertificateUpdateModel = z
-  .object({
-    newCertificateName: z.string().nullable(),
-    newTags: z.array(z.string()).nullable(),
-    newCertificateDescription: z.string().nullable(),
-  })
-  .partial();
+const CertificateUpdateModel = z.object({
+  newCertificateName: z.string().min(2).max(100),
+  newTags: z.array(z.string()).nullish(),
+  newCertificateDescription: z.string().min(0).max(1000).nullish(),
+});
 const CertificateRenewalScheduleModel = z
   .object({
     subscriptionId: z.string().uuid(),

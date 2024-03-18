@@ -28,13 +28,10 @@ public class CertificateService(CertManagerContext certManagerContext)
 	{
 		using var trn = certManagerContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
 
-		var cert = await certManagerContext.Certificates.FindAsync(id) ?? throw new ItemNotFoundException("No certificate found for this Id");
+		var cert = await certManagerContext.Certificates.Include(x => x.CertificateTags).FirstOrDefaultAsync(x => x.CertificateId == id) ?? throw new ItemNotFoundException("No certificate found for this Id");
 
 		cert.CertificateDescription = payload.NewCertificateDescription;
-		if (!string.IsNullOrWhiteSpace(payload.NewCertificateName))
-		{
-			cert.CertificateName = payload.NewCertificateName;
-		}
+		cert.CertificateName = payload.NewCertificateName;
 		cert.CertificateTags = payload.NewTags?.ConvertAll(x => new CertificateTag
 		{
 			Tag = x
@@ -66,7 +63,7 @@ public class CertificateService(CertManagerContext certManagerContext)
 	}
 	public async Task<CertificateModelWithId?> GetCertificateById(Guid Id)
 	{
-		var cert = await certManagerContext.Certificates.Include(x=> x.CertificateTags)
+		var cert = await certManagerContext.Certificates.Include(x => x.CertificateTags)
 			.FirstOrDefaultAsync(x => x.CertificateId == Id);
 
 		return cert == null ? null : CertificateModelWithId.FromCertificate(cert);

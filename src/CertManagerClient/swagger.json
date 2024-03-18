@@ -960,6 +960,8 @@
             "nullable": true
           },
           "certificateDescription": {
+            "maxLength": 1000,
+            "minLength": 0,
             "type": "string",
             "nullable": true
           },
@@ -993,6 +995,8 @@
             "nullable": true
           },
           "certificateDescription": {
+            "maxLength": 1000,
+            "minLength": 0,
             "type": "string",
             "nullable": true
           },
@@ -1117,11 +1121,15 @@
         "type": "string"
       },
       "CertificateUpdateModel": {
+        "required": [
+          "newCertificateName"
+        ],
         "type": "object",
         "properties": {
           "newCertificateName": {
-            "type": "string",
-            "nullable": true
+            "maxLength": 100,
+            "minLength": 2,
+            "type": "string"
           },
           "newTags": {
             "type": "array",
@@ -1131,6 +1139,8 @@
             "nullable": true
           },
           "newCertificateDescription": {
+            "maxLength": 1000,
+            "minLength": 0,
             "type": "string",
             "nullable": true
           }
