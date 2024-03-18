@@ -58,6 +58,21 @@ const CertificateRenewalSubscriptionModel = z.object({
   destinationCertificateId: z.string().uuid(),
   parentCertificateId: z.string().uuid(),
 });
+const UploadFormat = z.enum([
+  "Pem",
+  "PemWithPrivateKey",
+  "PemWithEncryptedPrivateKey",
+  "PfxOrCer",
+  "PemWithInlinePrivateKey",
+]);
+const CreateCertificateVersion_Body = z
+  .object({
+    Files: z.array(z.instanceof(File)),
+    Password: z.string().optional(),
+    CertificateId: z.string().uuid(),
+    Format: UploadFormat,
+  })
+  .passthrough();
 const CertificateVersionModel = z
   .object({
     activationDate: z.string().datetime({ offset: true }),
@@ -79,6 +94,8 @@ export const schemas = {
   CertificateRenewalScheduleModel,
   CertificateRenewalSubscriptionModelWithId,
   CertificateRenewalSubscriptionModel,
+  UploadFormat,
+  CreateCertificateVersion_Body,
   CertificateVersionModel,
 };
 
@@ -358,20 +375,7 @@ const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: z
-          .object({ Certificate: z.instanceof(File) })
-          .partial()
-          .passthrough(),
-      },
-      {
-        name: "Password",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "CertificateId",
-        type: "Query",
-        schema: z.string().uuid().optional(),
+        schema: CreateCertificateVersion_Body,
       },
       {
         name: "organizationId",

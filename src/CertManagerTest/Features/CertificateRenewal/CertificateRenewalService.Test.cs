@@ -49,16 +49,11 @@ public class CertificateRenewalServiceTests
 		context.Add(subscription);
 		context.SaveChanges();
 		defaultCertificate = new X509Certificate2(
-			GetCertificatePath(
+			CertHelper.GetCertificatePath(
 				"TestCertificate_Password_Is_123.pfx"
 			), "123", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.EphemeralKeySet
 		);
 	}
-	private static string GetCertificatePath(string FileName) => Path.Combine(
-		AppDomain.CurrentDomain.BaseDirectory,
-		"../../../../../TestCertificates",
-		FileName
-	);
 	private async Task<CertificateVersion> CreateDefaultCertificateVersion(Guid id, DateTime? expirationTimeOverride = null, DateTime? activationTimeOverride = null)
 	{
 		CertificateVersion newCertVersion = new()

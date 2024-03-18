@@ -24,16 +24,17 @@ public class CertificateVersionController : ControllerBase
 	[HttpPost("CertificateVersion", Name = nameof(CreateCertificateVersion))]
 	[ProducesResponseType(typeof(CertificateVersionModel), 200)]
 	[ProducesResponseType(400)]
+	[Consumes("multipart/form-data")]
 	[RequiredScope(AuthenticationScopes.WriteScope)]
-	public async Task<IActionResult> CreateCertificateVersion(IFormFile Certificate, string? Password, Guid CertificateId)
+	public async Task<IActionResult> CreateCertificateVersion(CertificateVersionUploadModel Payload)
 	{
-		using X509Certificate2 cert = await Certificate.ReadCertificateAsync(Password);
+		using X509Certificate2 cert = await Payload.ReadCertificateAsync();
 		var allowCA = cert.Extensions.OfType<X509BasicConstraintsExtension>().FirstOrDefault()?.CertificateAuthority;
 		var hasCAKeyUsageFlag = cert.Extensions.OfType<X509KeyUsageExtension>().FirstOrDefault()?.KeyUsages.HasFlag(X509KeyUsageFlags.KeyCertSign);
 		var hasPrivateKey = cert.GetRSAPrivateKey() != null;
 
 		using var trn = certManagerContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
-		var certificateData = await certManagerContext.Certificates.FindAsync(CertificateId);
+		var certificateData = await certManagerContext.Certificates.FindAsync(Payload.CertificateId);
 		if ((certificateData?.IsCertificateAuthority ?? true) && !(allowCA ?? false) && !(hasCAKeyUsageFlag ?? false))
 		{
 			return Problem("Certificate is missing basic constraint or KeyUsage certificate properties required for it to be used as CA", statusCode: 422);
@@ -43,7 +44,7 @@ public class CertificateVersionController : ControllerBase
 			return Problem("Certificate is missing private key", statusCode: 422);
 		}
 
-		var newCertVersion = await certificateVersionService.AddCertificateVersion(CertificateId, cert);
+		var newCertVersion = await certificateVersionService.AddCertificateVersion(Payload.CertificateId, cert);
 		await trn.CommitAsync();
 
 		return Ok(newCertVersion);
