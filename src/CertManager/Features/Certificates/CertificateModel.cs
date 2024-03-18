@@ -15,6 +15,8 @@ public class CertificateModel
 	public required string CertificateName { get; init; }
 
 	public List<string> Tags { get; init; } = [];
+
+	[StringLength(1000)]
 	public string? CertificateDescription { get; init; }
 
 	[DefaultValue(false)]
