@@ -2,7 +2,7 @@ import { Button } from "@mantine/core";
 import { hooks } from "../zodios/client-hooks";
 import { useAuthHelperForceAuthenticated } from "../authentication/use-auth-helper";
 
-export function DeleteButton({ certificateId, organizationId }: { certificateId: string, organizationId: string }) {
+export function CertificateDeleteButton({ certificateId, organizationId }: { certificateId: string, organizationId: string }) {
 	const { bearerToken } = useAuthHelperForceAuthenticated()
 	const { invalidate } = hooks.useGetAllCertificates({
 		params: { organizationId: organizationId },
