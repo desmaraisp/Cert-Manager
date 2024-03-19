@@ -363,6 +363,152 @@
         }
       }
     },
+    "/{organization-id}/api/v1/ExpiringCertificateVersionNotifications": {
+      "get": {
+        "tags": [
+          "CertificateExpirations"
+        ],
+        "operationId": "GetExpiringCertificateVersionNotifications",
+        "parameters": [
+          {
+            "name": "MinimumVersionExpirationTimeUtc",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "MaximumVersionExpirationTimeUtc",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CertificateExpirationNotification"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CertificateExpirationNotification"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CertificateExpirationNotification"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{organization-id}/api/v1/MuteTimings": {
+      "patch": {
+        "tags": [
+          "CertificateExpirations"
+        ],
+        "operationId": "CreateMuteTimings",
+        "parameters": [
+          {
+            "name": "organization-id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/MuteTimingModel"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/MuteTimingModel"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/MuteTimingModel"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MuteTimingModelWithId"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MuteTimingModelWithId"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MuteTimingModelWithId"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/{organization-id}/api/v1/CertificateRenewalSchedules": {
       "get": {
         "tags": [
@@ -937,6 +1083,37 @@
   },
   "components": {
     "schemas": {
+      "CertificateExpirationNotification": {
+        "type": "object",
+        "properties": {
+          "expiringCertificateVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expiringCertificateId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "certificateExpirationTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "certificateRenewalTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "certificateName": {
+            "type": "string",
+            "nullable": true
+          },
+          "certificateDescription": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "CertificateModel": {
         "required": [
           "certificateName"
@@ -1180,6 +1357,46 @@
             "format": "uuid"
           },
           "certificateVersionId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MuteTimingModel": {
+        "required": [
+          "certificateVersionId",
+          "mutedUntilUtc"
+        ],
+        "type": "object",
+        "properties": {
+          "certificateVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "mutedUntilUtc": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MuteTimingModelWithId": {
+        "required": [
+          "certificateVersionId",
+          "mutedUntilUtc"
+        ],
+        "type": "object",
+        "properties": {
+          "certificateVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "mutedUntilUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "muteTimingId": {
             "type": "string",
             "format": "uuid"
           }

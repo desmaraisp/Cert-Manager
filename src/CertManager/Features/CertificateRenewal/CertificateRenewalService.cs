@@ -11,6 +11,8 @@ public class CertificateRenewalService(CertManagerContext context)
 	public async Task<List<CertificateRenewalScheduleModel>> GetRenewalSchedules(DateTime MinimumUtcScheduledTime, DateTime MaximumUtcScheduledTime)
 	{
 		var res = await certManagerContext.CertificateRenewalSubscriptions
+				.Include(x => x.DestinationCertificate)
+				.ThenInclude(x => x.CertificateVersions)
 				.Where(x =>
 					x.DestinationCertificate.CertificateVersions.Count() == 0 ||
 					(
