@@ -39,10 +39,6 @@ public class CertificateExpirationService(CertManagerContext certManagerContext)
 
 	public async Task<List<MuteTimingModelWithId>> CreateMuteTimings(List<MuteTimingModel> muteTimings)
 	{
-		var certVersions = muteTimings.Select(x => x.CertificateVersionId).ToList();
-		using var trn = await certManagerContext.Database.BeginTransactionAsync();
-		await certManagerContext.MuteTimings.Where(x => certVersions.Contains(x.CertificateVersionId)).ExecuteDeleteAsync();
-
 		List<NotificationMuteTiming> entities = muteTimings.ConvertAll(x => new NotificationMuteTiming
 		{
 			CertificateVersionId = x.CertificateVersionId,
@@ -50,7 +46,6 @@ public class CertificateExpirationService(CertManagerContext certManagerContext)
 		});
 		certManagerContext.MuteTimings.AddRange(entities);
 		await certManagerContext.SaveChangesAsync();
-		await trn.CommitAsync();
 
 		return entities.ConvertAll(x => new MuteTimingModelWithId{
 			CertificateVersionId = x.CertificateVersionId,
