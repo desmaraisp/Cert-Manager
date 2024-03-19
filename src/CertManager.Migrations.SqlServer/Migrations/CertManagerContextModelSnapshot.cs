@@ -164,6 +164,26 @@ namespace CertManager.Migrations.SqlServer.Migrations
                     b.ToTable("CertificateVersions");
                 });
 
+            modelBuilder.Entity("CertManager.Database.NotificationMuteTiming", b =>
+                {
+                    b.Property<Guid>("MuteTimingId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CertificateVersionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("NotificationMutedUntilUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("MuteTimingId");
+
+                    b.HasIndex("CertificateVersionId")
+                        .IsUnique();
+
+                    b.ToTable("MuteTimings");
+                });
+
             modelBuilder.Entity("CertManager.Database.CertificateRenewalSubscription", b =>
                 {
                     b.HasOne("CertManager.Database.Certificate", "DestinationCertificate")
@@ -205,6 +225,17 @@ namespace CertManager.Migrations.SqlServer.Migrations
                     b.Navigation("Certificate");
                 });
 
+            modelBuilder.Entity("CertManager.Database.NotificationMuteTiming", b =>
+                {
+                    b.HasOne("CertManager.Database.CertificateVersion", "CertificateVersion")
+                        .WithOne("MuteTiming")
+                        .HasForeignKey("CertManager.Database.NotificationMuteTiming", "CertificateVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CertificateVersion");
+                });
+
             modelBuilder.Entity("CertManager.Database.Certificate", b =>
                 {
                     b.Navigation("CertificateTags");
@@ -214,6 +245,11 @@ namespace CertManager.Migrations.SqlServer.Migrations
                     b.Navigation("DependentRenewalSubscriptions");
 
                     b.Navigation("RenewedBySubscription");
+                });
+
+            modelBuilder.Entity("CertManager.Database.CertificateVersion", b =>
+                {
+                    b.Navigation("MuteTiming");
                 });
 #pragma warning restore 612, 618
         }

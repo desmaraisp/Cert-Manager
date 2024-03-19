@@ -23,4 +23,6 @@ public partial class CertificateVersion
 
 	public Guid CertificateId { get; init; }
 	public Certificate Certificate { get; init; } = null!;
+	
+	public NotificationMuteTiming? MuteTiming { get; init; }
 }
