@@ -1,11 +1,11 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
-namespace CertRenewer;
+namespace CertRenewer.Features.CertRenewer;
 
 public static class CertificateFactory
 {
-	public static X509Certificate2 RenewCertificate(X509Certificate2 ParentCertificate, string subject, DateTimeOffset expireAt)
+	public static X509Certificate2 RenewCertificate(X509Certificate2 ParentCertificate, string subject, DateTime expireAt)
 	{
 		var rsaKey = RSA.Create(2048);
 		var certificateRequest = new CertificateRequest(
@@ -44,7 +44,7 @@ public static class CertificateFactory
 		RandomNumberGenerator.Fill(signature);
 		var certificate = certificateRequest.Create(
 			ParentCertificate,
-			DateTimeOffset.UtcNow,
+			DateTime.UtcNow,
 			expireAt,
 			signature
 		);
