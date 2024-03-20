@@ -1,11 +1,11 @@
 import { useParams } from "react-router-dom";
 import { CertificateDisplay } from "../../features/certificates/certificate-display";
-import { withAuthenticationRequired } from "react-oidc-context";
 import { Stack } from "@mantine/core";
 import { CertificateVersionDisplay } from "../../features/certificate-versions/certificate-versions-display";
 import { CertificateVersionsAddForm } from "../../features/certificate-versions/certificate-versions-add";
 import { useOrganizationId } from "../../features/multi-tenancy/use-organization-id";
 import { CertificateRenewalSubscriptionAddOrDisplay } from "../../features/certificate-renewals/certificate-renewal-subscription-add-or-display";
+import { withAuthRequired } from "../../features/authentication/with-auth-required";
 
 function _CertificateDisplayPage() {
 	const { organizationId } = useOrganizationId()
@@ -20,5 +20,5 @@ function _CertificateDisplayPage() {
 	</Stack>
 
 }
-const CertificateDisplayPage = withAuthenticationRequired(_CertificateDisplayPage)
+const CertificateDisplayPage = withAuthRequired(_CertificateDisplayPage)
 export default CertificateDisplayPage

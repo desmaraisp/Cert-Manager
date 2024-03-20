@@ -1,8 +1,8 @@
 import { Stack } from "@mantine/core";
 import { CertificatesDisplay } from "../features/certificates/certificates-display";
 import { CertificatesAddForm } from "../features/certificates/certificates-add";
-import { withAuthenticationRequired } from "react-oidc-context";
 import { useOrganizationId } from "../features/multi-tenancy/use-organization-id";
+import { withAuthRequired } from "../features/authentication/with-auth-required";
 
 function _CertificatesPage() {
 	const { organizationId } = useOrganizationId()
@@ -12,5 +12,5 @@ function _CertificatesPage() {
 		<CertificatesAddForm organizationId={organizationId} />
 	</Stack>
 }
-const CertificatesPage = withAuthenticationRequired(_CertificatesPage)
+const CertificatesPage = withAuthRequired(_CertificatesPage)
 export default CertificatesPage
