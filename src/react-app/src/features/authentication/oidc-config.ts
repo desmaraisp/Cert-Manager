@@ -1,3 +1,4 @@
+import { WebStorageStateStore } from 'oidc-client-ts';
 import { AuthProviderProps } from 'react-oidc-context';
 
 export const oidcConfig: AuthProviderProps = {
@@ -10,6 +11,7 @@ export const oidcConfig: AuthProviderProps = {
 	client_id: import.meta.env.VITE_CLIENT_ID,
 	redirect_uri: `${import.meta.env.VITE_PUBLIC_URL}/oidc-callback`,
 	automaticSilentRenew: true,
+	userStore: new WebStorageStateStore({ store: window.localStorage })
 };
 
 function getPreviousPath() {
