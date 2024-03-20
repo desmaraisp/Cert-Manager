@@ -1,43 +1,33 @@
 using System.Security.Cryptography.X509Certificates;
 using CertManagerClient;
+using CertRenewer.Features.CertExpirationMonitor;
+using CertRenewer.Features.CertRenewer;
+using CertRenewer.Features.NotificationsService;
+using Microsoft.Extensions.Options;
 
 namespace CertRenewer;
 
-public class Main(IGeneratedCertManagerClient certManagerClient)
+public class Main(RenewerService renewerService, CertExpirationMonitor certExpirationMonitor, INotificationsService notificationsService, IOptions<NotificationOptions> options)
 {
-	private readonly IGeneratedCertManagerClient certManagerClient = certManagerClient;
+	private readonly RenewerService renewerService = renewerService;
+	private readonly INotificationsService notificationsService = notificationsService;
+	private readonly CertExpirationMonitor certExpirationMonitor = certExpirationMonitor;
+	private readonly IOptions<NotificationOptions> options = options;
 
 	public async Task Run(string Organization)
 	{
-		var scheduledRenewals = await certManagerClient.GetCertificateRenewalSchedulesAsync(DateTime.UtcNow, DateTime.UtcNow.AddDays(1), Organization);
-		var parentCertificateVersions = await certManagerClient.GetCertificateVersionsAsync(
-			scheduledRenewals.Select(x => x.ParentCertificateId).Distinct().ToList(),
-			DateTime.UtcNow.AddDays(10),
-			null,
-			null,
-			null,
-			Organization
-		);
+		var task = renewerService.RenewCertificatesForOrganization(Organization);
+		var expiringCerts = await certExpirationMonitor.GetExpiringCertificatesAsync(Organization);
+		var renewedCerts = await task;
 
-		foreach (var scheduledRenewal in scheduledRenewals)
+		if (renewedCerts.Count == 0 && expiringCerts.Count == 0) return;
+		await notificationsService.SendNotification(new()
 		{
-			var certBytes = parentCertificateVersions.OrderByDescending(x => x.ExpiryDate).FirstOrDefault(x => x.CertificateId == scheduledRenewal.ParentCertificateId)?.RawCertificate;
+			CertManagerFrontendBaseUrl = options.Value.CertManagerFrontendBaseUrl,
+			CertExpirationNotifications = expiringCerts,
+			CertRenewedNotifications = renewedCerts
+		}, Organization);
 
-			if (certBytes == null) continue;
-
-			using var parentCert = new X509Certificate2(certBytes);
-			using var newCert = CertificateFactory.RenewCertificate(parentCert, scheduledRenewal.CertificateSubject, DateTimeOffset.UtcNow.AddSeconds(scheduledRenewal.CertificateDuration.TotalSeconds));
-			var newCertBytes = newCert.Export(X509ContentType.Pfx);
-
-			await certManagerClient.CreateCertificateVersionAsync(
-				Organization,
-				[new(new MemoryStream(newCertBytes))],
-				"",
-				scheduledRenewal.DestinationCertificateId,
-				UploadFormat.PfxOrCer
-			);
-		}
-
-		return;
+		await certExpirationMonitor.MuteExpiringCertificatesAsync(Organization, expiringCerts);
 	}
 }

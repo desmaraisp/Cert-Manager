@@ -1,5 +1,5 @@
 using System.Security.Cryptography.X509Certificates;
-using CertRenewer;
+using CertRenewer.Features.CertRenewer;
 
 namespace CertRenewerTest;
 
@@ -27,7 +27,7 @@ public class CertificateFactoryTest
 	[TestMethod]
 	public void RenewCertificate()
 	{
-		using var newCert = CertificateFactory.RenewCertificate(TestCertificate, "CN=test", DateTimeOffset.UtcNow.AddDays(12));
+		using var newCert = CertificateFactory.RenewCertificate(TestCertificate, "CN=test", DateTime.UtcNow.AddDays(12));
 		Assert.AreEqual("CN=test", newCert.Subject);
 	}
 }

@@ -31,6 +31,25 @@ const CertificateUpdateModel = z.object({
   newTags: z.array(z.string()).nullish(),
   newCertificateDescription: z.string().min(0).max(1000).nullish(),
 });
+const CertificateExpirationNotification = z
+  .object({
+    expiringCertificateVersionId: z.string().uuid(),
+    expiringCertificateId: z.string().uuid(),
+    certificateExpirationTime: z.string().datetime({ offset: true }),
+    certificateRenewalTime: z.string().datetime({ offset: true }).nullable(),
+    certificateName: z.string().nullable(),
+    certificateDescription: z.string().nullable(),
+  })
+  .partial();
+const MuteTimingModel = z.object({
+  certificateVersionId: z.string().uuid(),
+  mutedUntilUtc: z.string().datetime({ offset: true }),
+});
+const MuteTimingModelWithId = z.object({
+  certificateVersionId: z.string().uuid(),
+  mutedUntilUtc: z.string().datetime({ offset: true }),
+  muteTimingId: z.string().uuid().optional(),
+});
 const CertificateRenewalScheduleModel = z
   .object({
     subscriptionId: z.string().uuid(),
@@ -89,6 +108,9 @@ export const schemas = {
   CertificateModelWithId,
   ProblemDetails,
   CertificateUpdateModel,
+  CertificateExpirationNotification,
+  MuteTimingModel,
+  MuteTimingModelWithId,
   CertificateRenewalScheduleModel,
   CertificateRenewalSubscriptionModelWithId,
   CertificateRenewalSubscriptionModel,
@@ -507,6 +529,49 @@ const endpoints = makeApi([
           .passthrough(),
       },
     ],
+  },
+  {
+    method: "get",
+    path: "/:organizationId/api/v1/ExpiringCertificateVersionNotifications",
+    alias: "GetExpiringCertificateVersionNotifications",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "MinimumVersionExpirationTimeUtc",
+        type: "Query",
+        schema: z.string().datetime({ offset: true }).optional(),
+      },
+      {
+        name: "MaximumVersionExpirationTimeUtc",
+        type: "Query",
+        schema: z.string().datetime({ offset: true }).optional(),
+      },
+      {
+        name: "organizationId",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: z.array(CertificateExpirationNotification),
+  },
+  {
+    method: "patch",
+    path: "/:organizationId/api/v1/MuteTimings",
+    alias: "CreateMuteTimings",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z.array(MuteTimingModel),
+      },
+      {
+        name: "organizationId",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: z.array(MuteTimingModelWithId),
   },
 ]);
 

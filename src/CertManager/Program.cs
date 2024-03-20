@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using CertManager.Database;
 using CertManager.Features.Authentication;
+using CertManager.Features.CertificateExpirationNotifications;
 using CertManager.Features.CertificateRenewal;
 using CertManager.Features.Certificates;
 using CertManager.Features.CertificateVersions;
@@ -57,6 +58,7 @@ internal class Program
 		});
 		builder.Services.AddScoped<CertificateVersionService>()
 					.AddScoped<CertificateService>()
+					.AddScoped<CertificateExpirationService>()
 					.AddSingleton<IValidator<CertificateModel>, CertificateModelValidator>()
 					.AddSingleton<IValidator<CertificateVersionUploadModel>, CertificateVersionUploadModelValidator>()
 					.AddSingleton<IValidator<CertificateUpdateModel>, CertificateUpdateModelValidator>()
