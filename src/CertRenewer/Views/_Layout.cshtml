@@ -1,0 +1,22 @@
+@inject Microsoft.Extensions.Options.IOptions<CertRenewer.Features.NotificationsService.NotificationOptions> options;
+
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+	<div style="width: 85%; margin: 25px auto 50px;">
+		@RenderBody()
+	</div>
+	<hr />
+	<footer>
+		<p>&copy; 2024 - CertManager</p>
+		<p>Sent by <a href=@(options.Value.CertManagerFrontendBaseUrl)>certManager</a></p>
+	</footer>
+</body>
+
+</html>

@@ -3,14 +3,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Serilog.Events;
-using Serilog.Exceptions;
-using Serilog.Formatting.Json;
 using CertManagerClient.Extensions;
 using CertRenewer.Features.CertExpirationMonitor;
 using CertRenewer.Features.CertRenewer;
 using CertRenewer.Features.NotificationsService;
 using Microsoft.Extensions.Options;
+using RazorLight;
+using RazorLight.Extensions;
 
 internal class Program
 {
@@ -29,9 +28,12 @@ internal class Program
 			services.AddOptions<List<OrganizationsConfig>>().BindConfiguration("Organizations");
 
 			services.AddFluentEmail(notificationOptions.SenderEmail, notificationOptions.SenderName)
-				.AddRazorRenderer()
 				.AddMailKitSender(notificationOptions.SmtpOptions);
 
+			services.AddRazorLight(() => new RazorLightEngineBuilder()
+				.UseEmbeddedResourcesProject(typeof(Main).Assembly)
+				.UseMemoryCachingProvider()
+				.Build());
 			services.AddDistributedMemoryCache();
 			services.AddScoped<Main>()
 					.AddScoped<CertExpirationMonitor>()

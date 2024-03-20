@@ -1,0 +1,60 @@
+@model CertRenewer.Features.NotificationsService.NotificationPayload;
+@{
+	Layout = "CertRenewer.Views._Layout.cshtml";
+}
+
+@if (Model.CertExpirationNotifications.Any())
+{
+	<table style="width: 100%; border-collapse: collapse;">
+		<caption>Expiring certificates</caption>
+		<thead>
+			<tr style="border-bottom: 1px solid black;">
+				<th style="text-align: left;">Version</th>
+				<th style="text-align: left;">Certificate name</th>
+				<th style="text-align: left;">Expiration date</th>
+				<th style="text-align: left;">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var expiringCert in Model.CertExpirationNotifications)
+			{
+				<tr style="border-bottom: 1px solid black;">
+					<td><a
+							href=@($"{Model.CertManagerFrontendBaseUrl}/certificates/{expiringCert.ExpiringCertificateId}")>@expiringCert.ExpiringCertificateVersionId</a>
+					</td>
+					<td>@expiringCert.CertificateName</td>
+					<td>@expiringCert.CertificateExpirationTime.UtcDateTime.ToString("yyyy-MM-dd")</td>
+					<td>@(string.IsNullOrWhiteSpace(expiringCert.CertificateDescription) ? "No description was provided" :
+										expiringCert.CertificateDescription)</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@if (Model.CertRenewedNotifications.Any())
+{
+	<table style="width: 100%; margin-top: 45px; border-collapse: collapse;">
+		<caption>Renewed certificates</caption>
+		<thead>
+			<tr style="border-bottom: 1px solid black;">
+				<th style="text-align: left;">Version</th>
+				<th style="text-align: left;">Certificate name</th>
+				<th style="text-align: left;">New expiration date</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var renewedCert in Model.CertRenewedNotifications)
+			{
+				<tr style="border-bottom: 1px solid black;">
+					<td><a
+							href=@($"{Model.CertManagerFrontendBaseUrl}/certificates/{renewedCert.CertificateId}")>@renewedCert.CertificateId</a>
+					</td>
+					<td>@renewedCert.CreatedSubject</td>
+					<td>@renewedCert.ExpiresOnUtc.ToString("yyyy-MM-dd")</td>
+				</tr>
+			}
+		</tbody>
+
+	</table>
+}
