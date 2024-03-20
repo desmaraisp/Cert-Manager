@@ -13,7 +13,6 @@ export function OrganizationIdSelector() {
 		orgs = (profile[groupsClaimName] ?? []) as string[]
 	}
 
-	// when your user is logged in through normal means, they shouldn't be able to switch organization
 	return <Select
 		placeholder="Organization Id"
 		value={organizationId}

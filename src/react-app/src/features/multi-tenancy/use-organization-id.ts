@@ -1,9 +1,9 @@
 import { useLocalStorage } from "@mantine/hooks";
 
 export function useOrganizationId() {
-	const [orgId, setter]= useLocalStorage<string>({
+	const [orgId, setter] = useLocalStorage<string | null>({
 		key: 'organization-id',
-		defaultValue: '',
+		defaultValue: null,
 	});
 
 	return {

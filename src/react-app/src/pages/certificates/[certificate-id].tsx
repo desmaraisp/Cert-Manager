@@ -3,12 +3,13 @@ import { CertificateDisplay } from "../../features/certificates/certificate-disp
 import { Stack } from "@mantine/core";
 import { CertificateVersionDisplay } from "../../features/certificate-versions/certificate-versions-display";
 import { CertificateVersionsAddForm } from "../../features/certificate-versions/certificate-versions-add";
-import { useOrganizationId } from "../../features/multi-tenancy/use-organization-id";
 import { CertificateRenewalSubscriptionAddOrDisplay } from "../../features/certificate-renewals/certificate-renewal-subscription-add-or-display";
 import { withAuthRequired } from "../../features/authentication/with-auth-required";
+import { useRequiredOrganizationId } from "../../features/multi-tenancy/use-required-organization-id";
+import { withOrganizationIdRequired } from "../../features/multi-tenancy/with-organizationId-required";
 
 function _CertificateDisplayPage() {
-	const { organizationId } = useOrganizationId()
+	const { organizationId } = useRequiredOrganizationId()
 	const certId = useParams()["certificate-id"]
 	if (!certId) throw new Error('No certificate id')
 
@@ -20,5 +21,5 @@ function _CertificateDisplayPage() {
 	</Stack>
 
 }
-const CertificateDisplayPage = withAuthRequired(_CertificateDisplayPage)
+const CertificateDisplayPage = withAuthRequired(withOrganizationIdRequired(_CertificateDisplayPage))
 export default CertificateDisplayPage

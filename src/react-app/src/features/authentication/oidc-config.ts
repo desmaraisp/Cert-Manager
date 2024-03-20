@@ -21,6 +21,7 @@ function getPreviousPath() {
 }
 
 export function setPreviousPath() {
+	window.localStorage.clear()
 	const prevPath = window.location.href;
 	if (prevPath.startsWith("/oidc-callback")) {
 		return;
