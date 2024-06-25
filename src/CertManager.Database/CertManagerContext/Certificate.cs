@@ -18,6 +18,6 @@ public partial class Certificate
 
 	public List<CertificateVersion> CertificateVersions { get; set; } = [];
 	public List<CertificateTag> CertificateTags { get; set; } = [];
-	public CertificateRenewalSubscription? RenewedBySubscription { get; set; }
+	public CertificateRenewalSubscription? ParentRenewalSubscription { get; set; }
 	public List<CertificateRenewalSubscription> DependentRenewalSubscriptions { get; set; } = [];
 }

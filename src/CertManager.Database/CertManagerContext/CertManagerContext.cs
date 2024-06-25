@@ -30,7 +30,7 @@ public class CertManagerContext(DbContextOptions<CertManagerContext> options) : 
 			entity.Property(s => s.CertificateDuration).HasConversion(new TimeSpanToTicksConverter());
 
 			entity.HasOne(x => x.DestinationCertificate)
-				.WithOne(x => x.RenewedBySubscription)
+				.WithOne(x => x.ParentRenewalSubscription)
 				.HasForeignKey<CertificateRenewalSubscription>(x => x.DestinationCertificateId)
 				.OnDelete(DeleteBehavior.NoAction);
 

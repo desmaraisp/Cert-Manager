@@ -33,7 +33,7 @@ public class CertificateVersionServiceTests
 			OrganizationId = "",
 			ActivationDate = expirationTimeOverride ?? DateTime.Now,
 			CertificateId = id,
-			Cn = defaultCertificate.GetNameInfo(X509NameType.SimpleName, false),
+			CommonName = defaultCertificate.GetNameInfo(X509NameType.SimpleName, false),
 			ExpiryDate = expirationTimeOverride ?? defaultCertificate.NotAfter.ToUniversalTime(),
 			IssuerName = defaultCertificate.IssuerName.Name,
 			Thumbprint = defaultCertificate.Thumbprint,
@@ -100,7 +100,7 @@ public class CertificateVersionServiceTests
 		var retrievedCertificateVersion = result.Single();
 		Assert.IsNotNull(retrievedCertificateVersion);
 		Assert.AreEqual(insertedCertVersion.ActivationDate, retrievedCertificateVersion.ActivationDate);
-		Assert.AreEqual(insertedCertVersion.Cn, retrievedCertificateVersion.Cn);
+		Assert.AreEqual(insertedCertVersion.CommonName, retrievedCertificateVersion.Cn);
 		Assert.AreEqual(insertedCertVersion.ExpiryDate, retrievedCertificateVersion.ExpiryDate);
 		Assert.AreEqual(insertedCertVersion.IssuerName, retrievedCertificateVersion.IssuerName);
 		Assert.AreEqual(insertedCertVersion.Thumbprint, retrievedCertificateVersion.Thumbprint);

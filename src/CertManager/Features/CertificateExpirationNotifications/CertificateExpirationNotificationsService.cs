@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CertManager.Features.CertificateExpirationNotifications;
 
-public class CertificateExpirationService(CertManagerContext certManagerContext)
+public class CertificateExpirationNotificationsService(CertManagerContext certManagerContext)
 {
 	private readonly CertManagerContext certManagerContext = certManagerContext;
 
@@ -31,7 +31,7 @@ public class CertificateExpirationService(CertManagerContext certManagerContext)
 					CertificateName = x.Certificate.CertificateName,
 					ExpiringCertificateId = x.CertificateId,
 					CertificateDescription = x.Certificate.CertificateDescription,
-					CertificateRenewalTime = x.ExpiryDate.AddDays(-(x.Certificate.RenewedBySubscription == null ? 0 : x.Certificate.RenewedBySubscription.RenewXDaysBeforeExpiration)),
+					CertificateRenewalTime = x.ExpiryDate.AddDays(-(x.Certificate.ParentRenewalSubscription == null ? 0 : x.Certificate.ParentRenewalSubscription.RenewXDaysBeforeExpiration)),
 					ExpiringCertificateVersionId = x.CertificateVersionId
 				})
 				.ToListAsync();

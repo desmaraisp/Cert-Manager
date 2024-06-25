@@ -58,7 +58,7 @@ internal class Program
 		});
 		builder.Services.AddScoped<CertificateVersionService>()
 					.AddScoped<CertificateService>()
-					.AddScoped<CertificateExpirationService>()
+					.AddScoped<CertificateExpirationNotificationsService>()
 					.AddSingleton<IValidator<CertificateModel>, CertificateModelValidator>()
 					.AddSingleton<IValidator<CertificateVersionUploadModel>, CertificateVersionUploadModelValidator>()
 					.AddSingleton<IValidator<CertificateUpdateModel>, CertificateUpdateModelValidator>()

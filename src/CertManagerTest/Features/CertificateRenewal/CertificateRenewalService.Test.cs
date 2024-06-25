@@ -61,7 +61,7 @@ public class CertificateRenewalServiceTests
 			OrganizationId = "",
 			ActivationDate = activationTimeOverride ?? DateTime.Now,
 			CertificateId = id,
-			Cn = defaultCertificate.GetNameInfo(X509NameType.SimpleName, false),
+			CommonName = defaultCertificate.GetNameInfo(X509NameType.SimpleName, false),
 			ExpiryDate = expirationTimeOverride ?? defaultCertificate.NotAfter.ToUniversalTime(),
 			IssuerName = defaultCertificate.IssuerName.Name,
 			Thumbprint = defaultCertificate.Thumbprint,

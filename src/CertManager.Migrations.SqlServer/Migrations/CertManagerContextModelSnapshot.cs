@@ -129,11 +129,10 @@ namespace CertManager.Migrations.SqlServer.Migrations
                     b.Property<Guid>("CertificateId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Cn")
+                    b.Property<string>("CommonName")
                         .IsRequired()
                         .HasMaxLength(442)
-                        .HasColumnType("nvarchar(442)")
-                        .HasColumnName("CN");
+                        .HasColumnType("nvarchar(442)");
 
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("datetime2");
@@ -187,7 +186,7 @@ namespace CertManager.Migrations.SqlServer.Migrations
             modelBuilder.Entity("CertManager.Database.CertificateRenewalSubscription", b =>
                 {
                     b.HasOne("CertManager.Database.Certificate", "DestinationCertificate")
-                        .WithOne("RenewedBySubscription")
+                        .WithOne("ParentRenewalSubscription")
                         .HasForeignKey("CertManager.Database.CertificateRenewalSubscription", "DestinationCertificateId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -244,7 +243,7 @@ namespace CertManager.Migrations.SqlServer.Migrations
 
                     b.Navigation("DependentRenewalSubscriptions");
 
-                    b.Navigation("RenewedBySubscription");
+                    b.Navigation("ParentRenewalSubscription");
                 });
 
             modelBuilder.Entity("CertManager.Database.CertificateVersion", b =>

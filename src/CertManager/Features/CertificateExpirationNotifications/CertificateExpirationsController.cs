@@ -8,10 +8,10 @@ namespace CertManager.Features.CertificateExpirationNotifications;
 [ApiController]
 public class CertificateExpirationsController : ControllerBase
 {
-	private readonly CertificateExpirationService expirationService;
+	private readonly CertificateExpirationNotificationsService expirationService;
 	private readonly ILogger<CertificateExpirationsController> logger;
 
-	public CertificateExpirationsController(CertificateExpirationService expirationService, ILogger<CertificateExpirationsController> logger)
+	public CertificateExpirationsController(CertificateExpirationNotificationsService expirationService, ILogger<CertificateExpirationsController> logger)
 	{
 		this.expirationService = expirationService;
 		this.logger = logger;

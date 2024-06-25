@@ -75,14 +75,14 @@ public class CertificateService(CertManagerContext certManagerContext)
 		var cert = await certManagerContext.Certificates
 				.Include(x => x.DependentRenewalSubscriptions)
 				.Include(x => x.CertificateVersions)
-				.Include(x => x.RenewedBySubscription)
+				.Include(x => x.ParentRenewalSubscription)
 				.Where(x => x.CertificateId == Id).FirstOrDefaultAsync();
 
 		if (cert == null) return false;
 
-		if (cert.RenewedBySubscription != null)
+		if (cert.ParentRenewalSubscription != null)
 		{
-			certManagerContext.Remove(cert.RenewedBySubscription);
+			certManagerContext.Remove(cert.ParentRenewalSubscription);
 		}
 		certManagerContext.RemoveRange(cert.CertificateVersions);
 		certManagerContext.RemoveRange(cert.DependentRenewalSubscriptions);

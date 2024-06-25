@@ -17,7 +17,7 @@ public class CertificateVersionService(CertManagerContext certManagerContext)
 			OrganizationId = certManagerContext.OrganizationId,
 			ActivationDate = DateTime.UtcNow,
 			CertificateId = CertificateId,
-			Cn = cert.GetNameInfo(X509NameType.SimpleName, false),
+			CommonName = cert.GetNameInfo(X509NameType.SimpleName, false),
 			ExpiryDate = cert.NotAfter.ToUniversalTime(),
 			IssuerName = cert.IssuerName.Name,
 			Thumbprint = cert.Thumbprint,

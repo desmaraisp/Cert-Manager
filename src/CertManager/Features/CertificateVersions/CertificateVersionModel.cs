@@ -17,7 +17,7 @@ public class CertificateVersionModel
 	public static CertificateVersionModel FromCertificateVersion(CertificateVersion newCertVersion) => new()
 	{
 		ActivationDate = newCertVersion.ActivationDate,
-		Cn = newCertVersion.Cn,
+		Cn = newCertVersion.CommonName,
 		ExpiryDate = newCertVersion.ExpiryDate,
 		IssuerName = newCertVersion.IssuerName,
 		Thumbprint = newCertVersion.Thumbprint,
