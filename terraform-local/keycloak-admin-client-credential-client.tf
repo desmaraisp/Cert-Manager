@@ -1,6 +1,6 @@
 /*
 This client serves a single purposes. Allow swagger client_credentials authentication
-and CertRenwer auth. As such, it needs to have access to all groups and scopes in the realm.
+and CertRenwer auth. As such, it needs to have access to all orgs and roles in the realm.
 It also allows direct access auth for swaggerUI authentication
 */
 
@@ -33,26 +33,16 @@ resource "keycloak_openid_audience_protocol_mapper" "admin_credentials_audience_
 resource "keycloak_generic_protocol_mapper" "admin_hardcode_attribute_mapper" {
   realm_id        = keycloak_realm.realm.id
   client_id       = keycloak_openid_client.admin_credentials_client.id
-  name            = "groups-mapper"
+  name            = "roles-mapper"
   protocol        = "openid-connect"
   protocol_mapper = "oidc-hardcoded-claim-mapper"
   config = {
-    "claim.name" = "groups"
-    "claim.value" : "[\"foo\", \"bar\"]"
+    "claim.name" = "roles"
+    "claim.value" : "[\"*.Admin\"]"
     "jsonType.label"             = "JSON"
     "id.token.claim"             = "true"
     "access.token.claim"         = "true"
     "userinfo.token.claim"       = "true"
     "access.tokenResponse.claim" = "false"
   }
-}
-
-resource "keycloak_openid_client_optional_scopes" "admin_optional_scopes" {
-  realm_id  = keycloak_realm.realm.id
-  client_id = keycloak_openid_client.admin_credentials_client.id
-
-  optional_scopes = [
-    keycloak_openid_client_scope.cert-write-scope.name,
-    keycloak_openid_client_scope.cert-read-scope.name
-  ]
 }

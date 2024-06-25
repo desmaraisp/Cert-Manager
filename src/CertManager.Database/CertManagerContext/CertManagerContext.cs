@@ -7,7 +7,7 @@ namespace CertManager.Database;
 
 public class CertManagerContext(DbContextOptions<CertManagerContext> options) : DbContext(options)
 {
-	public string OrganizationId { get; set; } = null!;
+	public string? OrganizationId { get; set; }
 	public DbSet<Certificate> Certificates { get; set; } = null!;
 	public DbSet<NotificationMuteTiming> MuteTimings { get; set; } = null!;
 	public DbSet<CertificateVersion> CertificateVersions { get; set; } = null!;
@@ -19,14 +19,14 @@ public class CertManagerContext(DbContextOptions<CertManagerContext> options) : 
 		modelBuilder.Entity<Certificate>(entity =>
 		{
 			entity.HasIndex(m => new { m.CertificateName, m.OrganizationId }).IsUnique();
-			entity.HasQueryFilter(x => x.OrganizationId == OrganizationId);
+			entity.HasQueryFilter(x => string.IsNullOrEmpty(OrganizationId) || x.OrganizationId == OrganizationId);
 		});
 		modelBuilder.Entity<CertificateVersion>()
-			.HasQueryFilter(x => x.OrganizationId == OrganizationId);
+			.HasQueryFilter(x => string.IsNullOrEmpty(OrganizationId) || x.OrganizationId == OrganizationId);
 
 		modelBuilder.Entity<CertificateRenewalSubscription>(entity =>
 		{
-			entity.HasQueryFilter(x => x.OrganizationId == OrganizationId);
+			entity.HasQueryFilter(x => string.IsNullOrEmpty(OrganizationId) || x.OrganizationId == OrganizationId);
 			entity.Property(s => s.CertificateDuration).HasConversion(new TimeSpanToTicksConverter());
 
 			entity.HasOne(x => x.DestinationCertificate)

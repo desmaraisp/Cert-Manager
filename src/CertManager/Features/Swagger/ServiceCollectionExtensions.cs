@@ -59,23 +59,10 @@ public static class ServiceCollectionExtensions
 	{
 		OpenApiOAuthFlows openApiOAuthFlows = new()
 		{
-			Password = new()
-			{
-				AuthorizationUrl = new(AuthEndpoint),
-				TokenUrl = new(TokenEndpoint),
-				Scopes = {
-					{ AuthenticationScopes.ReadScope, "Read access" },
-					{ AuthenticationScopes.WriteScope, "write access" },
-				}
-			},
 			ClientCredentials = new()
 			{
 				AuthorizationUrl = new(AuthEndpoint),
 				TokenUrl = new(TokenEndpoint),
-				Scopes = {
-					{ AuthenticationScopes.ReadScope, "Read access" },
-					{ AuthenticationScopes.WriteScope, "write access" },
-				}
 			}
 		};
 		return openApiOAuthFlows;

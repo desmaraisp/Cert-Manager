@@ -1,11 +1,9 @@
 using CertManager.Features.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CertManager.Features.CertificateExpirationNotifications;
 
-[Authorize]
 [Route("{organization-id}/api/v1")]
 [ApiController]
 public class CertificateExpirationsController : ControllerBase
@@ -22,17 +20,16 @@ public class CertificateExpirationsController : ControllerBase
 
 	[HttpGet("ExpiringCertificateVersionNotifications", Name = nameof(GetExpiringCertificateVersionNotifications))]
 	[ProducesResponseType(typeof(List<CertificateExpirationNotification>), 200)]
-	[RequiredScope(AuthenticationScopes.ReadScope)]
+	[Authorize(Policy=nameof(PermissionsEnum.ManageNotifications))]
 	public async Task<IActionResult> GetExpiringCertificateVersionNotifications(DateTime MinimumVersionExpirationTimeUtc, DateTime MaximumVersionExpirationTimeUtc)
 	{
 		var expiringCerts = await expirationService.GetExpiringCertificateVersionNotifications(MinimumVersionExpirationTimeUtc, MaximumVersionExpirationTimeUtc);
-
 		return Ok(expiringCerts);
 	}
 
 	[HttpPatch("MuteTimings", Name = nameof(CreateMuteTimings))]
 	[ProducesResponseType(typeof(List<MuteTimingModelWithId>), 200)]
-	[RequiredScope(AuthenticationScopes.WriteScope)]
+	[Authorize(Policy=nameof(PermissionsEnum.ManageNotifications))]
 	public async Task<IActionResult> CreateMuteTimings(List<MuteTimingModel> muteTimings)
 	{
 		var result = await expirationService.CreateMuteTimings(muteTimings);

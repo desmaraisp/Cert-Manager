@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CertManager.Features.CertificateRenewal;
 
-[Authorize]
 [Route("{organization-id}/api/v1")]
 [ApiController]
 public class CertificateRenewalController : ControllerBase
@@ -24,7 +23,7 @@ public class CertificateRenewalController : ControllerBase
 
 	[HttpGet("CertificateRenewalSchedules", Name = nameof(GetCertificateRenewalSchedules))]
 	[ProducesResponseType(typeof(List<CertificateRenewalScheduleModel>), 200)]
-	[RequiredScope(AuthenticationScopes.ReadScope)]
+	[Authorize(Policy=nameof(PermissionsEnum.ReadCertificateSubscriptions))]
 	public async Task<IActionResult> GetCertificateRenewalSchedules(DateTime MinimumUtcScheduledTime, DateTime MaximumUtcScheduledTime)
 	{
 		var schedules = await renewalService.GetRenewalSchedules(MinimumUtcScheduledTime, MaximumUtcScheduledTime);
@@ -34,7 +33,7 @@ public class CertificateRenewalController : ControllerBase
 
 	[HttpGet("CertificateRenewalSubscriptions", Name = nameof(GetCertificateRenewalSubscriptions))]
 	[ProducesResponseType(typeof(List<CertificateRenewalSubscriptionModelWithId>), 200)]
-	[RequiredScope(AuthenticationScopes.ReadScope)]
+	[Authorize(Policy=nameof(PermissionsEnum.ReadCertificateSubscriptions))]
 	public async Task<IActionResult> GetCertificateRenewalSubscriptions([FromQuery] List<Guid> CertificateIds)
 	{
 		var schedules = await renewalService.GetRenewalSubscriptions(CertificateIds);
@@ -45,7 +44,7 @@ public class CertificateRenewalController : ControllerBase
 	[HttpDelete("CertificateRenewalSubscriptions/{id}", Name = nameof(DeleteCertificateRenewalSubscription))]
 	[ProducesResponseType(200)]
 	[ProducesResponseType(400)]
-	[RequiredScope(AuthenticationScopes.WriteScope)]
+	[Authorize(Policy=nameof(PermissionsEnum.WriteCertificateSubscriptions))]
 	public async Task<IActionResult> DeleteCertificateRenewalSubscription(Guid id)
 	{
 		var deletedCount = await renewalService.DeleteRenewalSubscription(id);
@@ -56,7 +55,7 @@ public class CertificateRenewalController : ControllerBase
 
 	[HttpPost("CertificateRenewalSubscriptions", Name = nameof(CreateCertificateRenewalSubscriptions))]
 	[ProducesResponseType(typeof(CertificateRenewalSubscriptionModelWithId), 200)]
-	[RequiredScope(AuthenticationScopes.WriteScope)]
+	[Authorize(Policy=nameof(PermissionsEnum.WriteCertificateSubscriptions))]
 	public async Task<IActionResult> CreateCertificateRenewalSubscriptions(CertificateRenewalSubscriptionModel Payload)
 	{
 		using var trn = certManagerContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);

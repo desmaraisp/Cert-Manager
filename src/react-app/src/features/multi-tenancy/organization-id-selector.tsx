@@ -4,13 +4,13 @@ import { useAuthHelper } from "../authentication/use-auth-helper";
 
 export function OrganizationIdSelector() {
 	const { organizationId, setOrganizationId } = useOrganizationId()
-	const {auth} = useAuthHelper()
+	const { auth } = useAuthHelper()
 	let orgs: string[] = []
-	const groupsClaimName= import.meta.env.VITE_GROUPS_CLAIM_NAME
+	const rolesClaimName = import.meta.env.VITE_ROLES_CLAIM_NAME
 
-	if(auth.isAuthenticated){
-		const profile = auth.user!.profile
-		orgs = (profile[groupsClaimName] ?? []) as string[]
+	if (auth.isAuthenticated) {
+		const roles = (auth.user!.profile[rolesClaimName] as string[] ?? []);
+		orgs = roles.map(x => x.split(".").at(0)).filter(x => x !== null) as string[];
 	}
 
 	return <Select

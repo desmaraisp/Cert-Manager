@@ -34,7 +34,7 @@ internal class Program
 
 		builder.Services.AddControllers(c =>
 		{
-			c.Filters.Add(new OrganizationIdActionFilterAttribute());
+			c.Filters.Add(new OrganizationIdDbContextInserterActionFilterAttribute());
 		}).AddJsonOptions(options =>
 		{
 			options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -64,7 +64,7 @@ internal class Program
 					.AddSingleton<IValidator<CertificateUpdateModel>, CertificateUpdateModelValidator>()
 					.AddSingleton<IValidator<CertificateRenewalSubscriptionModel>, CertificateRenewalSubscriptionModelValidator>()
 					.AddScoped<CertificateRenewalService>();
-		builder.Services.RegisterAuthentication(builder.Configuration);
+		builder.RegisterAuthentication();
 		builder.Services.AddCors(x =>
 		{
 			x.AddDefaultPolicy(x =>

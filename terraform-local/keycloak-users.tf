@@ -9,16 +9,6 @@ resource "keycloak_user" "admin_user" {
     temporary = false
   }
 }
-resource "keycloak_user_groups" "admin_groups" {
-  realm_id = keycloak_realm.realm.id
-  user_id = keycloak_user.admin_user.id
-
-  group_ids  = [
-    keycloak_group.foo.id,
-    keycloak_group.bar.id
-  ]
-}
-
 
 resource "keycloak_user" "foo_user" {
   realm_id = keycloak_realm.realm.id
@@ -31,12 +21,12 @@ resource "keycloak_user" "foo_user" {
     temporary = false
   }
 }
-resource "keycloak_user_groups" "foo_groups" {
+resource "keycloak_user_roles" "foo_roles" {
   realm_id = keycloak_realm.realm.id
-  user_id = keycloak_user.foo_user.id
+  user_id  = keycloak_user.foo_user.id
 
-  group_ids  = [
-    keycloak_group.foo.id
+  role_ids = [
+    keycloak_role.foo_role.id,
   ]
 }
 
@@ -51,12 +41,11 @@ resource "keycloak_user" "bar_user" {
     temporary = false
   }
 }
-resource "keycloak_user_groups" "bar_groups" {
+resource "keycloak_user_roles" "bar_roles" {
   realm_id = keycloak_realm.realm.id
-  user_id = keycloak_user.bar_user.id
+  user_id  = keycloak_user.bar_user.id
 
-  group_ids  = [
-    keycloak_group.bar.id
+  role_ids = [
+    keycloak_role.bar_role.id,
   ]
 }
-

@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 namespace CertManager.Features.CertificateVersions;
 
 [ApiController]
-[Authorize]
 [Route("{organization-id}/api/v1")]
 public class CertificateVersionController : ControllerBase
 {
@@ -25,7 +24,7 @@ public class CertificateVersionController : ControllerBase
 	[ProducesResponseType(typeof(CertificateVersionModel), 200)]
 	[ProducesResponseType(400)]
 	[Consumes("multipart/form-data")]
-	[RequiredScope(AuthenticationScopes.WriteScope)]
+	[Authorize(Policy=nameof(PermissionsEnum.WriteCertificateVersions))]
 	public async Task<IActionResult> CreateCertificateVersion(CertificateVersionUploadModel Payload)
 	{
 		using X509Certificate2 cert = await Payload.ReadCertificateAsync();
@@ -54,7 +53,7 @@ public class CertificateVersionController : ControllerBase
 	[HttpGet("CertificateVersions/{id}", Name = nameof(GetCertificateVersionById))]
 	[ProducesResponseType(typeof(CertificateVersionModel), 200)]
 	[ProducesResponseType(404)]
-	[RequiredScope(AuthenticationScopes.ReadScope)]
+	[Authorize(Policy=nameof(PermissionsEnum.ReadCertificateVersions))]
 	public async Task<IActionResult> GetCertificateVersionById(Guid id)
 	{
 		var certVersion = (await certificateVersionService.GetCertificateVersions([id])).SingleOrDefault();
@@ -66,7 +65,7 @@ public class CertificateVersionController : ControllerBase
 	[HttpDelete("CertificateVersions/{id}", Name = nameof(DeleteCertificateVersion))]
 	[ProducesResponseType(200)]
 	[ProducesResponseType(404)]
-	[RequiredScope(AuthenticationScopes.WriteScope)]
+	[Authorize(Policy=nameof(PermissionsEnum.WriteCertificateVersions))]
 	public async Task<IActionResult> DeleteCertificateVersion(Guid id)
 	{
 		int rowsDeleted = await certificateVersionService.DeleteCertificateVersion(id);
@@ -77,7 +76,7 @@ public class CertificateVersionController : ControllerBase
 
 	[HttpGet("CertificateVersions", Name = nameof(GetCertificateVersions))]
 	[ProducesResponseType(typeof(List<CertificateVersionModel>), 200)]
-	[RequiredScope(AuthenticationScopes.ReadScope)]
+	[Authorize(Policy=nameof(PermissionsEnum.ReadCertificateVersions))]
 	public async Task<IActionResult> GetCertificateVersions(
 		[FromQuery] List<Guid> CertificateIds,
 		[FromQuery] DateTime? MinimumUtcExpirationTime,

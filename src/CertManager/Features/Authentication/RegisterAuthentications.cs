@@ -1,26 +1,29 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace CertManager.Features.Authentication;
 
 public static class ServiceCollectionExtensions
 {
-	public static IServiceCollection RegisterAuthentication(this IServiceCollection services, IConfiguration configuration)
+	public static void RegisterAuthentication(this WebApplicationBuilder builder)
 	{
-		services.AddOptions<AuthenticationConfig>().BindConfiguration("Authentication").ValidateDataAnnotations();
-		var config = configuration.GetSection("Authentication").Get<AuthenticationConfig>() ?? new();
-		Validator.ValidateObject(config, new(config), true);
+		var config = builder.Configuration.GetSection("Authentication").Get<AuthenticationConfig>() ?? new();
 
-		services.AddSingleton<IAuthorizationHandler, ScopeAuthorizationHandler>();
-		services.AddAuthorizationBuilder()
-				.SetDefaultPolicy(new AuthorizationPolicyBuilder([JwtBearerDefaults.AuthenticationScheme])
-					.RequireAuthenticatedUser()
-					.AddRequirements(new ScopeAuthorizationRequirement())
-					.Build()
-				);
+		builder.Services
+				.AddSingleton<IAuthorizationHandler, PermissionsAuthorizationHandler>()
+				.AddSingleton<PermissionsResolver>()
+				.AddHttpContextAccessor();
+		builder.Services.AddAuthorization(c =>
+		{
+			foreach(PermissionsEnum permission in Enum.GetValues<PermissionsEnum>()){
+				c.AddPolicy(permission.ToString(), policy => policy.Requirements.Add(new PermissionsAuthorizationRequirement {
+					RequiredPermission = permission
+				}));
+			}
+		});
 
-		var authBuilder = services.AddAuthentication(options =>
+		var authBuilder = builder.Services.AddAuthentication(options =>
 		{
 			options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
 			options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -34,7 +37,5 @@ public static class ServiceCollectionExtensions
 
 			options.TokenValidationParameters.ValidateAudience = config.ValidateJwtAudience;
 		});
-
-		return services;
 	}
 }

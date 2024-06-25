@@ -8,7 +8,7 @@ export function AuthHeader() {
 	if (!auth.isAuthenticated) return <Button onClick={async () => {
 		setPreviousPath()
 		await auth.signinRedirect({
-			scope: 'openid cert-manager/write cert-manager/read'
+			scope: 'openid profile roles'
 		})
 	}}>Login</Button>
 
